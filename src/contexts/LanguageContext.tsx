@@ -1,0 +1,433 @@
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+
+type Language = "en" | "ar" | "ku";
+
+interface LanguageContextType {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: (key: string) => string;
+  dir: "ltr" | "rtl";
+}
+
+const translations: Record<Language, Record<string, string>> = {
+  en: {
+    // Navbar
+    "nav.home": "Home",
+    "nav.services": "Services",
+    "nav.about": "About",
+    "nav.testimonials": "Testimonials",
+    "nav.contact": "Contact",
+    "nav.bookAppointment": "Book Appointment",
+    "nav.call": "Call",
+    
+    // Hero
+    "hero.badge": "Professional Dental Care in Duhok",
+    "hero.title1": "Your Smile Is Our",
+    "hero.title2": "Priority",
+    "hero.description": "Experience exceptional dental care with Dr. Saleem Andraws. Combining advanced techniques with a gentle approach for your perfect smile.",
+    "hero.credential1": "M.Sc. Oral Radiology",
+    "hero.credential2": "B.D.S. - University of Baghdad",
+    "hero.bookBtn": "Book Appointment",
+    "hero.callBtn": "Call Now",
+    "hero.workingHours": "Working Hours",
+    "hero.workingHoursValue": "3 PM - 9 PM (Except Fri)",
+    "hero.location": "Location",
+    "hero.locationValue": "Duhok - KRO",
+    "hero.experience": "Experience",
+    "hero.years": "15+ Years",
+    "hero.happyPatients": "500+ Happy Patients",
+    
+    // Services
+    "services.badge": "Our Services",
+    "services.title1": "Comprehensive Dental",
+    "services.title2": "Care",
+    "services.description": "We offer a wide range of dental services using the latest technology and techniques to ensure your comfort and satisfaction.",
+    "services.teethWhitening": "Teeth Whitening",
+    "services.teethWhiteningDesc": "Professional whitening treatments for a brighter, more confident smile.",
+    "services.dentalImplants": "Dental Implants",
+    "services.dentalImplantsDesc": "Permanent tooth replacement solutions that look and feel natural.",
+    "services.cosmeticDentistry": "Cosmetic Dentistry",
+    "services.cosmeticDentistryDesc": "Veneers, bonding, and smile makeovers for aesthetic perfection.",
+    "services.rootCanal": "Root Canal Treatment",
+    "services.rootCanalDesc": "Pain-free root canal therapy to save and restore damaged teeth.",
+    "services.orthodontics": "Orthodontics",
+    "services.orthodonticsDesc": "Braces and aligners for perfectly aligned teeth and improved bite.",
+    "services.oralRadiology": "Oral Radiology",
+    "services.oralRadiologyDesc": "Advanced digital X-rays and imaging for accurate diagnosis.",
+    "services.dentalCleaning": "Dental Cleaning",
+    "services.dentalCleaningDesc": "Professional cleaning and scaling for optimal oral hygiene.",
+    "services.pediatricDentistry": "Pediatric Dentistry",
+    "services.pediatricDentistryDesc": "Gentle and caring dental treatments for children of all ages.",
+    "services.startingFrom": "Starting from",
+    
+    // About
+    "about.badge": "About Dr. Saleem",
+    "about.title1": "Expert Dental Care You Can",
+    "about.title2": "Trust",
+    "about.description1": "Dr. Saleem Andraws is a highly qualified dental professional with over 15 years of experience in providing exceptional dental care. With a Master's degree in Oral Radiology and a Bachelor's degree from the prestigious University of Baghdad, Dr. Saleem brings expertise and dedication to every patient.",
+    "about.description2": "At our clinic in Duhok, we combine state-of-the-art technology with a warm, patient-centered approach. Whether you need routine dental care or advanced treatments, we're committed to helping you achieve and maintain a healthy, beautiful smile.",
+    "about.oralRadiology": "Oral Radiology",
+    "about.univBaghdad": "University of Baghdad",
+    "about.happyPatients": "Happy Patients",
+    "about.yearsExperience": "Years Experience",
+    
+    // Testimonials
+    "testimonials.badge": "Testimonials",
+    "testimonials.title1": "What Our Patients",
+    "testimonials.title2": "Say",
+    "testimonials.description": "Don't just take our word for it. Here's what our patients have to say about their experience at our clinic.",
+    "testimonials.businessOwner": "Business Owner",
+    "testimonials.teacher": "Teacher",
+    "testimonials.engineer": "Engineer",
+    "testimonials.student": "Student",
+    "testimonials.review1": "Dr. Saleem transformed my smile completely. His expertise in cosmetic dentistry is remarkable. Highly recommend!",
+    "testimonials.review2": "The best dental experience I've ever had. The clinic is modern, clean, and Dr. Saleem is incredibly gentle and professional.",
+    "testimonials.review3": "I was terrified of dentists until I visited Dr. Saleem. He made me feel comfortable and explained everything clearly.",
+    "testimonials.review4": "Got my braces from Dr. Saleem's clinic. The results are amazing and the staff is always friendly and helpful.",
+    
+    // Contact
+    "contact.badge": "Contact Us",
+    "contact.title1": "Get In",
+    "contact.title2": "Touch",
+    "contact.description": "Ready to schedule your appointment or have questions? We're here to help you achieve your perfect smile.",
+    "contact.callUs": "Call Us",
+    "contact.emailUs": "Email Us",
+    "contact.visitUs": "Visit Us",
+    "contact.address": "Duhok - KRO - Above Sherko Nuts",
+    "contact.workingHours": "Working Hours",
+    "contact.workingHoursValue": "Daily 3:00 PM - 9:00 PM (Except Friday)",
+    "contact.whatsapp": "WhatsApp Us",
+    "contact.socialMedia": "Social Media",
+    "contact.readyToVisit": "Ready to visit?",
+    "contact.bookYourAppointment": "Book Your Appointment",
+    
+    // Footer
+    "footer.description": "Professional dental care in Duhok. M.Sc. Oral Radiology, B.D.S. from University of Baghdad. Committed to providing exceptional care for your smile.",
+    "footer.quickLinks": "Quick Links",
+    "footer.contact": "Contact",
+    "footer.rights": "All rights reserved.",
+    "footer.openDaily": "Open Daily: 3:00 PM - 9:00 PM (Except Friday)",
+    
+    // Booking Modal
+    "booking.title": "Book Appointment",
+    "booking.subtitle": "Schedule your visit with Dr. Saleem",
+    "booking.fullName": "Full Name",
+    "booking.fullNamePlaceholder": "Enter your full name",
+    "booking.phone": "Phone Number",
+    "booking.phonePlaceholder": "07XXXXXXXXX",
+    "booking.service": "Service Required",
+    "booking.selectService": "Select a service",
+    "booking.continue": "Continue to Date & Time",
+    "booking.preferredDate": "Preferred Date",
+    "booking.dateNote": "Note: Clinic is closed on Fridays",
+    "booking.preferredTime": "Preferred Time",
+    "booking.additionalNotes": "Additional Notes (Optional)",
+    "booking.notesPlaceholder": "Any special requirements or concerns...",
+    "booking.back": "Back",
+    "booking.bookViaWhatsapp": "Book via WhatsApp",
+    "booking.generalCheckup": "General Checkup",
+    
+    // Chatbot
+    "chat.title": "Dental Assistant",
+    "chat.status": "Online • Quick replies",
+    "chat.welcome": "Hello! 👋 Welcome to Dr. Saleem Andraws Dental Clinic. How can I help you today?",
+    "chat.placeholder": "Type your message...",
+    "chat.quickServices": "What services do you offer?",
+    "chat.quickPrices": "What are your prices?",
+    "chat.quickHours": "Working hours?",
+    "chat.quickBooking": "How to book an appointment?",
+  },
+  ar: {
+    // Navbar
+    "nav.home": "الرئيسية",
+    "nav.services": "الخدمات",
+    "nav.about": "عن العيادة",
+    "nav.testimonials": "آراء المرضى",
+    "nav.contact": "اتصل بنا",
+    "nav.bookAppointment": "حجز موعد",
+    "nav.call": "اتصل",
+    
+    // Hero
+    "hero.badge": "رعاية أسنان احترافية في دهوك",
+    "hero.title1": "ابتسامتك هي",
+    "hero.title2": "أولويتنا",
+    "hero.description": "استمتع برعاية أسنان استثنائية مع الدكتور سليم أندراوس. نجمع بين التقنيات المتقدمة والنهج اللطيف لابتسامتك المثالية.",
+    "hero.credential1": "ماجستير أشعة الفم",
+    "hero.credential2": "بكالوريوس طب الأسنان - جامعة بغداد",
+    "hero.bookBtn": "حجز موعد",
+    "hero.callBtn": "اتصل الآن",
+    "hero.workingHours": "ساعات العمل",
+    "hero.workingHoursValue": "٣ - ٩ مساءً (عدا الجمعة)",
+    "hero.location": "الموقع",
+    "hero.locationValue": "دهوك - KRO",
+    "hero.experience": "الخبرة",
+    "hero.years": "+١٥ سنة",
+    "hero.happyPatients": "+٥٠٠ مريض سعيد",
+    
+    // Services
+    "services.badge": "خدماتنا",
+    "services.title1": "رعاية أسنان",
+    "services.title2": "شاملة",
+    "services.description": "نقدم مجموعة واسعة من خدمات طب الأسنان باستخدام أحدث التقنيات لضمان راحتك ورضاك.",
+    "services.teethWhitening": "تبييض الأسنان",
+    "services.teethWhiteningDesc": "علاجات تبييض احترافية لابتسامة أكثر إشراقاً وثقة.",
+    "services.dentalImplants": "زراعة الأسنان",
+    "services.dentalImplantsDesc": "حلول استبدال الأسنان الدائمة بمظهر وإحساس طبيعي.",
+    "services.cosmeticDentistry": "طب الأسنان التجميلي",
+    "services.cosmeticDentistryDesc": "قشور الأسنان والترابط وتجميل الابتسامة للكمال الجمالي.",
+    "services.rootCanal": "علاج قناة الجذر",
+    "services.rootCanalDesc": "علاج قناة الجذر بدون ألم لإنقاذ الأسنان التالفة.",
+    "services.orthodontics": "تقويم الأسنان",
+    "services.orthodonticsDesc": "تقويم الأسنان والمصففات لأسنان مستقيمة تماماً.",
+    "services.oralRadiology": "أشعة الفم",
+    "services.oralRadiologyDesc": "أشعة سينية رقمية متقدمة للتشخيص الدقيق.",
+    "services.dentalCleaning": "تنظيف الأسنان",
+    "services.dentalCleaningDesc": "تنظيف احترافي لصحة فم مثالية.",
+    "services.pediatricDentistry": "طب أسنان الأطفال",
+    "services.pediatricDentistryDesc": "علاجات لطيفة للأطفال من جميع الأعمار.",
+    "services.startingFrom": "يبدأ من",
+    
+    // About
+    "about.badge": "عن الدكتور سليم",
+    "about.title1": "رعاية أسنان خبيرة يمكنك",
+    "about.title2": "الوثوق بها",
+    "about.description1": "الدكتور سليم أندراوس طبيب أسنان مؤهل تأهيلاً عالياً مع أكثر من ١٥ عاماً من الخبرة. حاصل على ماجستير في أشعة الفم وبكالوريوس من جامعة بغداد المرموقة.",
+    "about.description2": "في عيادتنا في دهوك، نجمع بين أحدث التقنيات والنهج الدافئ المتمحور حول المريض. سواء كنت بحاجة إلى رعاية روتينية أو علاجات متقدمة، نحن ملتزمون بمساعدتك.",
+    "about.oralRadiology": "أشعة الفم",
+    "about.univBaghdad": "جامعة بغداد",
+    "about.happyPatients": "مريض سعيد",
+    "about.yearsExperience": "سنوات خبرة",
+    
+    // Testimonials
+    "testimonials.badge": "آراء المرضى",
+    "testimonials.title1": "ماذا يقول",
+    "testimonials.title2": "مرضانا",
+    "testimonials.description": "لا تأخذ كلمتنا فقط. إليك ما يقوله مرضانا عن تجربتهم في عيادتنا.",
+    "testimonials.businessOwner": "رجل أعمال",
+    "testimonials.teacher": "معلم",
+    "testimonials.engineer": "مهندس",
+    "testimonials.student": "طالب",
+    "testimonials.review1": "الدكتور سليم غيّر ابتسامتي بالكامل. خبرته في طب الأسنان التجميلي رائعة. أوصي به بشدة!",
+    "testimonials.review2": "أفضل تجربة أسنان مررت بها. العيادة حديثة ونظيفة والدكتور سليم لطيف ومحترف للغاية.",
+    "testimonials.review3": "كنت أخاف من أطباء الأسنان حتى زرت الدكتور سليم. جعلني أشعر بالراحة وشرح كل شيء بوضوح.",
+    "testimonials.review4": "حصلت على تقويم أسناني من عيادة الدكتور سليم. النتائج مذهلة والموظفون ودودون ومفيدون دائماً.",
+    
+    // Contact
+    "contact.badge": "اتصل بنا",
+    "contact.title1": "تواصل",
+    "contact.title2": "معنا",
+    "contact.description": "هل أنت مستعد لحجز موعدك أو لديك أسئلة؟ نحن هنا لمساعدتك في الحصول على ابتسامتك المثالية.",
+    "contact.callUs": "اتصل بنا",
+    "contact.emailUs": "راسلنا",
+    "contact.visitUs": "زورنا",
+    "contact.address": "دهوك - KRO - فوق شيركو للمكسرات",
+    "contact.workingHours": "ساعات العمل",
+    "contact.workingHoursValue": "يومياً ٣:٠٠ - ٩:٠٠ مساءً (عدا الجمعة)",
+    "contact.whatsapp": "واتساب",
+    "contact.socialMedia": "وسائل التواصل",
+    "contact.readyToVisit": "مستعد للزيارة؟",
+    "contact.bookYourAppointment": "احجز موعدك",
+    
+    // Footer
+    "footer.description": "رعاية أسنان احترافية في دهوك. ماجستير أشعة الفم، بكالوريوس من جامعة بغداد. ملتزمون بتقديم رعاية استثنائية لابتسامتك.",
+    "footer.quickLinks": "روابط سريعة",
+    "footer.contact": "اتصل بنا",
+    "footer.rights": "جميع الحقوق محفوظة.",
+    "footer.openDaily": "مفتوح يومياً: ٣:٠٠ - ٩:٠٠ مساءً (عدا الجمعة)",
+    
+    // Booking Modal
+    "booking.title": "حجز موعد",
+    "booking.subtitle": "حدد موعد زيارتك مع الدكتور سليم",
+    "booking.fullName": "الاسم الكامل",
+    "booking.fullNamePlaceholder": "أدخل اسمك الكامل",
+    "booking.phone": "رقم الهاتف",
+    "booking.phonePlaceholder": "07XXXXXXXXX",
+    "booking.service": "الخدمة المطلوبة",
+    "booking.selectService": "اختر خدمة",
+    "booking.continue": "المتابعة لاختيار الوقت",
+    "booking.preferredDate": "التاريخ المفضل",
+    "booking.dateNote": "ملاحظة: العيادة مغلقة أيام الجمعة",
+    "booking.preferredTime": "الوقت المفضل",
+    "booking.additionalNotes": "ملاحظات إضافية (اختياري)",
+    "booking.notesPlaceholder": "أي متطلبات أو مخاوف خاصة...",
+    "booking.back": "رجوع",
+    "booking.bookViaWhatsapp": "حجز عبر واتساب",
+    "booking.generalCheckup": "فحص عام",
+    
+    // Chatbot
+    "chat.title": "مساعد الأسنان",
+    "chat.status": "متصل • ردود سريعة",
+    "chat.welcome": "مرحباً! 👋 أهلاً بك في عيادة الدكتور سليم أندراوس لطب الأسنان. كيف يمكنني مساعدتك اليوم؟",
+    "chat.placeholder": "اكتب رسالتك...",
+    "chat.quickServices": "ما هي الخدمات المتوفرة؟",
+    "chat.quickPrices": "ما هي الأسعار؟",
+    "chat.quickHours": "ساعات العمل؟",
+    "chat.quickBooking": "كيف أحجز موعد؟",
+  },
+  ku: {
+    // Navbar
+    "nav.home": "سەرەتا",
+    "nav.services": "خزمەتگوزارییەکان",
+    "nav.about": "دەربارە",
+    "nav.testimonials": "بۆچوونەکان",
+    "nav.contact": "پەیوەندی",
+    "nav.bookAppointment": "نۆرەی پزیشک",
+    "nav.call": "پەیوەندی",
+    
+    // Hero
+    "hero.badge": "چاودێری ددان بە شێوەیەکی پیشەگەری لە دهۆک",
+    "hero.title1": "بزەیی تۆ",
+    "hero.title2": "گرنگە بۆمان",
+    "hero.description": "چاودێری ددانی نایاب لەگەڵ دکتۆر سەلیم ئەندراوس. تەکنیکی پێشکەوتوو لەگەڵ ڕێبازێکی نەرم بۆ بزەیی تەواوت.",
+    "hero.credential1": "ماستەر لە تیشکی دەم",
+    "hero.credential2": "بەکالۆریۆس - زانکۆی بەغدا",
+    "hero.bookBtn": "نۆرەی پزیشک",
+    "hero.callBtn": "پەیوەندی بکە",
+    "hero.workingHours": "کاتی کارکردن",
+    "hero.workingHoursValue": "٣ - ٩ ئێوارە (جگە لە هەینی)",
+    "hero.location": "شوێن",
+    "hero.locationValue": "دهۆک - KRO",
+    "hero.experience": "ئەزموون",
+    "hero.years": "+١٥ ساڵ",
+    "hero.happyPatients": "+٥٠٠ نەخۆشی دڵخۆش",
+    
+    // Services
+    "services.badge": "خزمەتگوزارییەکانمان",
+    "services.title1": "چاودێری ددانی",
+    "services.title2": "تەواو",
+    "services.description": "کۆمەڵێک خزمەتگوزاری ددان بە بەکارهێنانی تەکنەلۆژیای هەرە نوێ پێشکەش دەکەین بۆ ئارامی و ڕازیبوونت.",
+    "services.teethWhitening": "سپیکردنەوەی ددان",
+    "services.teethWhiteningDesc": "چارەسەری سپیکردنەوەی پیشەگەری بۆ بزەیەکی درەوشاوەتر.",
+    "services.dentalImplants": "چاندنی ددان",
+    "services.dentalImplantsDesc": "چارەسەری دانانەوەی ددانی هەمیشەیی بە شێوەیەکی سروشتی.",
+    "services.cosmeticDentistry": "ددانی جوانکاری",
+    "services.cosmeticDentistryDesc": "ڤینیر و بۆندینگ و جوانکاری بزەی بۆ تەواوی جوانکاری.",
+    "services.rootCanal": "چارەسەری کەناڵی ڕەگ",
+    "services.rootCanalDesc": "چارەسەری کەناڵی ڕەگ بێ ئازار بۆ ڕزگارکردنی ددانی زیانمەند.",
+    "services.orthodontics": "ڕاستکردنەوەی ددان",
+    "services.orthodonticsDesc": "برەیسیس و ئەلایننەر بۆ ڕیزکردنی تەواوی ددان.",
+    "services.oralRadiology": "تیشکی دەم",
+    "services.oralRadiologyDesc": "تیشکی ئێکسی دیجیتاڵی پێشکەوتوو بۆ دەستنیشانکردنی وردی نەخۆشی.",
+    "services.dentalCleaning": "پاککردنەوەی ددان",
+    "services.dentalCleaningDesc": "پاککردنەوەی پیشەگەری بۆ تەندروستی باشی دەم.",
+    "services.pediatricDentistry": "ددانی منداڵان",
+    "services.pediatricDentistryDesc": "چارەسەری نەرم بۆ منداڵانی هەموو تەمەنێک.",
+    "services.startingFrom": "دەست پێدەکات لە",
+    
+    // About
+    "about.badge": "دەربارەی دکتۆر سەلیم",
+    "about.title1": "چاودێری ددانی شارەزا کە دەتوانیت",
+    "about.title2": "متمانەی پێبکەیت",
+    "about.description1": "دکتۆر سەلیم ئەندراوس پزیشکی ددانی شارەزایە بە زیاتر لە ١٥ ساڵ ئەزموون. ماستەری تیشکی دەم و بەکالۆریۆس لە زانکۆی بەغدا.",
+    "about.description2": "لە کلینیکەکەماندا لە دهۆک، تەکنەلۆژیای پێشکەوتوو دەگەڵ ڕێبازێکی گەرم و نەخۆش-ناوەندی تێکەڵ دەکەین.",
+    "about.oralRadiology": "تیشکی دەم",
+    "about.univBaghdad": "زانکۆی بەغدا",
+    "about.happyPatients": "نەخۆشی دڵخۆش",
+    "about.yearsExperience": "ساڵ ئەزموون",
+    
+    // Testimonials
+    "testimonials.badge": "بۆچوونەکان",
+    "testimonials.title1": "نەخۆشەکانمان چی",
+    "testimonials.title2": "دەڵێن",
+    "testimonials.description": "تەنها قسەی ئێمە وەرمەگرە. ئەمە ئەوەیە کە نەخۆشەکانمان دەیڵێن دەربارەی ئەزموونیان لە کلینیکەکەمان.",
+    "testimonials.businessOwner": "خاوەن کار",
+    "testimonials.teacher": "مامۆستا",
+    "testimonials.engineer": "ئەندازیار",
+    "testimonials.student": "خوێندکار",
+    "testimonials.review1": "دکتۆر سەلیم بزەیم بە تەواوی گۆڕی. شارەزاییەکەی لە ددانی جوانکاریدا نایابە. زۆر پێشنیاری دەکەم!",
+    "testimonials.review2": "باشترین ئەزموونی ددان بوو کە هەبووم. کلینیکەکە مۆدێرن و پاکە و دکتۆر سەلیم زۆر نەرم و پیشەگەرە.",
+    "testimonials.review3": "لە پزیشکی ددان دەترسام تا سەردانی دکتۆر سەلیمم کرد. هەستم بە ئارامی کرد و هەموو شتێکی بە ئاشکرا ڕوونکردەوە.",
+    "testimonials.review4": "برەیسیسم لە کلینیکی دکتۆر سەلیم وەرگرت. ئەنجامەکان نایابن و ستافەکە هەمیشە خۆشەویست و یارمەتیدەرن.",
+    
+    // Contact
+    "contact.badge": "پەیوەندیمان پێوە بکە",
+    "contact.title1": "پەیوەندی",
+    "contact.title2": "بکە",
+    "contact.description": "ئامادەیت بۆ دانانی نۆرەی پزیشک یان پرسیارت هەیە؟ ئێمە لێرەین بۆ یارمەتیت بۆ بەدەستهێنانی بزەیی تەواوت.",
+    "contact.callUs": "پەیوەندیمان پێوە بکە",
+    "contact.emailUs": "ئیمەیڵمان بۆ بنێرە",
+    "contact.visitUs": "سەردانمان بکە",
+    "contact.address": "دهۆک - KRO - سەرووی شیرکۆ نەتس",
+    "contact.workingHours": "کاتی کارکردن",
+    "contact.workingHoursValue": "ڕۆژانە ٣:٠٠ - ٩:٠٠ ئێوارە (جگە لە هەینی)",
+    "contact.whatsapp": "واتساپ",
+    "contact.socialMedia": "تۆڕە کۆمەڵایەتییەکان",
+    "contact.readyToVisit": "ئامادەیت بۆ سەردان؟",
+    "contact.bookYourAppointment": "نۆرەی پزیشکت دابنێ",
+    
+    // Footer
+    "footer.description": "چاودێری ددانی پیشەگەری لە دهۆک. ماستەر تیشکی دەم، بەکالۆریۆس لە زانکۆی بەغدا. پابەندین بە پێشکەشکردنی چاودێری نایاب بۆ بزەیت.",
+    "footer.quickLinks": "لینکە خێراکان",
+    "footer.contact": "پەیوەندی",
+    "footer.rights": "هەموو مافەکان پارێزراون.",
+    "footer.openDaily": "کراوەیە ڕۆژانە: ٣:٠٠ - ٩:٠٠ ئێوارە (جگە لە هەینی)",
+    
+    // Booking Modal
+    "booking.title": "نۆرەی پزیشک",
+    "booking.subtitle": "سەردانت بۆ دکتۆر سەلیم دابنێ",
+    "booking.fullName": "ناوی تەواو",
+    "booking.fullNamePlaceholder": "ناوی تەواوت بنووسە",
+    "booking.phone": "ژمارەی تەلەفۆن",
+    "booking.phonePlaceholder": "07XXXXXXXXX",
+    "booking.service": "خزمەتگوزاری پێویست",
+    "booking.selectService": "خزمەتگوزارییەک هەڵبژێرە",
+    "booking.continue": "بەردەوامبوون بۆ کات و ڕۆژ",
+    "booking.preferredDate": "ڕۆژی خوازراو",
+    "booking.dateNote": "تێبینی: کلینیک ڕۆژی هەینی داخراوە",
+    "booking.preferredTime": "کاتی خوازراو",
+    "booking.additionalNotes": "تێبینی زیاتر (ئارەزوومەندانە)",
+    "booking.notesPlaceholder": "هەر داواکاری یان نیگەرانییەکی تایبەت...",
+    "booking.back": "گەڕانەوە",
+    "booking.bookViaWhatsapp": "نۆرەی پزیشک لە ڕێگای واتساپ",
+    "booking.generalCheckup": "پشکنینی گشتی",
+    
+    // Chatbot
+    "chat.title": "یاریدەدەری ددان",
+    "chat.status": "سەرهێڵ • وەڵامی خێرا",
+    "chat.welcome": "سڵاو! 👋 بەخێربێیت بۆ کلینیکی دکتۆر سەلیم ئەندراوس بۆ ددان. چۆن دەتوانم یارمەتیت بدەم ئەمڕۆ؟",
+    "chat.placeholder": "پەیامەکەت بنووسە...",
+    "chat.quickServices": "چ خزمەتگوزارییەکان هەن؟",
+    "chat.quickPrices": "نرخەکان چەندن؟",
+    "chat.quickHours": "کاتی کارکردن؟",
+    "chat.quickBooking": "چۆن نۆرەی پزیشک دابنێم؟",
+  },
+};
+
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+  const [language, setLanguageState] = useState<Language>(() => {
+    const saved = localStorage.getItem("language");
+    return (saved as Language) || "en";
+  });
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem("language", lang);
+  };
+
+  const t = (key: string): string => {
+    return translations[language][key] || translations.en[key] || key;
+  };
+
+  const dir = language === "en" ? "ltr" : "rtl";
+
+  useEffect(() => {
+    document.documentElement.dir = dir;
+    document.documentElement.lang = language;
+  }, [language, dir]);
+
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, t, dir }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
+
+export const useLanguage = () => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error("useLanguage must be used within a LanguageProvider");
+  }
+  return context;
+};
