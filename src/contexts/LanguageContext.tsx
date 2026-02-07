@@ -94,13 +94,14 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.callUs": "Call Us",
     "contact.emailUs": "Email Us",
     "contact.visitUs": "Visit Us",
-    "contact.address": "Duhok - KRO - Above Sherko Nuts",
+    "contact.address": "Duhok - KRO - Above Sherko Nuts - Opposite Hanasa Pharmacy",
     "contact.workingHours": "Working Hours",
     "contact.workingHoursValue": "Daily 3:00 PM - 9:00 PM (Except Friday)",
     "contact.whatsapp": "WhatsApp Us",
     "contact.socialMedia": "Social Media",
     "contact.readyToVisit": "Ready to visit?",
     "contact.bookYourAppointment": "Book Your Appointment",
+    "contact.getDirections": "Get Directions",
     
     // Footer
     "footer.description": "Professional dental care in Duhok. M.Sc. Oral Radiology, B.D.S. from University of Baghdad. Committed to providing exceptional care for your smile.",
@@ -264,13 +265,14 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.callUs": "اتصل بنا",
     "contact.emailUs": "راسلنا",
     "contact.visitUs": "زورنا",
-    "contact.address": "دهوك - KRO - فوق شيركو للمكسرات",
+    "contact.address": "دهوك - كي ار او - فوق جرزات شيركو - مقابل صيدلية هناسة",
     "contact.workingHours": "ساعات العمل",
     "contact.workingHoursValue": "يومياً ٣:٠٠ - ٩:٠٠ مساءً (عدا الجمعة)",
     "contact.whatsapp": "واتساب",
     "contact.socialMedia": "وسائل التواصل",
     "contact.readyToVisit": "مستعد للزيارة؟",
     "contact.bookYourAppointment": "احجز موعدك",
+    "contact.getDirections": "احصل على الاتجاهات",
     
     // Footer
     "footer.description": "رعاية أسنان احترافية في دهوك. ماجستير أشعة الفم، بكالوريوس من جامعة بغداد. ملتزمون بتقديم رعاية استثنائية لابتسامتك.",
@@ -434,13 +436,14 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.callUs": "پەیوەندیمان پێوە بکە",
     "contact.emailUs": "ئیمەیڵمان بۆ بنێرە",
     "contact.visitUs": "سەردانمان بکە",
-    "contact.address": "دهۆک - KRO - سەرووی شیرکۆ نەتس",
+    "contact.address": "دهۆک - کەی ئار ئۆ - سەرووی جرزاتی شیرکۆ - بەرامبەر دەرمانخانەی هانەسە",
     "contact.workingHours": "کاتی کارکردن",
     "contact.workingHoursValue": "ڕۆژانە ٣:٠٠ - ٩:٠٠ ئێوارە (جگە لە هەینی)",
     "contact.whatsapp": "واتساپ",
     "contact.socialMedia": "تۆڕە کۆمەڵایەتییەکان",
     "contact.readyToVisit": "ئامادەیت بۆ سەردان؟",
     "contact.bookYourAppointment": "نۆرەی پزیشکت دابنێ",
+    "contact.getDirections": "ئاراستەکان بەدەستبهێنە",
     
     // Footer
     "footer.description": "چاودێری ددانی پیشەگەری لە دهۆک. ماستەر تیشکی دەم، بەکالۆریۆس لە زانکۆی بەغدا. پابەندین بە پێشکەشکردنی چاودێری نایاب بۆ بزەیت.",

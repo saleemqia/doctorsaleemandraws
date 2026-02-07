@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, MapPin, Clock, ExternalLink, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, ExternalLink, MessageCircle, Navigation } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ContactProps {
@@ -16,9 +16,9 @@ const Contact = ({ onBookingClick }: ContactProps) => {
   const mapEmbedUrl = "https://maps.google.com/maps?q=Doctor+Saleem+Andraws+Dental+Clinic+Duhok&t=&z=17&ie=UTF8&iwloc=&output=embed";
 
   return (
-    <section id="contact" className="py-20 md:py-28 bg-background relative overflow-hidden">
-      <div className="container">
-        <div className={`grid lg:grid-cols-2 gap-12 lg:gap-16 ${dir === "rtl" ? "lg:grid-flow-dense" : ""}`}>
+    <section id="contact" className="py-16 md:py-24 lg:py-28 bg-background relative overflow-hidden">
+      <div className="container px-4 sm:px-6">
+        <div className={`grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 ${dir === "rtl" ? "lg:grid-flow-dense" : ""}`}>
           {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: dir === "rtl" ? 30 : -30 }}
@@ -27,73 +27,77 @@ const Contact = ({ onBookingClick }: ContactProps) => {
             transition={{ duration: 0.6 }}
             className={dir === "rtl" ? "lg:col-start-2 text-right" : ""}
           >
-            <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
               <MapPin className="w-4 h-4" />
               {t("contact.badge")}
             </span>
 
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
               {t("contact.title1")}{" "}
               <span className="text-gradient">{t("contact.title2")}</span>
             </h2>
 
-            <p className="text-muted-foreground text-lg mb-8">
+            <p className="text-muted-foreground text-base md:text-lg mb-6 md:mb-8">
               {t("contact.description")}
             </p>
 
             {/* Contact Cards */}
-            <div className="space-y-4 mb-8">
-              <a href="tel:07507816500" className={`group flex items-center gap-4 p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-soft transition-all ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
-                <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 group-hover:bg-gradient-primary transition-colors">
-                  <Phone className="w-5 h-5 text-primary group-hover:text-white transition-colors" />
+            <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
+              <a href="tel:07507816500" className={`group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-soft transition-all ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
+                <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 group-hover:bg-gradient-primary transition-colors flex-shrink-0">
+                  <Phone className="w-4 h-4 md:w-5 md:h-5 text-primary group-hover:text-white transition-colors" />
                 </div>
-                <div>
-                  <p className="font-semibold">{t("contact.callUs")}</p>
-                  <p className="text-muted-foreground">07507816500</p>
-                </div>
-              </a>
-
-              <a href="mailto:dr.saleemo@gmail.com" className={`group flex items-center gap-4 p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-soft transition-all ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
-                <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 group-hover:bg-gradient-primary transition-colors">
-                  <Mail className="w-5 h-5 text-primary group-hover:text-white transition-colors" />
-                </div>
-                <div>
-                  <p className="font-semibold">{t("contact.emailUs")}</p>
-                  <p className="text-muted-foreground">dr.saleemo@gmail.com</p>
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm md:text-base">{t("contact.callUs")}</p>
+                  <p className="text-muted-foreground text-sm truncate">07507816500</p>
                 </div>
               </a>
 
-              <a href={mapDirectionsUrl} target="_blank" rel="noopener noreferrer" className={`group flex items-center gap-4 p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-soft transition-all ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
-                <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 group-hover:bg-gradient-primary transition-colors">
-                  <MapPin className="w-5 h-5 text-primary group-hover:text-white transition-colors" />
+              <a href="mailto:dr.saleemo@gmail.com" className={`group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-soft transition-all ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
+                <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 group-hover:bg-gradient-primary transition-colors flex-shrink-0">
+                  <Mail className="w-4 h-4 md:w-5 md:h-5 text-primary group-hover:text-white transition-colors" />
                 </div>
-                <div>
-                  <p className="font-semibold">{t("contact.visitUs")}</p>
-                  <p className="text-muted-foreground">{t("contact.address")}</p>
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm md:text-base">{t("contact.emailUs")}</p>
+                  <p className="text-muted-foreground text-sm truncate">dr.saleemo@gmail.com</p>
                 </div>
               </a>
 
-              <div className={`flex items-center gap-4 p-4 rounded-xl bg-card border border-border/50 ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
-                <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10">
-                  <Clock className="w-5 h-5 text-primary" />
+              <a href={mapDirectionsUrl} target="_blank" rel="noopener noreferrer" className={`group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-soft transition-all ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
+                <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 group-hover:bg-gradient-primary transition-colors flex-shrink-0">
+                  <MapPin className="w-4 h-4 md:w-5 md:h-5 text-primary group-hover:text-white transition-colors" />
                 </div>
-                <div>
-                  <p className="font-semibold">{t("contact.workingHours")}</p>
-                  <p className="text-muted-foreground">{t("contact.workingHoursValue")}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-sm md:text-base">{t("contact.visitUs")}</p>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{t("contact.address")}</p>
+                  <span className={`inline-flex items-center gap-1 text-primary text-xs md:text-sm mt-1 group-hover:underline ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                    <Navigation className="w-3 h-3" />
+                    {t("contact.getDirections")}
+                  </span>
+                </div>
+              </a>
+
+              <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
+                <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 flex-shrink-0">
+                  <Clock className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm md:text-base">{t("contact.workingHours")}</p>
+                  <p className="text-muted-foreground text-sm">{t("contact.workingHoursValue")}</p>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className={`flex flex-col sm:flex-row gap-4 ${dir === "rtl" ? "sm:flex-row-reverse" : ""}`}>
-              <a href="https://wa.me/9647507816500" target="_blank" rel="noopener noreferrer">
-                <Button variant="whatsapp" size="lg" className={`w-full sm:w-auto gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <div className={`flex flex-col sm:flex-row gap-3 md:gap-4 ${dir === "rtl" ? "sm:flex-row-reverse" : ""}`}>
+              <a href="https://wa.me/9647507816500" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <Button variant="whatsapp" size="lg" className={`w-full gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                   <MessageCircle className="w-5 h-5" />
                   {t("contact.whatsapp")}
                 </Button>
               </a>
-              <a href="https://linktr.ee/saleem.andraws" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="lg" className={`w-full sm:w-auto gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+              <a href="https://linktr.ee/saleem.andraws" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <Button variant="outline" size="lg" className={`w-full gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                   <ExternalLink className="w-5 h-5" />
                   {t("contact.socialMedia")}
                 </Button>
@@ -109,23 +113,24 @@ const Contact = ({ onBookingClick }: ContactProps) => {
             transition={{ duration: 0.6 }}
             className={`relative ${dir === "rtl" ? "lg:col-start-1 lg:row-start-1" : ""}`}
           >
-            <div className="rounded-2xl overflow-hidden shadow-elevated h-full min-h-[400px]">
+            <div className="rounded-2xl overflow-hidden shadow-elevated h-full min-h-[300px] md:min-h-[400px]">
               <iframe
                 src={mapEmbedUrl}
                 width="100%"
                 height="100%"
-                style={{ border: 0, minHeight: "400px" }}
+                style={{ border: 0, minHeight: "300px" }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 title="Dr. Saleem Andraws Dental Clinic Location - Duhok"
+                className="md:min-h-[400px]"
               />
             </div>
 
             {/* Book appointment overlay */}
-            <div className={`absolute bottom-4 ${dir === "rtl" ? "right-4 left-4" : "left-4 right-4"}`}>
-              <div className={`p-4 rounded-xl bg-card/95 backdrop-blur-sm border border-border/50 shadow-card ${dir === "rtl" ? "text-right" : ""}`}>
-                <p className="font-semibold mb-2">{t("contact.readyToVisit")}</p>
+            <div className={`absolute bottom-3 md:bottom-4 ${dir === "rtl" ? "right-3 left-3 md:right-4 md:left-4" : "left-3 right-3 md:left-4 md:right-4"}`}>
+              <div className={`p-3 md:p-4 rounded-xl bg-card/95 backdrop-blur-sm border border-border/50 shadow-card ${dir === "rtl" ? "text-right" : ""}`}>
+                <p className="font-semibold mb-2 text-sm md:text-base">{t("contact.readyToVisit")}</p>
                 <Button variant="teal" className="w-full" onClick={onBookingClick}>
                   {t("contact.bookYourAppointment")}
                 </Button>
