@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, MapPin, Clock, ExternalLink, MessageCircle, Navigation } from "lucide-react";
+import { MapPin, Clock, ExternalLink, Navigation } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ContactProps {
@@ -43,26 +43,6 @@ const Contact = ({ onBookingClick }: ContactProps) => {
 
             {/* Contact Cards */}
             <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
-              <a href="tel:07507816500" className={`group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-soft transition-all ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
-                <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 group-hover:bg-gradient-primary transition-colors flex-shrink-0">
-                  <Phone className="w-4 h-4 md:w-5 md:h-5 text-primary group-hover:text-white transition-colors" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm md:text-base">{t("contact.callUs")}</p>
-                  <p className="text-muted-foreground text-sm truncate">07507816500</p>
-                </div>
-              </a>
-
-              <a href="mailto:dr.saleemo@gmail.com" className={`group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-soft transition-all ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
-                <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 group-hover:bg-gradient-primary transition-colors flex-shrink-0">
-                  <Mail className="w-4 h-4 md:w-5 md:h-5 text-primary group-hover:text-white transition-colors" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm md:text-base">{t("contact.emailUs")}</p>
-                  <p className="text-muted-foreground text-sm truncate">dr.saleemo@gmail.com</p>
-                </div>
-              </a>
-
               <a href={mapDirectionsUrl} target="_blank" rel="noopener noreferrer" className={`group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-soft transition-all ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
                 <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 group-hover:bg-gradient-primary transition-colors flex-shrink-0">
                   <MapPin className="w-4 h-4 md:w-5 md:h-5 text-primary group-hover:text-white transition-colors" />
@@ -90,14 +70,8 @@ const Contact = ({ onBookingClick }: ContactProps) => {
 
             {/* Action Buttons */}
             <div className={`flex flex-col sm:flex-row gap-3 md:gap-4 ${dir === "rtl" ? "sm:flex-row-reverse" : ""}`}>
-              <a href="https://wa.me/9647507816500" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                <Button variant="whatsapp" size="lg" className={`w-full gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
-                  <MessageCircle className="w-5 h-5" />
-                  {t("contact.whatsapp")}
-                </Button>
-              </a>
               <a href="https://linktr.ee/saleem.andraws" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className={`w-full gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                <Button variant="teal" size="lg" className={`w-full gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                   <ExternalLink className="w-5 h-5" />
                   {t("contact.socialMedia")}
                 </Button>
