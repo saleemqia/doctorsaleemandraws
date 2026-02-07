@@ -2,18 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { X, Calendar, Clock, User, Phone, FileText } from "lucide-react";
-
-const services = [
-  "Teeth Whitening",
-  "Dental Implants",
-  "Cosmetic Dentistry",
-  "Root Canal Treatment",
-  "Orthodontics",
-  "Oral Radiology",
-  "Dental Cleaning",
-  "Pediatric Dentistry",
-  "General Checkup",
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const timeSlots = [
   "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM",
@@ -27,6 +16,7 @@ interface BookingModalProps {
 }
 
 const BookingModal = ({ isOpen, onClose }: BookingModalProps) => {
+  const { t, dir } = useLanguage();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
@@ -36,6 +26,18 @@ const BookingModal = ({ isOpen, onClose }: BookingModalProps) => {
     time: "",
     notes: "",
   });
+
+  const services = [
+    t("services.teethWhitening"),
+    t("services.dentalImplants"),
+    t("services.cosmeticDentistry"),
+    t("services.rootCanal"),
+    t("services.orthodontics"),
+    t("services.oralRadiology"),
+    t("services.dentalCleaning"),
+    t("services.pediatricDentistry"),
+    t("booking.generalCheckup"),
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,10 +86,10 @@ Thank you!`;
           >
             {/* Header */}
             <div className="bg-gradient-primary p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="font-display text-2xl font-bold">Book Appointment</h2>
-                  <p className="text-white/80 text-sm mt-1">Schedule your visit with Dr. Saleem</p>
+              <div className={`flex items-center justify-between ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                <div className={dir === "rtl" ? "text-right" : ""}>
+                  <h2 className="font-display text-2xl font-bold">{t("booking.title")}</h2>
+                  <p className="text-white/80 text-sm mt-1">{t("booking.subtitle")}</p>
                 </div>
                 <button
                   onClick={onClose}
@@ -98,7 +100,7 @@ Thank you!`;
               </div>
 
               {/* Progress */}
-              <div className="flex gap-2 mt-4">
+              <div className={`flex gap-2 mt-4 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                 {[1, 2].map((s) => (
                   <div
                     key={s}
@@ -114,14 +116,14 @@ Thank you!`;
             <form onSubmit={handleSubmit} className="p-6">
               {step === 1 && (
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: dir === "rtl" ? -20 : 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-4"
                 >
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                       <User className="w-4 h-4 text-primary" />
-                      Full Name
+                      {t("booking.fullName")}
                     </label>
                     <input
                       type="text"
@@ -129,15 +131,16 @@ Thank you!`;
                       value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                      placeholder="Enter your full name"
+                      dir={dir}
+                      className={`w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${dir === "rtl" ? "text-right" : ""}`}
+                      placeholder={t("booking.fullNamePlaceholder")}
                     />
                   </div>
 
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                       <Phone className="w-4 h-4 text-primary" />
-                      Phone Number
+                      {t("booking.phone")}
                     </label>
                     <input
                       type="tel"
@@ -145,24 +148,25 @@ Thank you!`;
                       value={formData.phone}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-                      placeholder="07XXXXXXXXX"
+                      className={`w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${dir === "rtl" ? "text-right" : ""}`}
+                      placeholder={t("booking.phonePlaceholder")}
                     />
                   </div>
 
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                       <FileText className="w-4 h-4 text-primary" />
-                      Service Required
+                      {t("booking.service")}
                     </label>
                     <select
                       name="service"
                       value={formData.service}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      dir={dir}
+                      className={`w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${dir === "rtl" ? "text-right" : ""}`}
                     >
-                      <option value="">Select a service</option>
+                      <option value="">{t("booking.selectService")}</option>
                       {services.map((service) => (
                         <option key={service} value={service}>{service}</option>
                       ))}
@@ -176,21 +180,21 @@ Thank you!`;
                     onClick={() => setStep(2)}
                     disabled={!formData.name || !formData.phone || !formData.service}
                   >
-                    Continue to Date & Time
+                    {t("booking.continue")}
                   </Button>
                 </motion.div>
               )}
 
               {step === 2 && (
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: dir === "rtl" ? -20 : 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-4"
                 >
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                       <Calendar className="w-4 h-4 text-primary" />
-                      Preferred Date
+                      {t("booking.preferredDate")}
                     </label>
                     <input
                       type="date"
@@ -199,15 +203,15 @@ Thank you!`;
                       onChange={handleInputChange}
                       required
                       min={new Date().toISOString().split("T")[0]}
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className={`w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${dir === "rtl" ? "text-right" : ""}`}
                     />
-                    <p className="text-xs text-muted-foreground mt-1">Note: Clinic is closed on Fridays</p>
+                    <p className={`text-xs text-muted-foreground mt-1 ${dir === "rtl" ? "text-right" : ""}`}>{t("booking.dateNote")}</p>
                   </div>
 
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                       <Clock className="w-4 h-4 text-primary" />
-                      Preferred Time
+                      {t("booking.preferredTime")}
                     </label>
                     <div className="grid grid-cols-4 gap-2">
                       {timeSlots.map((time) => (
@@ -228,25 +232,26 @@ Thank you!`;
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Additional Notes (Optional)</label>
+                    <label className={`text-sm font-medium mb-2 block ${dir === "rtl" ? "text-right" : ""}`}>{t("booking.additionalNotes")}</label>
                     <textarea
                       name="notes"
                       value={formData.notes}
                       onChange={handleInputChange}
                       rows={3}
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors resize-none"
-                      placeholder="Any special requirements or concerns..."
+                      dir={dir}
+                      className={`w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors resize-none ${dir === "rtl" ? "text-right" : ""}`}
+                      placeholder={t("booking.notesPlaceholder")}
                     />
                   </div>
 
-                  <div className="flex gap-3 mt-4">
+                  <div className={`flex gap-3 mt-4 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                     <Button
                       type="button"
                       variant="outline"
                       className="flex-1"
                       onClick={() => setStep(1)}
                     >
-                      Back
+                      {t("booking.back")}
                     </Button>
                     <Button
                       type="submit"
@@ -254,7 +259,7 @@ Thank you!`;
                       className="flex-1"
                       disabled={!formData.date || !formData.time}
                     >
-                      Book via WhatsApp
+                      {t("booking.bookViaWhatsapp")}
                     </Button>
                   </div>
                 </motion.div>
