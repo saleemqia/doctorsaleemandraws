@@ -10,9 +10,10 @@ interface ContactProps {
 const Contact = ({ onBookingClick }: ContactProps) => {
   const { t, dir } = useLanguage();
 
-  // Google Maps location for Duhok, Iraq - Sherko Nuts area
-  const mapEmbedUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3219.5!2d42.9881!3d36.8670!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40086e6e41c5c8ed%3A0x1!2sDuhok%2C%20Kurdistan%20Region%2C%20Iraq!5e0!3m2!1sen!2s!4v1699000000000!5m2!1sen!2s";
-  const mapDirectionsUrl = "https://www.google.com/maps/search/Dr.+Saleem+Andraws+Dental+Clinic+Duhok+KRO+Sherko+Nuts/@36.867,42.988,15z";
+  // Google Maps links - Dr. Saleem's actual clinic location
+  const mapDirectionsUrl = "https://maps.app.goo.gl/jSSTEsjHMTwo7L768";
+  // Embed using the maps embed format with search query
+  const mapEmbedUrl = "https://maps.google.com/maps?q=36.8561,42.9937&t=&z=17&ie=UTF8&iwloc=&output=embed";
 
   return (
     <section id="contact" className="py-20 md:py-28 bg-background relative overflow-hidden">
