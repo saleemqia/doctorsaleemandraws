@@ -1,5 +1,6 @@
 import { Phone, Mail, MapPin, ExternalLink } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import clinicLogo from "@/assets/clinic-logo.png";
 
 const Footer = () => {
   const { t, dir } = useLanguage();
@@ -19,13 +20,11 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className={`flex items-center gap-3 mb-4 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
-              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary">
-                <span className="text-xl">🦷</span>
-              </div>
-              <div>
-                <h3 className="font-display font-bold text-lg">Dr. Saleem Andraws</h3>
-                <p className="text-sm text-background/70">Dental Clinic</p>
-              </div>
+              <img 
+                src={clinicLogo} 
+                alt="Dr. Saleem Andraws Dental Clinic" 
+                className="h-16 w-auto object-contain"
+              />
             </div>
             <p className="text-background/70 text-sm leading-relaxed max-w-md mb-4">
               {t("footer.description")}
