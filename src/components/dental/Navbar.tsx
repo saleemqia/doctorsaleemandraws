@@ -8,6 +8,7 @@ const navLinks = [
   { key: "home", href: "#home" },
   { key: "services", href: "#services" },
   { key: "about", href: "#about" },
+  { key: "gallery", href: "#gallery" },
   { key: "testimonials", href: "#testimonials" },
   { key: "contact", href: "#contact" },
 ];

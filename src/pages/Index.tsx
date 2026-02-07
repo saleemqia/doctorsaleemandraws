@@ -3,6 +3,7 @@ import Navbar from "@/components/dental/Navbar";
 import Hero from "@/components/dental/Hero";
 import Services from "@/components/dental/Services";
 import About from "@/components/dental/About";
+import Gallery from "@/components/dental/Gallery";
 import Testimonials from "@/components/dental/Testimonials";
 import Contact from "@/components/dental/Contact";
 import Footer from "@/components/dental/Footer";
@@ -19,6 +20,7 @@ const Index = () => {
         <Hero onBookingClick={() => setIsBookingOpen(true)} />
         <Services />
         <About />
+        <Gallery />
         <Testimonials />
         <Contact onBookingClick={() => setIsBookingOpen(true)} />
       </main>
