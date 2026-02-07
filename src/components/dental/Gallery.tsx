@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Camera, Sparkles, ZoomIn } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Camera, Sparkles, ZoomIn, BookOpen } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 
@@ -10,7 +10,7 @@ import receptionArea from "@/assets/gallery/reception-area.jpg";
 import implantResult from "@/assets/gallery/implant-result.jpg";
 import dentalEquipment from "@/assets/gallery/dental-equipment.jpg";
 import dentalCrowns from "@/assets/gallery/dental-crowns.jpg";
-// New before/after images
+// Before/after images
 import frontFilling from "@/assets/gallery/front-filling.jpeg";
 import amalgamReplacement from "@/assets/gallery/amalgam-replacement.jpeg";
 import smileMakeover1 from "@/assets/gallery/smile-makeover-1.png";
@@ -21,16 +21,25 @@ import smileTransformation1 from "@/assets/gallery/smile-transformation-1.jpeg";
 import veneerCase from "@/assets/gallery/veneer-case.jpeg";
 import fullRestoration from "@/assets/gallery/full-restoration.jpeg";
 import beforeAfterComparison from "@/assets/gallery/before-after-comparison.jpeg";
+// Educational images
+import eduGumCleaning from "@/assets/gallery/edu-gum-cleaning.png";
+import eduGingivitis from "@/assets/gallery/edu-gingivitis.png";
+import eduKidsBrushing from "@/assets/gallery/edu-kids-brushing.png";
+import eduCheckup from "@/assets/gallery/edu-checkup.png";
+import eduPlaque from "@/assets/gallery/edu-plaque.png";
+import eduPrevention from "@/assets/gallery/edu-prevention.png";
+import eduModernCare from "@/assets/gallery/edu-modern-care.png";
+import eduHealthyGums from "@/assets/gallery/edu-healthy-gums.png";
 
 interface GalleryImage {
   src: string;
   titleKey: string;
   descKey: string;
-  category: "clinic" | "results";
+  category: "clinic" | "results" | "educational";
 }
 
 const galleryImages: GalleryImage[] = [
-  // Results - Before/After Images (showcased first)
+  // Results - Before/After Images
   {
     src: smileMakeover1,
     titleKey: "gallery.smileMakeover",
@@ -103,6 +112,55 @@ const galleryImages: GalleryImage[] = [
     descKey: "gallery.dentalCrownsDesc",
     category: "results",
   },
+  // Educational Images
+  {
+    src: eduGumCleaning,
+    titleKey: "gallery.eduGumCleaning",
+    descKey: "gallery.eduGumCleaningDesc",
+    category: "educational",
+  },
+  {
+    src: eduGingivitis,
+    titleKey: "gallery.eduGingivitis",
+    descKey: "gallery.eduGingivitisDesc",
+    category: "educational",
+  },
+  {
+    src: eduKidsBrushing,
+    titleKey: "gallery.eduKidsBrushing",
+    descKey: "gallery.eduKidsBrushingDesc",
+    category: "educational",
+  },
+  {
+    src: eduCheckup,
+    titleKey: "gallery.eduCheckup",
+    descKey: "gallery.eduCheckupDesc",
+    category: "educational",
+  },
+  {
+    src: eduPlaque,
+    titleKey: "gallery.eduPlaque",
+    descKey: "gallery.eduPlaqueDesc",
+    category: "educational",
+  },
+  {
+    src: eduPrevention,
+    titleKey: "gallery.eduPrevention",
+    descKey: "gallery.eduPreventionDesc",
+    category: "educational",
+  },
+  {
+    src: eduModernCare,
+    titleKey: "gallery.eduModernCare",
+    descKey: "gallery.eduModernCareDesc",
+    category: "educational",
+  },
+  {
+    src: eduHealthyGums,
+    titleKey: "gallery.eduHealthyGums",
+    descKey: "gallery.eduHealthyGumsDesc",
+    category: "educational",
+  },
   // Clinic Images
   {
     src: clinicInterior,
@@ -127,7 +185,7 @@ const galleryImages: GalleryImage[] = [
 const Gallery = () => {
   const { t, dir } = useLanguage();
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  const [filter, setFilter] = useState<"all" | "clinic" | "results">("all");
+  const [filter, setFilter] = useState<"all" | "clinic" | "results" | "educational">("all");
 
   const filteredImages = filter === "all" 
     ? galleryImages 
@@ -153,7 +211,6 @@ const Gallery = () => {
     setSelectedImage(newIndex);
   };
 
-  // Enhanced animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -181,48 +238,63 @@ const Gallery = () => {
         damping: 12,
       },
     },
-    exit: {
-      opacity: 0,
-      scale: 0.8,
-      y: -30,
-      transition: { duration: 0.3 },
-    },
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "results":
+        return <Sparkles className="w-3 h-3" />;
+      case "educational":
+        return <BookOpen className="w-3 h-3" />;
+      default:
+        return <Camera className="w-3 h-3" />;
+    }
+  };
+
+  const getCategoryTag = (category: string) => {
+    switch (category) {
+      case "results":
+        return t("gallery.resultsTag");
+      case "educational":
+        return t("gallery.educationalTag");
+      default:
+        return t("gallery.clinicTag");
+    }
   };
 
   return (
-    <section id="gallery" className="py-20 md:py-28 bg-muted/30 relative overflow-hidden">
+    <section id="gallery" className="py-16 md:py-24 lg:py-28 bg-muted/30 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-20 left-10 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-20 right-10 w-80 h-80 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="container relative z-10">
+      <div className="container relative z-10 px-4 sm:px-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className={`text-center mb-12 ${dir === "rtl" ? "text-right md:text-center" : ""}`}
+          className={`text-center mb-10 md:mb-12 ${dir === "rtl" ? "text-right md:text-center" : ""}`}
         >
           <motion.span 
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}
           >
             <Camera className="w-4 h-4" />
             {t("gallery.badge")}
           </motion.span>
 
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+          <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
             {t("gallery.title1")}{" "}
             <span className="text-gradient">{t("gallery.title2")}</span>
           </h2>
 
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto px-4">
             {t("gallery.description")}
           </p>
         </motion.div>
@@ -233,33 +305,42 @@ const Gallery = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className={`flex flex-wrap justify-center gap-3 mb-10 ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+          className={`flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-10 ${dir === "rtl" ? "flex-row-reverse" : ""}`}
         >
           <Button
             variant={filter === "all" ? "teal" : "outline"}
             size="sm"
             onClick={() => setFilter("all")}
-            className="rounded-full transition-all duration-300 hover:scale-105"
+            className="rounded-full transition-all duration-300 hover:scale-105 text-xs md:text-sm"
           >
             {t("gallery.filterAll")}
-          </Button>
-          <Button
-            variant={filter === "clinic" ? "teal" : "outline"}
-            size="sm"
-            onClick={() => setFilter("clinic")}
-            className={`rounded-full gap-2 transition-all duration-300 hover:scale-105 ${dir === "rtl" ? "flex-row-reverse" : ""}`}
-          >
-            <Camera className="w-4 h-4" />
-            {t("gallery.filterClinic")}
           </Button>
           <Button
             variant={filter === "results" ? "teal" : "outline"}
             size="sm"
             onClick={() => setFilter("results")}
-            className={`rounded-full gap-2 transition-all duration-300 hover:scale-105 ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+            className={`rounded-full gap-1 md:gap-2 transition-all duration-300 hover:scale-105 text-xs md:text-sm ${dir === "rtl" ? "flex-row-reverse" : ""}`}
           >
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
             {t("gallery.filterResults")}
+          </Button>
+          <Button
+            variant={filter === "educational" ? "teal" : "outline"}
+            size="sm"
+            onClick={() => setFilter("educational")}
+            className={`rounded-full gap-1 md:gap-2 transition-all duration-300 hover:scale-105 text-xs md:text-sm ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+          >
+            <BookOpen className="w-3 h-3 md:w-4 md:h-4" />
+            {t("gallery.filterEducational")}
+          </Button>
+          <Button
+            variant={filter === "clinic" ? "teal" : "outline"}
+            size="sm"
+            onClick={() => setFilter("clinic")}
+            className={`rounded-full gap-1 md:gap-2 transition-all duration-300 hover:scale-105 text-xs md:text-sm ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+          >
+            <Camera className="w-3 h-3 md:w-4 md:h-4" />
+            {t("gallery.filterClinic")}
           </Button>
         </motion.div>
 
@@ -269,7 +350,7 @@ const Gallery = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5"
         >
           <AnimatePresence mode="popLayout">
             {filteredImages.map((image, index) => (
@@ -277,7 +358,7 @@ const Gallery = () => {
                 key={image.src}
                 variants={itemVariants}
                 layout
-                className="group relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer"
+                className="group relative aspect-[4/5] rounded-xl md:rounded-2xl overflow-hidden cursor-pointer"
                 onClick={() => openLightbox(index)}
                 whileHover={{ 
                   scale: 1.03,
@@ -290,7 +371,7 @@ const Gallery = () => {
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/50 via-accent/50 to-primary/50 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10" />
                 
                 {/* Card container */}
-                <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-card group-hover:shadow-elevated transition-shadow duration-500">
+                <div className="relative w-full h-full rounded-xl md:rounded-2xl overflow-hidden shadow-card group-hover:shadow-elevated transition-shadow duration-500">
                   <motion.img
                     src={image.src}
                     alt={t(image.titleKey)}
@@ -302,29 +383,19 @@ const Gallery = () => {
                   
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-90 transition-all duration-500" />
-                  
-                  {/* Shine effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                  </div>
 
                   {/* Content */}
-                  <div className={`absolute bottom-0 left-0 right-0 p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ${dir === "rtl" ? "text-right" : ""}`}>
-                    <motion.h3 
-                      className="text-white font-semibold text-lg mb-1 opacity-90 group-hover:opacity-100"
-                      initial={{ y: 10, opacity: 0 }}
-                      whileInView={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.1 }}
-                    >
+                  <div className={`absolute bottom-0 left-0 right-0 p-2 md:p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ${dir === "rtl" ? "text-right" : ""}`}>
+                    <h3 className="text-white font-semibold text-xs md:text-lg mb-0.5 md:mb-1 opacity-90 group-hover:opacity-100 line-clamp-1">
                       {t(image.titleKey)}
-                    </motion.h3>
-                    <p className="text-white/70 text-sm line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                    </h3>
+                    <p className="text-white/70 text-xs line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 hidden md:block">
                       {t(image.descKey)}
                     </p>
                   </div>
 
                   {/* Zoom Icon */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-50 group-hover:scale-100 hidden md:block">
                     <div className="p-3 rounded-full bg-white/20 backdrop-blur-sm border border-white/30">
                       <ZoomIn className="w-6 h-6 text-white" />
                     </div>
@@ -332,22 +403,20 @@ const Gallery = () => {
 
                   {/* Category Badge */}
                   <motion.div 
-                    className={`absolute top-3 ${dir === "rtl" ? "left-3" : "right-3"}`}
+                    className={`absolute top-2 md:top-3 ${dir === "rtl" ? "left-2 md:left-3" : "right-2 md:right-3"}`}
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 }}
                   >
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
+                    <span className={`inline-flex items-center gap-1 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-medium backdrop-blur-sm ${
                       image.category === "results" 
                         ? "bg-accent/80 text-accent-foreground" 
+                        : image.category === "educational"
+                        ? "bg-blue-500/80 text-white"
                         : "bg-primary/80 text-primary-foreground"
                     } ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
-                      {image.category === "results" ? (
-                        <Sparkles className="w-3 h-3" />
-                      ) : (
-                        <Camera className="w-3 h-3" />
-                      )}
-                      {image.category === "results" ? t("gallery.resultsTag") : t("gallery.clinicTag")}
+                      {getCategoryIcon(image.category)}
+                      <span className="hidden sm:inline">{getCategoryTag(image.category)}</span>
                     </span>
                   </motion.div>
                 </div>
