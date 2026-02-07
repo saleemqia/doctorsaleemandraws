@@ -1,19 +1,30 @@
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import Features from "@/components/Features";
-import CTA from "@/components/CTA";
-import Footer from "@/components/Footer";
+import { useState } from "react";
+import Navbar from "@/components/dental/Navbar";
+import Hero from "@/components/dental/Hero";
+import Services from "@/components/dental/Services";
+import About from "@/components/dental/About";
+import Testimonials from "@/components/dental/Testimonials";
+import Contact from "@/components/dental/Contact";
+import Footer from "@/components/dental/Footer";
+import BookingModal from "@/components/dental/BookingModal";
+import ChatBot from "@/components/dental/ChatBot";
 
 const Index = () => {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      <Navbar onBookingClick={() => setIsBookingOpen(true)} />
       <main>
-        <Hero />
-        <Features />
-        <CTA />
+        <Hero onBookingClick={() => setIsBookingOpen(true)} />
+        <Services />
+        <About />
+        <Testimonials />
+        <Contact onBookingClick={() => setIsBookingOpen(true)} />
       </main>
       <Footer />
+      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
+      <ChatBot />
     </div>
   );
 };
