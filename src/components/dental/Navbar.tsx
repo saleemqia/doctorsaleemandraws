@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Calendar, Globe, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import clinicLogo from "@/assets/clinic-logo.png";
 
 const navLinks = [
   { key: "home", href: "#home" },
@@ -36,13 +37,11 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
         <nav className={`flex items-center justify-between px-6 py-4 rounded-2xl bg-card/90 backdrop-blur-xl border border-border/50 shadow-soft ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
           {/* Logo */}
           <a href="#home" className={`flex items-center gap-3 group ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-primary group-hover:shadow-teal transition-shadow">
-              <span className="text-xl font-bold text-white">🦷</span>
-            </div>
-            <div className={dir === "rtl" ? "text-right" : ""}>
-              <span className="font-display font-bold text-lg text-foreground">Dr. Saleem Andraws</span>
-              <p className="text-xs text-muted-foreground">Dental Clinic</p>
-            </div>
+            <img 
+              src={clinicLogo} 
+              alt="Dr. Saleem Andraws Dental Clinic" 
+              className="h-12 w-auto object-contain"
+            />
           </a>
 
           {/* Desktop Navigation */}
