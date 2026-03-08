@@ -35,6 +35,22 @@ const Footer = () => {
             </p>
             <div className={`flex gap-3 ${dir === "rtl" ? "flex-row-reverse justify-end" : ""}`}>
               <a 
+                href="https://www.facebook.com/share/1BDxQi3wKS/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-primary transition-colors"
+              >
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a 
+                href="https://www.instagram.com/dr.saleem.andraws/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-primary transition-colors"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a 
                 href="https://linktr.ee/saleem.andraws" 
                 target="_blank" 
                 rel="noopener noreferrer"
