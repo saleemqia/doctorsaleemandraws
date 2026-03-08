@@ -35,7 +35,7 @@ const Footer = () => {
             </p>
             <div className={`flex gap-3 ${dir === "rtl" ? "flex-row-reverse justify-end" : ""}`}>
               <a 
-                href="https://www.facebook.com/share/1BDxQi3wKS/" 
+                href="https://www.facebook.com/doctor.saleem.diamond.dental.duhok/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-primary transition-colors"
@@ -43,12 +43,21 @@ const Footer = () => {
                 <Facebook className="w-4 h-4" />
               </a>
               <a 
-                href="https://www.instagram.com/dr.saleem.andraws/" 
+                href="https://www.instagram.com/dr.saleemandraws/?hl=en" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-primary transition-colors"
               >
                 <Instagram className="w-4 h-4" />
+              </a>
+              <a 
+                href="https://www.tripadvisor.com/LocationPhotoDirectLink-g676534-i473690580-Duhok_Duhok_Province.html" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-primary transition-colors"
+                title="TripAdvisor"
+              >
+                <Star className="w-4 h-4" />
               </a>
               <a 
                 href="https://linktr.ee/saleem.andraws" 
