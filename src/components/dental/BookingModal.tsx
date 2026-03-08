@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { X, Calendar, Clock, User, Phone, FileText } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const timeSlots = [
   "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM",
