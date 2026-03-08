@@ -41,10 +41,27 @@ const BookingModal = ({ isOpen, onClose }: BookingModalProps) => {
     t("booking.generalCheckup"),
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Create WhatsApp message
-    const message = `Hello Dr. Saleem! I'd like to book an appointment.
+    setIsSubmitting(true);
+
+    try {
+      // Save to database
+      const { error } = await supabase.from("appointments").insert({
+        name: formData.name.trim(),
+        phone: formData.phone.trim(),
+        service: formData.service,
+        preferred_date: formData.date,
+        preferred_time: formData.time,
+        notes: formData.notes?.trim() || null,
+      });
+
+      if (error) throw error;
+
+      // Create WhatsApp message
+      const message = `Hello Dr. Saleem! I'd like to book an appointment.
 
 Name: ${formData.name}
 Phone: ${formData.phone}
@@ -55,11 +72,18 @@ ${formData.notes ? `Notes: ${formData.notes}` : ""}
 
 Thank you!`;
 
-    const whatsappUrl = `https://wa.me/9647507816500?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, "_blank");
-    onClose();
-    setStep(1);
-    setFormData({ name: "", phone: "", service: "", date: "", time: "", notes: "" });
+      const whatsappUrl = `https://wa.me/9647507816500?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, "_blank");
+      toast.success(t("booking.success") || "Appointment booked successfully!");
+    } catch (error) {
+      console.error("Booking error:", error);
+      toast.error(t("booking.error") || "Failed to book appointment. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+      onClose();
+      setStep(1);
+      setFormData({ name: "", phone: "", service: "", date: "", time: "", notes: "" });
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
