@@ -283,9 +283,9 @@ Thank you!`;
                       type="submit"
                       variant="whatsapp"
                       className="flex-1"
-                      disabled={!formData.date || !formData.time}
+                      disabled={!formData.date || !formData.time || isSubmitting}
                     >
-                      {t("booking.bookViaWhatsapp")}
+                      {isSubmitting ? (t("booking.submitting") || "Submitting...") : t("booking.bookViaWhatsapp")}
                     </Button>
                   </div>
                 </motion.div>
