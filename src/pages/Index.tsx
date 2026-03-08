@@ -6,16 +6,18 @@ import About from "@/components/dental/About";
 import Gallery from "@/components/dental/Gallery";
 import Appointments from "@/components/dental/Appointments";
 import Testimonials from "@/components/dental/Testimonials";
+import FAQ from "@/components/dental/FAQ";
 import Contact from "@/components/dental/Contact";
 import Footer from "@/components/dental/Footer";
 import BookingModal from "@/components/dental/BookingModal";
 import ChatBot from "@/components/dental/ChatBot";
+import ScrollToTop from "@/components/dental/ScrollToTop";
 
 const Index = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background scroll-smooth">
       <Navbar onBookingClick={() => setIsBookingOpen(true)} />
       <main>
         <Hero onBookingClick={() => setIsBookingOpen(true)} />
@@ -24,11 +26,13 @@ const Index = () => {
         <Appointments />
         <Gallery />
         <Testimonials />
+        <FAQ />
         <Contact onBookingClick={() => setIsBookingOpen(true)} />
       </main>
       <Footer />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
       <ChatBot />
+      <ScrollToTop />
     </div>
   );
 };
