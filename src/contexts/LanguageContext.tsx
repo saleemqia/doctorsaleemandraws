@@ -666,6 +666,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Welcome Screen
     "welcome.title": "بەخێربێن بۆ کلینیکەکەمان",
     "welcome.subtitle": "بزەکەت ئارەزووی ئێمەیە",
+    "welcome.skip": "بازدان",
   },
 };
 
