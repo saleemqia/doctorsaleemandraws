@@ -234,6 +234,10 @@ const translations: Record<Language, Record<string, string>> = {
     "appointments.patient4": "Layla M.",
     "appointments.patient5": "Omar H.",
     "appointments.patient6": "Fatima S.",
+
+    // Welcome Screen
+    "welcome.title": "Welcome to Our Clinic",
+    "welcome.subtitle": "Your smile is our passion",
   },
   ar: {
     // Navbar
@@ -460,6 +464,10 @@ const translations: Record<Language, Record<string, string>> = {
     "faq.a5": "يمكنك حجز موعد من خلال نموذج الحجز على موقعنا، عبر واتساب، أو بالاتصال بنا مباشرة على 07507816500. سنؤكد موعدك على الفور.",
     "faq.q6": "هل تقدمون رعاية أسنان للأطفال؟",
     "faq.a6": "بالتأكيد! يقدم الدكتور سليم علاجات أسنان لطيفة ومحبة للأطفال من جميع الأعمار، مما يجعل تجربتهم مريحة وخالية من التوتر.",
+
+    // Welcome Screen
+    "welcome.title": "مرحباً بكم في عيادتنا",
+    "welcome.subtitle": "ابتسامتك هي شغفنا",
   },
   ku: {
     // Navbar
@@ -652,6 +660,10 @@ const translations: Record<Language, Record<string, string>> = {
     "faq.a5": "دەتوانیت نۆرەی پزیشک لە ڕێگای فۆرمی نۆرەی ماڵپەڕەکەمان، واتساپ، یان بە پەیوەندیکردن بە ژمارە 07507816500 دابنێیت.",
     "faq.q6": "ئایا چاودێری ددان بۆ منداڵان پێشکەش دەکەن؟",
     "faq.a6": "بەدڵنیایی! دکتۆر سەلیم چارەسەری ددانی نەرم و بەخەمی بۆ منداڵانی هەموو تەمەنێک پێشکەش دەکات.",
+
+    // Welcome Screen
+    "welcome.title": "بەخێربێن بۆ کلینیکەکەمان",
+    "welcome.subtitle": "بزەکەت ئارەزووی ئێمەیە",
   },
 };
 
