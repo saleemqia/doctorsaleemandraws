@@ -12,12 +12,15 @@ import Footer from "@/components/dental/Footer";
 import BookingModal from "@/components/dental/BookingModal";
 import ChatBot from "@/components/dental/ChatBot";
 import ScrollToTop from "@/components/dental/ScrollToTop";
+import WelcomeScreen from "@/components/dental/WelcomeScreen";
 
 const Index = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
 
   return (
     <div className="min-h-screen bg-background scroll-smooth">
+      {showWelcome && <WelcomeScreen onComplete={() => setShowWelcome(false)} />}
       <Navbar onBookingClick={() => setIsBookingOpen(true)} />
       <main>
         <Hero onBookingClick={() => setIsBookingOpen(true)} />
