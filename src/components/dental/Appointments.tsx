@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Calendar, Clock, User, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCountUp } from "@/hooks/use-count-up";
 
 const Appointments = () => {
   const { t, dir } = useLanguage();
