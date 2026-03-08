@@ -238,6 +238,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Welcome Screen
     "welcome.title": "Welcome to Our Clinic",
     "welcome.subtitle": "Your smile is our passion",
+    "welcome.skip": "Skip",
   },
   ar: {
     // Navbar
