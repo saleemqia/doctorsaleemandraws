@@ -469,6 +469,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Welcome Screen
     "welcome.title": "مرحباً بكم في عيادتنا",
     "welcome.subtitle": "ابتسامتك هي شغفنا",
+    "welcome.skip": "تخطي",
   },
   ku: {
     // Navbar
