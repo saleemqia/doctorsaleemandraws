@@ -77,6 +77,10 @@ const Footer = () => {
 
         <div className={`mt-12 pt-8 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-background/60 ${dir === "rtl" ? "md:flex-row-reverse" : ""}`}>
           <p>© {new Date().getFullYear()} Dr. Saleem Andraws Dental Clinic. {t("footer.rights")}</p>
+          <Link to="/admin" className={`flex items-center gap-1.5 hover:text-primary transition-colors ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <Shield className="w-3.5 h-3.5" />
+            Admin
+          </Link>
         </div>
       </div>
     </footer>
