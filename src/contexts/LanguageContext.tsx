@@ -238,6 +238,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Welcome Screen
     "welcome.title": "Welcome to Our Clinic",
     "welcome.subtitle": "Your smile is our passion",
+    "welcome.skip": "Skip",
   },
   ar: {
     // Navbar
@@ -468,6 +469,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Welcome Screen
     "welcome.title": "مرحباً بكم في عيادتنا",
     "welcome.subtitle": "ابتسامتك هي شغفنا",
+    "welcome.skip": "تخطي",
   },
   ku: {
     // Navbar
@@ -664,6 +666,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Welcome Screen
     "welcome.title": "بەخێربێن بۆ کلینیکەکەمان",
     "welcome.subtitle": "بزەکەت ئارەزووی ئێمەیە",
+    "welcome.skip": "بازدان",
   },
 };
 
