@@ -234,6 +234,10 @@ const translations: Record<Language, Record<string, string>> = {
     "appointments.patient4": "Layla M.",
     "appointments.patient5": "Omar H.",
     "appointments.patient6": "Fatima S.",
+
+    // Welcome Screen
+    "welcome.title": "Welcome to Our Clinic",
+    "welcome.subtitle": "Your smile is our passion",
   },
   ar: {
     // Navbar
