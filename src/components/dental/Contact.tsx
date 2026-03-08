@@ -11,7 +11,7 @@ const Contact = ({ onBookingClick }: ContactProps) => {
   const { t, dir } = useLanguage();
 
   // Google Maps links - Dr. Saleem's actual clinic location
-  const mapDirectionsUrl = "https://maps.app.goo.gl/jSSTEsjHMTwo7L768";
+  const mapDirectionsUrl = "https://share.google/jfAOUXSkIEwwTg9fn";
   // Embed using search query for accurate business location
   const mapEmbedUrl = "https://maps.google.com/maps?q=Doctor+Saleem+Andraws+Dental+Clinic+Duhok&t=&z=17&ie=UTF8&iwloc=&output=embed";
 
