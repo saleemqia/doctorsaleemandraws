@@ -200,6 +200,24 @@ const translations: Record<Language, Record<string, string>> = {
     "gallery.eduHealthyGums": "Healthy Gums Guide",
     "gallery.eduHealthyGumsDesc": "Understanding the signs of healthy vs. unhealthy gums for better oral care.",
     
+    // FAQ
+    "faq.badge": "FAQ",
+    "faq.title1": "Frequently Asked",
+    "faq.title2": "Questions",
+    "faq.description": "Find answers to common questions about our dental services and clinic.",
+    "faq.q1": "What are your working hours?",
+    "faq.a1": "Our clinic is open daily from 3:00 PM to 9:00 PM, except Fridays. We recommend booking an appointment in advance to ensure availability.",
+    "faq.q2": "Do you accept walk-in patients?",
+    "faq.a2": "While we welcome walk-ins when possible, we strongly recommend booking an appointment to minimize your waiting time and ensure you receive the best care.",
+    "faq.q3": "What dental services do you offer?",
+    "faq.a3": "We offer a comprehensive range of services including teeth whitening, dental implants, cosmetic dentistry, root canal treatment, orthodontics, oral radiology, dental cleaning, and pediatric dentistry.",
+    "faq.q4": "Is the clinic equipped with modern technology?",
+    "faq.a4": "Yes! Our clinic features state-of-the-art digital X-ray equipment, modern sterilization systems, and the latest dental tools to ensure precise and comfortable treatments.",
+    "faq.q5": "How can I book an appointment?",
+    "faq.a5": "You can book an appointment through our website's booking form, via WhatsApp, or by calling us directly at 07507816500. We'll confirm your appointment promptly.",
+    "faq.q6": "Do you provide dental care for children?",
+    "faq.a6": "Absolutely! Dr. Saleem provides gentle and caring dental treatments for children of all ages, making their dental experience comfortable and stress-free.",
+    
     // Appointments
     "appointments.badge": "Recent Appointments",
     "appointments.title1": "Trusted by",
