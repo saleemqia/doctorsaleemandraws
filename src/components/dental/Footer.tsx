@@ -1,4 +1,4 @@
-import { MapPin, ExternalLink, Shield, Facebook, Instagram } from "lucide-react";
+import { MapPin, ExternalLink, Shield, Facebook, Instagram, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import clinicLogo from "@/assets/clinic-logo.png";
