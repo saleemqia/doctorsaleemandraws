@@ -174,9 +174,6 @@ const Stats = ({ t }: { t: (key: string) => string }) => {
       </div>
     </motion.div>
   );
-      </div>
-    </section>
-  );
 };
 
 export default Appointments;
