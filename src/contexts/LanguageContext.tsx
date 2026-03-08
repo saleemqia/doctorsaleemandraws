@@ -200,6 +200,24 @@ const translations: Record<Language, Record<string, string>> = {
     "gallery.eduHealthyGums": "Healthy Gums Guide",
     "gallery.eduHealthyGumsDesc": "Understanding the signs of healthy vs. unhealthy gums for better oral care.",
     
+    // FAQ
+    "faq.badge": "FAQ",
+    "faq.title1": "Frequently Asked",
+    "faq.title2": "Questions",
+    "faq.description": "Find answers to common questions about our dental services and clinic.",
+    "faq.q1": "What are your working hours?",
+    "faq.a1": "Our clinic is open daily from 3:00 PM to 9:00 PM, except Fridays. We recommend booking an appointment in advance to ensure availability.",
+    "faq.q2": "Do you accept walk-in patients?",
+    "faq.a2": "While we welcome walk-ins when possible, we strongly recommend booking an appointment to minimize your waiting time and ensure you receive the best care.",
+    "faq.q3": "What dental services do you offer?",
+    "faq.a3": "We offer a comprehensive range of services including teeth whitening, dental implants, cosmetic dentistry, root canal treatment, orthodontics, oral radiology, dental cleaning, and pediatric dentistry.",
+    "faq.q4": "Is the clinic equipped with modern technology?",
+    "faq.a4": "Yes! Our clinic features state-of-the-art digital X-ray equipment, modern sterilization systems, and the latest dental tools to ensure precise and comfortable treatments.",
+    "faq.q5": "How can I book an appointment?",
+    "faq.a5": "You can book an appointment through our website's booking form, via WhatsApp, or by calling us directly at 07507816500. We'll confirm your appointment promptly.",
+    "faq.q6": "Do you provide dental care for children?",
+    "faq.a6": "Absolutely! Dr. Saleem provides gentle and caring dental treatments for children of all ages, making their dental experience comfortable and stress-free.",
+    
     // Appointments
     "appointments.badge": "Recent Appointments",
     "appointments.title1": "Trusted by",
@@ -424,6 +442,24 @@ const translations: Record<Language, Record<string, string>> = {
     "gallery.eduModernCareDesc": "تقنيات متقدمة لنتائج أفضل.",
     "gallery.eduHealthyGums": "دليل اللثة الصحية",
     "gallery.eduHealthyGumsDesc": "فهم علامات اللثة الصحية مقابل غير الصحية.",
+    
+    // FAQ
+    "faq.badge": "الأسئلة الشائعة",
+    "faq.title1": "الأسئلة",
+    "faq.title2": "الشائعة",
+    "faq.description": "اعثر على إجابات للأسئلة الشائعة حول خدماتنا وعيادتنا.",
+    "faq.q1": "ما هي ساعات العمل؟",
+    "faq.a1": "عيادتنا مفتوحة يومياً من الساعة ٣:٠٠ مساءً حتى ٩:٠٠ مساءً، ما عدا أيام الجمعة. ننصح بحجز موعد مسبقاً لضمان التوفر.",
+    "faq.q2": "هل تقبلون المرضى بدون موعد؟",
+    "faq.a2": "نرحب بالمرضى بدون موعد عند الإمكان، لكن ننصح بشدة بحجز موعد لتقليل وقت الانتظار وضمان أفضل رعاية.",
+    "faq.q3": "ما هي خدمات الأسنان التي تقدمونها؟",
+    "faq.a3": "نقدم مجموعة شاملة من الخدمات تشمل تبييض الأسنان، زراعة الأسنان، طب الأسنان التجميلي، علاج قناة الجذر، تقويم الأسنان، أشعة الفم، تنظيف الأسنان، وطب أسنان الأطفال.",
+    "faq.q4": "هل العيادة مجهزة بتقنيات حديثة؟",
+    "faq.a4": "نعم! تتميز عيادتنا بأحدث أجهزة الأشعة السينية الرقمية وأنظمة التعقيم الحديثة وأحدث أدوات طب الأسنان لضمان علاجات دقيقة ومريحة.",
+    "faq.q5": "كيف يمكنني حجز موعد؟",
+    "faq.a5": "يمكنك حجز موعد من خلال نموذج الحجز على موقعنا، عبر واتساب، أو بالاتصال بنا مباشرة على 07507816500. سنؤكد موعدك على الفور.",
+    "faq.q6": "هل تقدمون رعاية أسنان للأطفال؟",
+    "faq.a6": "بالتأكيد! يقدم الدكتور سليم علاجات أسنان لطيفة ومحبة للأطفال من جميع الأعمار، مما يجعل تجربتهم مريحة وخالية من التوتر.",
   },
   ku: {
     // Navbar
@@ -595,6 +631,27 @@ const translations: Record<Language, Record<string, string>> = {
     "gallery.fullRestorationDesc": "نوێکردنەوەی تەواوی ددان بۆ گۆڕانکارییەکی سەرسوڕهێنەر.",
     "gallery.beforeAfterComparison": "پێش و دوا",
     "gallery.beforeAfterComparisonDesc": "بەراوردی تەنیشت یەکتر کە گۆڕانکارییەکی سەرنجڕاکێش پیشان دەدات.",
+    "gallery.filterEducational": "پەروەردەیی",
+    "gallery.educationalTag": "پەروەردەیی",
+    "footer.location": "شوێن",
+    
+    // FAQ
+    "faq.badge": "پرسیارە باوەکان",
+    "faq.title1": "پرسیارە",
+    "faq.title2": "باوەکان",
+    "faq.description": "وەڵامی پرسیارە باوەکان دەربارەی خزمەتگوزارییەکان و کلینیکەکەمان بدۆزەرەوە.",
+    "faq.q1": "کاتی کارکردنتان چەندە؟",
+    "faq.a1": "کلینیکەکەمان ڕۆژانە لە کاتژمێر ٣:٠٠ ئێوارە تا ٩:٠٠ ئێوارە کراوەیە، جگە لە ڕۆژی هەینی. پێشنیار دەکەین نۆرەی پزیشک پێشوەخت دابنێیت.",
+    "faq.q2": "ئایا نەخۆشانی بێ نۆرە وەردەگرن؟",
+    "faq.a2": "کاتێک بکرێت پێشوازی لە نەخۆشانی بێ نۆرە دەکەین، بەڵام زۆر پێشنیار دەکەین نۆرەی پزیشک دابنێیت بۆ کەمکردنەوەی کاتی چاوەڕوانی.",
+    "faq.q3": "چ خزمەتگوزارییەکانی ددان پێشکەش دەکەن؟",
+    "faq.a3": "کۆمەڵێک خزمەتگوزاری تەواو پێشکەش دەکەین لەوانە سپیکردنەوەی ددان، چاندنی ددان، ددانی جوانکاری، چارەسەری کەناڵی ڕەگ، ڕاستکردنەوەی ددان، تیشکی دەم، پاککردنەوەی ددان، و ددانی منداڵان.",
+    "faq.q4": "ئایا کلینیکەکە بە تەکنەلۆژیای مۆدێرن ئامادەیە؟",
+    "faq.a4": "بەڵێ! کلینیکەکەمان بە نوێترین ئامێری تیشکی ئێکسی دیجیتاڵ و سیستەمی ستیریلایزکردنی مۆدێرن و نوێترین ئامێری ددان ئامادەیە.",
+    "faq.q5": "چۆن نۆرەی پزیشک دابنێم؟",
+    "faq.a5": "دەتوانیت نۆرەی پزیشک لە ڕێگای فۆرمی نۆرەی ماڵپەڕەکەمان، واتساپ، یان بە پەیوەندیکردن بە ژمارە 07507816500 دابنێیت.",
+    "faq.q6": "ئایا چاودێری ددان بۆ منداڵان پێشکەش دەکەن؟",
+    "faq.a6": "بەدڵنیایی! دکتۆر سەلیم چارەسەری ددانی نەرم و بەخەمی بۆ منداڵانی هەموو تەمەنێک پێشکەش دەکات.",
   },
 };
 

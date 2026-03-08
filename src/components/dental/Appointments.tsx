@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Calendar, Clock, User, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCountUp } from "@/hooks/use-count-up";
 
 const Appointments = () => {
   const { t, dir } = useLanguage();
@@ -140,29 +141,38 @@ const Appointments = () => {
           ))}
         </div>
 
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-10 md:mt-12 grid grid-cols-3 gap-4"
-        >
-          <div className="text-center p-4 rounded-xl bg-card border border-border/50">
-            <p className="text-2xl md:text-3xl font-bold text-primary">150+</p>
-            <p className="text-xs md:text-sm text-muted-foreground">{t("appointments.thisMonth")}</p>
-          </div>
-          <div className="text-center p-4 rounded-xl bg-card border border-border/50">
-            <p className="text-2xl md:text-3xl font-bold text-primary">98%</p>
-            <p className="text-xs md:text-sm text-muted-foreground">{t("appointments.satisfaction")}</p>
-          </div>
-          <div className="text-center p-4 rounded-xl bg-card border border-border/50">
-            <p className="text-2xl md:text-3xl font-bold text-primary">500+</p>
-            <p className="text-xs md:text-sm text-muted-foreground">{t("appointments.totalPatients")}</p>
-          </div>
-        </motion.div>
+        <Stats t={t} />
       </div>
     </section>
+  );
+};
+
+const Stats = ({ t }: { t: (key: string) => string }) => {
+  const appointments = useCountUp(150, 2000);
+  const satisfaction = useCountUp(98, 2000);
+  const patients = useCountUp(500, 2000);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.3 }}
+      className="mt-10 md:mt-12 grid grid-cols-3 gap-4"
+    >
+      <div className="text-center p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-card transition-all duration-300">
+        <p className="text-2xl md:text-3xl font-bold text-primary" ref={appointments.ref as any}>{appointments.count}+</p>
+        <p className="text-xs md:text-sm text-muted-foreground">{t("appointments.thisMonth")}</p>
+      </div>
+      <div className="text-center p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-card transition-all duration-300">
+        <p className="text-2xl md:text-3xl font-bold text-primary" ref={satisfaction.ref as any}>{satisfaction.count}%</p>
+        <p className="text-xs md:text-sm text-muted-foreground">{t("appointments.satisfaction")}</p>
+      </div>
+      <div className="text-center p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-card transition-all duration-300">
+        <p className="text-2xl md:text-3xl font-bold text-primary" ref={patients.ref as any}>{patients.count}+</p>
+        <p className="text-xs md:text-sm text-muted-foreground">{t("appointments.totalPatients")}</p>
+      </div>
+    </motion.div>
   );
 };
 
