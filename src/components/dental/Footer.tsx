@@ -6,7 +6,7 @@ import clinicLogo from "@/assets/clinic-logo.png";
 const Footer = () => {
   const { t, dir } = useLanguage();
 
-  const mapDirectionsUrl = "https://maps.app.goo.gl/jSSTEsjHMTwo7L768";
+  const mapDirectionsUrl = "https://share.google/jfAOUXSkIEwwTg9fn";
 
   const navLinks = [
     { key: "home", href: "#home" },
