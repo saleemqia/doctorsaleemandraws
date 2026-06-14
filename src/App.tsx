@@ -30,8 +30,6 @@ const App = () => (
             </Routes>
             <ExportPageButton />
           </BrowserRouter>
-            </Routes>
-          </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
     </LanguageProvider>
