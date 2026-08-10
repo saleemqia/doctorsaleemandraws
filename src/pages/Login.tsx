@@ -31,7 +31,11 @@ const Login = () => {
         const { error } = await signIn(form.email, form.password);
         if (error) throw error;
         toast.success("Signed in successfully!");
-        navigate("/admin");
+        if (next) {
+          window.location.href = next;
+        } else {
+          navigate("/admin");
+        }
       }
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
