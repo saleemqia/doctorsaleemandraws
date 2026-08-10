@@ -23,7 +23,7 @@ const Login = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await signUp(form.email, form.password, form.fullName);
+        const { error } = await signUp(form.email, form.password, form.fullName, next ?? undefined);
         if (error) throw error;
         toast.success("Account created! You can now sign in.");
         setIsSignUp(false);
