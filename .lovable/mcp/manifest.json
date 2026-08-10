@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://cjcciaaysrvkdymamywa.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "project-lovable",
+      "version": "0.1.0",
+      "title": "Project Lovable"
+    },
+    "tools": [
+      {
+        "name": "list_appointments",
+        "title": "List appointments",
+        "description": "List clinic appointment requests, newest first. Optionally filter by status (pending, confirmed, cancelled, completed) or by preferred date range.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "description": "Filter by appointment status."
+            },
+            "from_date": {
+              "type": "string",
+              "description": "Earliest preferred date, YYYY-MM-DD."
+            },
+            "to_date": {
+              "type": "string",
+              "description": "Latest preferred date, YYYY-MM-DD."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Max rows to return (default 25)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "appointment_stats",
+        "title": "Appointment stats",
+        "description": "Summarize appointment requests by status, plus how many are upcoming from today onward.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_appointment_status",
+        "title": "Update appointment status",
+        "description": "Update the status of one appointment request (pending, confirmed, cancelled, completed). Requires clinic admin access.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Appointment id (uuid)."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "confirmed",
+                "cancelled",
+                "completed"
+              ],
+              "description": "New status for the appointment."
+            }
+          },
+          "required": [
+            "id",
+            "status"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

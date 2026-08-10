@@ -1,13 +1,18 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { LogIn, UserPlus, ArrowLeft } from "lucide-react";
 
+const safeNext = (value: string | null) =>
+  value && value.startsWith("/") && !value.startsWith("//") ? value : null;
+
 const Login = () => {
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const next = safeNext(params.get("next"));
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "", fullName: "" });
@@ -18,7 +23,7 @@ const Login = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await signUp(form.email, form.password, form.fullName);
+        const { error } = await signUp(form.email, form.password, form.fullName, next ?? undefined);
         if (error) throw error;
         toast.success("Account created! You can now sign in.");
         setIsSignUp(false);
@@ -26,7 +31,11 @@ const Login = () => {
         const { error } = await signIn(form.email, form.password);
         if (error) throw error;
         toast.success("Signed in successfully!");
-        navigate("/admin");
+        if (next) {
+          window.location.href = next;
+        } else {
+          navigate("/admin");
+        }
       }
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
