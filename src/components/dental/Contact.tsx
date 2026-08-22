@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, ExternalLink, Navigation } from "lucide-react";
+import { MapPin, Clock, ExternalLink, Navigation, Phone } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ContactProps {
