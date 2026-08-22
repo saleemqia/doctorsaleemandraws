@@ -59,6 +59,19 @@ const Contact = ({ onBookingClick }: ContactProps) => {
 
               <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
                 <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 flex-shrink-0">
+                  <Phone className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-sm md:text-base">{t("contact.phone") || "Phone"}</p>
+                  <div className={`flex flex-wrap gap-2 mt-1 ${dir === "rtl" ? "flex-row-reverse justify-end" : ""}`}>
+                    <a href="tel:07781665000" className="text-primary text-sm hover:underline">07781665000</a>
+                    <a href="tel:07507816500" className="text-primary text-sm hover:underline">07507816500</a>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
+                <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 flex-shrink-0">
                   <Clock className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 </div>
                 <div className="min-w-0">
