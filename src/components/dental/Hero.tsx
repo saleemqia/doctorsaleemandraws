@@ -69,10 +69,16 @@ const Hero = ({ onBookingClick }: HeroProps) => {
                 <Calendar className="w-5 h-5" />
                 {t("hero.bookBtn")}
               </Button>
-              <a href="tel:07507816500">
+              <a href="tel:07781665000">
                 <Button variant="tealOutline" size="lg" className={`w-full sm:w-auto gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                   <Phone className="w-5 h-5" />
                   {t("hero.callBtn")}
+                </Button>
+              </a>
+              <a href="tel:07507816500">
+                <Button variant="tealOutline" size="lg" className={`w-full sm:w-auto gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                  <Phone className="w-5 h-5" />
+                  07507816500
                 </Button>
               </a>
             </div>

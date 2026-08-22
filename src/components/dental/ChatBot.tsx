@@ -36,20 +36,20 @@ const ChatBot = () => {
       ? "ئەمە نرخەکانمانە:\n\n• سپیکردنەوەی ددان: لە 150$ دەست پێدەکات\n• چاندنی ددان: لە 800$ دەست پێدەکات\n• ددانی جوانکاری: لە 300$ دەست پێدەکات\n• چارەسەری کەناڵی ڕەگ: لە 250$ دەست پێدەکات\n• ڕاستکردنەوەی ددان: لە 1000$ دەست پێدەکات\n• تیشکی دەم: لە 50$ دەست پێدەکات\n• پاککردنەوەی ددان: لە 75$ دەست پێدەکات\n• ددانی منداڵان: لە 50$ دەست پێدەکات\n\nنرخەکان لەوانەیە جیاواز بن بەپێی حاڵەتی کەسی. دەتەوێت نۆرەی پزیشک دابنێیت؟"
       : "Here are our starting prices:\n\n• Teeth Whitening: from $150\n• Dental Implants: from $800\n• Cosmetic Dentistry: from $300\n• Root Canal: from $250\n• Orthodontics: from $1000\n• Oral Radiology: from $50\n• Dental Cleaning: from $75\n• Pediatric Dentistry: from $50\n\nPrices may vary based on individual cases. Would you like to schedule a consultation?",
     hours: language === "ar"
-      ? "عيادتنا مفتوحة:\n\n🕒 يومياً: 3:00 - 9:00 مساءً\n🚫 مغلق أيام الجمعة\n\n📍 الموقع: دهوك - KRO - فوق شيركو للمكسرات\n📞 اتصل بنا: 07507816500\n\nهل تريد حجز موعد؟"
+      ? "عيادتنا مفتوحة:\n\n🕒 يومياً: 3:00 - 9:00 مساءً\n🚫 مغلق أيام الجمعة\n\n📍 الموقع: دهوك - KRO - فوق شيركو للمكسرات\n📞 اتصل بنا: 07781665000 أو 07507816500\n\nهل تريد حجز موعد؟"
       : language === "ku"
-      ? "کلینیکەکەمان کراوەیە:\n\n🕒 ڕۆژانە: ٣:٠٠ - ٩:٠٠ ئێوارە\n🚫 داخراوە ڕۆژی هەینی\n\n📍 شوێن: دهۆک - KRO - سەرووی شیرکۆ نەتس\n📞 پەیوەندیمان پێوە بکە: 07507816500\n\nدەتەوێت نۆرەی پزیشک دابنێیت؟"
-      : "Our clinic is open:\n\n🕒 Daily: 3:00 PM - 9:00 PM\n🚫 Closed on Fridays\n\n📍 Location: Duhok - KRO - Above Sherko Nuts\n📞 Call us: 07507816500\n\nWould you like to book an appointment?",
+      ? "کلینیکەکەمان کراوەیە:\n\n🕒 ڕۆژانە: ٣:٠٠ - ٩:٠٠ ئێوارە\n🚫 داخراوە ڕۆژی هەینی\n\n📍 شوێن: دهۆک - KRO - سەرووی شیرکۆ نەتس\n📞 پەیوەندیمان پێوە بکە: 07781665000 یان 07507816500\n\nدەتەوێت نۆرەی پزیشک دابنێیت؟"
+      : "Our clinic is open:\n\n🕒 Daily: 3:00 PM - 9:00 PM\n🚫 Closed on Fridays\n\n📍 Location: Duhok - KRO - Above Sherko Nuts\n📞 Call us: 07781665000 or 07507816500\n\nWould you like to book an appointment?",
     booking: language === "ar"
-      ? "يمكنك حجز موعد عبر:\n\n1️⃣ انقر على زر 'حجز موعد' في هذه الصفحة\n2️⃣ اتصل بنا مباشرة: 07507816500\n3️⃣ واتساب: انقر على الزر الأخضر\n4️⃣ البريد الإلكتروني: dr.saleemo@gmail.com\n\nسنؤكد موعدك خلال 24 ساعة!"
+      ? "يمكنك حجز موعد عبر:\n\n1️⃣ انقر على زر 'حجز موعد' في هذه الصفحة\n2️⃣ اتصل بنا مباشرة: 07781665000 أو 07507816500\n3️⃣ واتساب: انقر على الزر الأخضر\n4️⃣ البريد الإلكتروني: dr.saleemo@gmail.com\n\nسنؤكد موعدك خلال 24 ساعة!"
       : language === "ku"
-      ? "دەتوانیت نۆرەی پزیشک دابنێیت لە ڕێگای:\n\n1️⃣ کلیک بکە لەسەر دوگمەی 'نۆرەی پزیشک' لەم لاپەڕەیەدا\n2️⃣ ڕاستەوخۆ پەیوەندیمان پێوە بکە: 07507816500\n3️⃣ واتساپ: کلیک بکە لەسەر دوگمەی سەوز\n4️⃣ ئیمەیڵ: dr.saleemo@gmail.com\n\nنۆرەی پزیشکت دڵنیا دەکەینەوە لە ماوەی ٢٤ کاتژمێردا!"
-      : "You can book an appointment through:\n\n1️⃣ Click the 'Book Appointment' button on this page\n2️⃣ Call us directly: 07507816500\n3️⃣ WhatsApp us: Click the green button\n4️⃣ Email: dr.saleemo@gmail.com\n\nWe'll confirm your appointment within 24 hours!",
+      ? "دەتوانیت نۆرەی پزیشک دابنێیت لە ڕێگای:\n\n1️⃣ کلیک بکە لەسەر دوگمەی 'نۆرەی پزیشک' لەم لاپەڕەیەدا\n2️⃣ ڕاستەوخۆ پەیوەندیمان پێوە بکە: 07781665000 یان 07507816500\n3️⃣ واتساپ: کلیک بکە لەسەر دوگمەی سەوز\n4️⃣ ئیمەیڵ: dr.saleemo@gmail.com\n\nنۆرەی پزیشکت دڵنیا دەکەینەوە لە ماوەی ٢٤ کاتژمێردا!"
+      : "You can book an appointment through:\n\n1️⃣ Click the 'Book Appointment' button on this page\n2️⃣ Call us directly: 07781665000 or 07507816500\n3️⃣ WhatsApp us: Click the green button\n4️⃣ Email: dr.saleemo@gmail.com\n\nWe'll confirm your appointment within 24 hours!",
     default: language === "ar"
-      ? "شكراً لرسالتك! للحصول على معلومات مفصلة، يرجى الاتصال بنا على:\n\n📞 الهاتف: 07507816500\n📧 البريد الإلكتروني: dr.saleemo@gmail.com\n💬 واتساب: انقر على الزر الأخضر\n\nأو يمكنك أن تسألني عن خدماتنا أو أسعارنا أو ساعات العمل!"
+      ? "شكراً لرسالتك! للحصول على معلومات مفصلة، يرجى الاتصال بنا على:\n\n📞 الهاتف: 07781665000 أو 07507816500\n📧 البريد الإلكتروني: dr.saleemo@gmail.com\n💬 واتساب: انقر على الزر الأخضر\n\nأو يمكنك أن تسألني عن خدماتنا أو أسعارنا أو ساعات العمل!"
       : language === "ku"
-      ? "سوپاس بۆ پەیامەکەت! بۆ زانیاری وردتر، تکایە پەیوەندیمان پێوە بکە لە:\n\n📞 تەلەفۆن: 07507816500\n📧 ئیمەیڵ: dr.saleemo@gmail.com\n💬 واتساپ: کلیک بکە لەسەر دوگمەی سەوز\n\nیان دەتوانیت پرسیارم لێبکەیت دەربارەی خزمەتگوزارییەکانمان، نرخەکان، یان کاتی کارکردن!"
-      : "Thank you for your message! For detailed information, please contact us at:\n\n📞 Phone: 07507816500\n📧 Email: dr.saleemo@gmail.com\n💬 WhatsApp: Click the green button\n\nOr you can ask me about our services, prices, or working hours!",
+      ? "سوپاس بۆ پەیامەکەت! بۆ زانیاری وردتر، تکایە پەیوەندیمان پێوە بکە لە:\n\n📞 تەلەفۆن: 07781665000 یان 07507816500\n📧 ئیمەیڵ: dr.saleemo@gmail.com\n💬 واتساپ: کلیک بکە لەسەر دوگمەی سەوز\n\nیان دەتوانیت پرسیارم لێبکەیت دەربارەی خزمەتگوزارییەکانمان، نرخەکان، یان کاتی کارکردن!"
+      : "Thank you for your message! For detailed information, please contact us at:\n\n📞 Phone: 07781665000 or 07507816500\n📧 Email: dr.saleemo@gmail.com\n💬 WhatsApp: Click the green button\n\nOr you can ask me about our services, prices, or working hours!",
   });
 
   // Initialize welcome message when language changes or chat opens

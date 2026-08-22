@@ -214,7 +214,7 @@ const translations: Record<Language, Record<string, string>> = {
     "faq.q4": "Is the clinic equipped with modern technology?",
     "faq.a4": "Yes! Our clinic features state-of-the-art digital X-ray equipment, modern sterilization systems, and the latest dental tools to ensure precise and comfortable treatments.",
     "faq.q5": "How can I book an appointment?",
-    "faq.a5": "You can book an appointment through our website's booking form, via WhatsApp, or by calling us directly at 07507816500. We'll confirm your appointment promptly.",
+    "faq.a5": "You can book an appointment through our website's booking form, via WhatsApp, or by calling us directly at 07781665000 or 07507816500. We'll confirm your appointment promptly.",
     "faq.q6": "Do you provide dental care for children?",
     "faq.a6": "Absolutely! Dr. Saleem provides gentle and caring dental treatments for children of all ages, making their dental experience comfortable and stress-free.",
     
@@ -462,7 +462,7 @@ const translations: Record<Language, Record<string, string>> = {
     "faq.q4": "هل العيادة مجهزة بتقنيات حديثة؟",
     "faq.a4": "نعم! تتميز عيادتنا بأحدث أجهزة الأشعة السينية الرقمية وأنظمة التعقيم الحديثة وأحدث أدوات طب الأسنان لضمان علاجات دقيقة ومريحة.",
     "faq.q5": "كيف يمكنني حجز موعد؟",
-    "faq.a5": "يمكنك حجز موعد من خلال نموذج الحجز على موقعنا، عبر واتساب، أو بالاتصال بنا مباشرة على 07507816500. سنؤكد موعدك على الفور.",
+    "faq.a5": "يمكنك حجز موعد من خلال نموذج الحجز على موقعنا، عبر واتساب، أو بالاتصال بنا مباشرة على 07781665000 أو 07507816500. سنؤكد موعدك على الفور.",
     "faq.q6": "هل تقدمون رعاية أسنان للأطفال؟",
     "faq.a6": "بالتأكيد! يقدم الدكتور سليم علاجات أسنان لطيفة ومحبة للأطفال من جميع الأعمار، مما يجعل تجربتهم مريحة وخالية من التوتر.",
 
@@ -659,7 +659,7 @@ const translations: Record<Language, Record<string, string>> = {
     "faq.q4": "ئایا کلینیکەکە بە تەکنەلۆژیای مۆدێرن ئامادەیە؟",
     "faq.a4": "بەڵێ! کلینیکەکەمان بە نوێترین ئامێری تیشکی ئێکسی دیجیتاڵ و سیستەمی ستیریلایزکردنی مۆدێرن و نوێترین ئامێری ددان ئامادەیە.",
     "faq.q5": "چۆن نۆرەی پزیشک دابنێم؟",
-    "faq.a5": "دەتوانیت نۆرەی پزیشک لە ڕێگای فۆرمی نۆرەی ماڵپەڕەکەمان، واتساپ، یان بە پەیوەندیکردن بە ژمارە 07507816500 دابنێیت.",
+    "faq.a5": "دەتوانیت نۆرەی پزیشک لە ڕێگای فۆرمی نۆرەی ماڵپەڕەکەمان، واتساپ، یان بە پەیوەندیکردن بە ژمارە 07781665000 یان 07507816500 دابنێیت.",
     "faq.q6": "ئایا چاودێری ددان بۆ منداڵان پێشکەش دەکەن؟",
     "faq.a6": "بەدڵنیایی! دکتۆر سەلیم چارەسەری ددانی نەرم و بەخەمی بۆ منداڵانی هەموو تەمەنێک پێشکەش دەکات.",
 
