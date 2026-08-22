@@ -3,10 +3,10 @@
 // supabase function: mcp
 // Bundled from src/lib/mcp/index.ts by @lovable.dev/mcp-js.
 // src/lib/mcp/index.ts
-import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.26.3";
 
 // src/lib/mcp/tools/list-appointments.ts
-import { defineTool } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool } from "npm:@lovable.dev/mcp-js@0.26.3";
 import { z } from "npm:zod@^3.25.76";
 
 // src/lib/mcp/supabase.ts
@@ -89,7 +89,7 @@ var list_appointments_default = defineTool({
 });
 
 // src/lib/mcp/tools/update-appointment-status.ts
-import { defineTool as defineTool2 } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool as defineTool2 } from "npm:@lovable.dev/mcp-js@0.26.3";
 import { z as z2 } from "npm:zod@^3.25.76";
 var STATUSES = ["pending", "confirmed", "cancelled", "completed"];
 var update_appointment_status_default = defineTool2({
@@ -122,7 +122,7 @@ var update_appointment_status_default = defineTool2({
 });
 
 // src/lib/mcp/tools/appointment-stats.ts
-import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@0.26.3";
 var appointment_stats_default = defineTool3({
   name: "appointment_stats",
   title: "Appointment stats",
@@ -166,5 +166,5 @@ var mcp_default = defineMcp({
 });
 
 // lovable-mcp-supabase-entry.ts
-import { createSupabaseHandler } from "npm:@lovable.dev/mcp-js@0.26.1/stacks/supabase";
+import { createSupabaseHandler } from "npm:@lovable.dev/mcp-js@0.26.3/stacks/supabase";
 Deno.serve(createSupabaseHandler(mcp_default, { functionName: "mcp" }));
