@@ -98,6 +98,12 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
               </AnimatePresence>
             </div>
 
+            <a href="tel:07781665000">
+              <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                <Phone className="w-4 h-4" />
+                <span className="hidden xl:inline">07781665000</span>
+              </Button>
+            </a>
             <a href="tel:07507816500">
               <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                 <Phone className="w-4 h-4" />
@@ -163,6 +169,12 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
                   </a>
                 ))}
                 <div className="pt-4 border-t border-border flex flex-col gap-3">
+                  <a href="tel:07781665000" className="w-full">
+                    <Button variant="outline" className={`w-full justify-center gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                      <Phone className="w-4 h-4" />
+                      {t("nav.call")}: 07781665000
+                    </Button>
+                  </a>
                   <a href="tel:07507816500" className="w-full">
                     <Button variant="outline" className={`w-full justify-center gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                       <Phone className="w-4 h-4" />
