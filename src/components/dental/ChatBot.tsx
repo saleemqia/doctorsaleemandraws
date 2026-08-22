@@ -46,7 +46,7 @@ const ChatBot = () => {
       ? "دەتوانیت نۆرەی پزیشک دابنێیت لە ڕێگای:\n\n1️⃣ کلیک بکە لەسەر دوگمەی 'نۆرەی پزیشک' لەم لاپەڕەیەدا\n2️⃣ ڕاستەوخۆ پەیوەندیمان پێوە بکە: 07781665000 یان 07507816500\n3️⃣ واتساپ: کلیک بکە لەسەر دوگمەی سەوز\n4️⃣ ئیمەیڵ: dr.saleemo@gmail.com\n\nنۆرەی پزیشکت دڵنیا دەکەینەوە لە ماوەی ٢٤ کاتژمێردا!"
       : "You can book an appointment through:\n\n1️⃣ Click the 'Book Appointment' button on this page\n2️⃣ Call us directly: 07781665000 or 07507816500\n3️⃣ WhatsApp us: Click the green button\n4️⃣ Email: dr.saleemo@gmail.com\n\nWe'll confirm your appointment within 24 hours!",
     default: language === "ar"
-      ? "شكراً لرسالتك! للحصول على معلومات مفصلة، يرجى الاتصال بنا على:\n\n📞 الهاتف: 07507816500\n📧 البريد الإلكتروني: dr.saleemo@gmail.com\n💬 واتساب: انقر على الزر الأخضر\n\nأو يمكنك أن تسألني عن خدماتنا أو أسعارنا أو ساعات العمل!"
+      ? "شكراً لرسالتك! للحصول على معلومات مفصلة، يرجى الاتصال بنا على:\n\n📞 الهاتف: 07781665000 أو 07507816500\n📧 البريد الإلكتروني: dr.saleemo@gmail.com\n💬 واتساب: انقر على الزر الأخضر\n\nأو يمكنك أن تسألني عن خدماتنا أو أسعارنا أو ساعات العمل!"
       : language === "ku"
       ? "سوپاس بۆ پەیامەکەت! بۆ زانیاری وردتر، تکایە پەیوەندیمان پێوە بکە لە:\n\n📞 تەلەفۆن: 07781665000 یان 07507816500\n📧 ئیمەیڵ: dr.saleemo@gmail.com\n💬 واتساپ: کلیک بکە لەسەر دوگمەی سەوز\n\nیان دەتوانیت پرسیارم لێبکەیت دەربارەی خزمەتگوزارییەکانمان، نرخەکان، یان کاتی کارکردن!"
       : "Thank you for your message! For detailed information, please contact us at:\n\n📞 Phone: 07781665000 or 07507816500\n📧 Email: dr.saleemo@gmail.com\n💬 WhatsApp: Click the green button\n\nOr you can ask me about our services, prices, or working hours!",
