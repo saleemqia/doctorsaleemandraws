@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, X, Send, Bot } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { GOOGLE_MAPS_URL } from "@/config/clinic";
 
 interface Message {
   id: number;
@@ -19,7 +20,6 @@ const ChatBot = () => {
 
   const quickReplies = [
     t("chat.quickServices"),
-    t("chat.quickPrices"),
     t("chat.quickHours"),
     t("chat.quickBooking"),
   ];
@@ -31,15 +31,15 @@ const ChatBot = () => {
       ? "کۆمەڵێک خزمەتگوزاری ددان پێشکەش دەکەین:\n\n🦷 سپیکردنەوەی ددان\n🔧 چاندنی ددان\n✨ ددانی جوانکاری\n🛡️ چارەسەری کەناڵی ڕەگ\n📐 ڕاستکردنەوەی ددان\n🔬 تیشکی دەم\n🧹 پاککردنەوەی ددان\n👶 ددانی منداڵان\n\nئایا دەتەوێت زیاتر بزانیت دەربارەی هەر خزمەتگوزارییەک؟"
       : "We offer a wide range of dental services:\n\n🦷 Teeth Whitening\n🔧 Dental Implants\n✨ Cosmetic Dentistry\n🛡️ Root Canal Treatment\n📐 Orthodontics (Braces)\n🔬 Oral Radiology\n🧹 Dental Cleaning\n👶 Pediatric Dentistry\n\nWould you like to know more about any specific service?",
     prices: language === "ar"
-      ? "إليك أسعارنا:\n\n• تبييض الأسنان: من 150$\n• زراعة الأسنان: من 800$\n• طب الأسنان التجميلي: من 300$\n• علاج قناة الجذر: من 250$\n• تقويم الأسنان: من 1000$\n• أشعة الفم: من 50$\n• تنظيف الأسنان: من 75$\n• طب أسنان الأطفال: من 50$\n\nقد تختلف الأسعار حسب الحالات الفردية. هل تريد حجز استشارة؟"
+      ? "تعتمد الأسعار على حالة كل مريض، ويحددها الطبيب بعد الفحص.\n\nاحجز استشارة أو راسلنا على واتساب وسنجيب على أسئلتك:\n📞 07781665000 أو 07507816500"
       : language === "ku"
-      ? "ئەمە نرخەکانمانە:\n\n• سپیکردنەوەی ددان: لە 150$ دەست پێدەکات\n• چاندنی ددان: لە 800$ دەست پێدەکات\n• ددانی جوانکاری: لە 300$ دەست پێدەکات\n• چارەسەری کەناڵی ڕەگ: لە 250$ دەست پێدەکات\n• ڕاستکردنەوەی ددان: لە 1000$ دەست پێدەکات\n• تیشکی دەم: لە 50$ دەست پێدەکات\n• پاککردنەوەی ددان: لە 75$ دەست پێدەکات\n• ددانی منداڵان: لە 50$ دەست پێدەکات\n\nنرخەکان لەوانەیە جیاواز بن بەپێی حاڵەتی کەسی. دەتەوێت نۆرەی پزیشک دابنێیت؟"
-      : "Here are our starting prices:\n\n• Teeth Whitening: from $150\n• Dental Implants: from $800\n• Cosmetic Dentistry: from $300\n• Root Canal: from $250\n• Orthodontics: from $1000\n• Oral Radiology: from $50\n• Dental Cleaning: from $75\n• Pediatric Dentistry: from $50\n\nPrices may vary based on individual cases. Would you like to schedule a consultation?",
+      ? "نرخەکان بەپێی حاڵەتی هەر نەخۆشێک جیاوازن و دوای پشکنین دیاری دەکرێن.\n\nنۆرەی ڕاوێژ دابنێ یان لە واتساپ پەیوەندیمان پێوە بکە:\n📞 07781665000 یان 07507816500"
+      : "Prices depend on each patient's case and are set by the doctor after an examination.\n\nBook a consultation or message us on WhatsApp and we'll answer your questions:\n📞 07781665000 or 07507816500",
     hours: language === "ar"
-      ? "عيادتنا مفتوحة:\n\n🕒 يومياً: 3:00 - 9:00 مساءً\n🚫 مغلق أيام الجمعة\n\n📍 الموقع: دهوك - KRO - فوق شيركو للمكسرات\n📞 اتصل بنا: 07781665000 أو 07507816500\n\nهل تريد حجز موعد؟"
+      ? "عيادتنا مفتوحة:\n\n🕒 3:00 - 9:00 مساءً\n🚫 مغلق أيام الجمعة\n\n📍 الموقع: دهوك - شارع قاضي محمد - فوق جرزات شيركو\n🗺️ " + GOOGLE_MAPS_URL + "\n📞 اتصل بنا: 07781665000 أو 07507816500\n\nهل تريد حجز موعد؟"
       : language === "ku"
-      ? "کلینیکەکەمان کراوەیە:\n\n🕒 ڕۆژانە: ٣:٠٠ - ٩:٠٠ ئێوارە\n🚫 داخراوە ڕۆژی هەینی\n\n📍 شوێن: دهۆک - KRO - سەرووی شیرکۆ نەتس\n📞 پەیوەندیمان پێوە بکە: 07781665000 یان 07507816500\n\nدەتەوێت نۆرەی پزیشک دابنێیت؟"
-      : "Our clinic is open:\n\n🕒 Daily: 3:00 PM - 9:00 PM\n🚫 Closed on Fridays\n\n📍 Location: Duhok - KRO - Above Sherko Nuts\n📞 Call us: 07781665000 or 07507816500\n\nWould you like to book an appointment?",
+      ? "کلینیکەکەمان کراوەیە:\n\n🕒 ٣:٠٠ - ٩:٠٠ ئێوارە\n🚫 داخراوە ڕۆژی هەینی\n\n📍 شوێن: دهۆک - شەقامی قازی محەمەد - سەرووی جرزاتی شیرکۆ\n🗺️ " + GOOGLE_MAPS_URL + "\n📞 پەیوەندیمان پێوە بکە: 07781665000 یان 07507816500\n\nدەتەوێت نۆرەی پزیشک دابنێیت؟"
+      : "Our clinic is open:\n\n🕒 3:00 PM - 9:00 PM\n🚫 Closed on Fridays\n\n📍 Location: Qazi Mohammad Road, Duhok - Above Sherko Nuts\n🗺️ " + GOOGLE_MAPS_URL + "\n📞 Call us: 07781665000 or 07507816500\n\nWould you like to book an appointment?",
     booking: language === "ar"
       ? "يمكنك حجز موعد عبر:\n\n1️⃣ انقر على زر 'حجز موعد' في هذه الصفحة\n2️⃣ اتصل بنا مباشرة: 07781665000 أو 07507816500\n3️⃣ واتساب: انقر على الزر الأخضر\n4️⃣ البريد الإلكتروني: dr.saleemo@gmail.com\n\nسنؤكد موعدك خلال 24 ساعة!"
       : language === "ku"
@@ -103,9 +103,9 @@ const ChatBot = () => {
       
       if (lowerText.includes("service") || lowerText.includes("خدم") || lowerText.includes("خزمەت")) {
         response = responses.services;
-      } else if (lowerText.includes("price") || lowerText.includes("سعر") || lowerText.includes("نرخ") || lowerText.includes("cost")) {
+      } else if (lowerText.includes("price") || lowerText.includes("سعر") || lowerText.includes("نرخ") || lowerText.includes("cost") || lowerText.includes("اسعار") || lowerText.includes("أسعار")) {
         response = responses.prices;
-      } else if (lowerText.includes("hour") || lowerText.includes("time") || lowerText.includes("ساع") || lowerText.includes("کات") || lowerText.includes("open")) {
+      } else if (lowerText.includes("hour") || lowerText.includes("time") || lowerText.includes("ساع") || lowerText.includes("کات") || lowerText.includes("open") || lowerText.includes("where") || lowerText.includes("location") || lowerText.includes("address") || lowerText.includes("موقع") || lowerText.includes("عنوان") || lowerText.includes("شوێن")) {
         response = responses.hours;
       } else if (lowerText.includes("book") || lowerText.includes("appointment") || lowerText.includes("حجز") || lowerText.includes("موعد") || lowerText.includes("نۆرە")) {
         response = responses.booking;

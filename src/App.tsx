@@ -10,7 +10,6 @@ import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
-import ExportPageButton from "@/components/dental/ExportPageButton";
 
 const queryClient = new QueryClient();
 
@@ -24,13 +23,14 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/ar" element={<Index />} />
+              <Route path="/ku" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-            <ExportPageButton />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Calendar, Phone, Clock, MapPin, Award, GraduationCap } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { GOOGLE_MAPS_URL } from "@/config/clinic";
 import drSaleem from "@/assets/dr-saleem.jpg";
 
 interface HeroProps {
@@ -37,15 +38,16 @@ const Hero = ({ onBookingClick }: HeroProps) => {
             transition={{ duration: 0.6 }}
             className={dir === "rtl" ? "lg:col-start-2 text-right" : ""}
           >
-            <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium text-primary mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            {/* The page's main heading (H1) names what we are and where — what people search for. */}
+            <h1 className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium font-sans text-primary mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
               <Award className="w-4 h-4" />
               {t("hero.badge")}
-            </span>
+            </h1>
 
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground mb-6">
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground mb-6">
               {t("hero.title1")}{" "}
               <span className="text-gradient">{t("hero.title2")}</span>
-            </h1>
+            </h2>
 
             <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
               {t("hero.description")}
@@ -157,7 +159,7 @@ const Hero = ({ onBookingClick }: HeroProps) => {
                   </div>
                   <span className="text-sm font-semibold">5.0</span>
                 </div>
-                <p className={`text-xs text-muted-foreground mt-1 ${dir === "rtl" ? "text-right" : ""}`}>{t("hero.happyPatients")}</p>
+                <a href={GOOGLE_MAPS_URL} target="_blank" rel="noopener noreferrer" className={`block text-xs text-muted-foreground mt-1 hover:text-primary hover:underline ${dir === "rtl" ? "text-right" : ""}`}>{t("hero.googleRating")}</a>
               </motion.div>
             </div>
           </motion.div>

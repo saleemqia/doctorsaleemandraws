@@ -6,60 +6,60 @@
 
 @layer base {
   :root {
-    --background: 180 20% 99%;
-    --foreground: 200 25% 15%;
+    --background: 210 25% 99%;
+    --foreground: 218 35% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 200 25% 15%;
+    --card-foreground: 218 35% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 200 25% 15%;
+    --popover-foreground: 218 35% 14%;
 
-    --primary: 174 62% 40%;
+    --primary: 216 45% 27%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 180 25% 95%;
-    --secondary-foreground: 200 25% 20%;
+    --secondary: 214 30% 95%;
+    --secondary-foreground: 218 35% 20%;
 
-    --muted: 180 15% 94%;
-    --muted-foreground: 200 10% 45%;
+    --muted: 214 20% 94%;
+    --muted-foreground: 215 12% 42%;
 
-    --accent: 174 50% 92%;
-    --accent-foreground: 174 62% 30%;
+    --accent: 214 35% 93%;
+    --accent-foreground: 216 45% 24%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 180 20% 90%;
-    --input: 180 20% 90%;
-    --ring: 174 62% 40%;
+    --border: 214 22% 89%;
+    --input: 214 22% 89%;
+    --ring: 216 45% 27%;
 
     --radius: 0.75rem;
 
     /* Dental clinic specific tokens */
-    --teal: 174 62% 40%;
-    --teal-light: 174 50% 92%;
-    --teal-dark: 174 70% 28%;
+    --teal: 216 45% 27%;
+    --teal-light: 214 35% 93%;
+    --teal-dark: 217 48% 16%;
     --gold: 45 80% 55%;
     --gold-light: 45 70% 90%;
     
-    --gradient-primary: linear-gradient(135deg, hsl(174, 62%, 40%) 0%, hsl(174, 70%, 28%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(180, 20%, 99%) 0%, hsl(174, 30%, 96%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(214, 40%, 32%) 0%, hsl(217, 48%, 16%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(210, 25%, 99%) 0%, hsl(214, 30%, 95%) 100%);
     --gradient-gold: linear-gradient(135deg, hsl(45, 80%, 55%) 0%, hsl(35, 85%, 50%) 100%);
     
-    --shadow-soft: 0 4px 20px -4px hsl(200 25% 15% / 0.08);
-    --shadow-card: 0 8px 32px -8px hsl(200 25% 15% / 0.1);
-    --shadow-elevated: 0 24px 48px -12px hsl(200 25% 15% / 0.15);
-    --shadow-teal: 0 8px 24px -4px hsl(174 62% 40% / 0.3);
+    --shadow-soft: 0 4px 20px -4px hsl(218 35% 14% / 0.08);
+    --shadow-card: 0 8px 32px -8px hsl(218 35% 14% / 0.1);
+    --shadow-elevated: 0 24px 48px -12px hsl(218 35% 14% / 0.15);
+    --shadow-teal: 0 8px 24px -4px hsl(216 45% 27% / 0.3);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 174 62% 40%;
+    --sidebar-primary: 216 45% 27%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 174 50% 95%;
-    --sidebar-accent-foreground: 174 62% 30%;
-    --sidebar-border: 180 20% 91%;
-    --sidebar-ring: 174 62% 40%;
+    --sidebar-accent: 214 35% 95%;
+    --sidebar-accent-foreground: 216 45% 24%;
+    --sidebar-border: 214 22% 91%;
+    --sidebar-ring: 216 45% 27%;
   }
 
   .dark {
@@ -72,7 +72,7 @@
     --popover: 200 25% 12%;
     --popover-foreground: 180 15% 95%;
 
-    --primary: 174 55% 50%;
+    --primary: 214 55% 62%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 200 20% 18%;
@@ -81,24 +81,24 @@
     --muted: 200 20% 18%;
     --muted-foreground: 180 15% 60%;
 
-    --accent: 174 40% 20%;
-    --accent-foreground: 174 55% 70%;
+    --accent: 216 35% 20%;
+    --accent-foreground: 214 55% 78%;
 
     --destructive: 0 70% 45%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 200 20% 20%;
     --input: 200 20% 20%;
-    --ring: 174 55% 50%;
+    --ring: 214 55% 62%;
 
     --sidebar-background: 200 25% 10%;
     --sidebar-foreground: 180 15% 95%;
-    --sidebar-primary: 174 55% 50%;
+    --sidebar-primary: 214 55% 62%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 200 20% 15%;
     --sidebar-accent-foreground: 180 15% 90%;
     --sidebar-border: 200 20% 18%;
-    --sidebar-ring: 174 55% 50%;
+    --sidebar-ring: 214 55% 62%;
   }
 }
 

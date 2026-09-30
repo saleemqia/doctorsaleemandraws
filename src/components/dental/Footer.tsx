@@ -2,17 +2,19 @@ import { MapPin, ExternalLink, Shield, Facebook, Instagram, Star, Phone } from "
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import clinicLogo from "@/assets/clinic-logo.png";
+import { GOOGLE_MAPS_URL, INSTAGRAM_URL } from "@/config/clinic";
 
 const Footer = () => {
   const { t, dir } = useLanguage();
 
-  const mapDirectionsUrl = "https://share.google/jfAOUXSkIEwwTg9fn";
+  const mapDirectionsUrl = GOOGLE_MAPS_URL;
 
   const navLinks = [
     { key: "home", href: "#home" },
     { key: "services", href: "#services" },
     { key: "about", href: "#about" },
     { key: "gallery", href: "#gallery" },
+    { key: "instagram", href: "#instagram" },
     { key: "testimonials", href: "#testimonials" },
     { key: "contact", href: "#contact" },
   ];
@@ -36,17 +38,20 @@ const Footer = () => {
             <div className={`flex gap-3 ${dir === "rtl" ? "flex-row-reverse justify-end" : ""}`}>
               <a 
                 href="https://www.facebook.com/doctor.saleem.diamond.dental.duhok/" 
+                aria-label="Facebook"
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-primary transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-white/25 transition-colors"
               >
                 <Facebook className="w-4 h-4" />
               </a>
               <a 
-                href="https://www.instagram.com/dr.saleemandraws/?hl=en" 
+                href={INSTAGRAM_URL}
+                aria-label="Instagram"
+                title="Instagram"
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-primary transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-white/25 transition-colors"
               >
                 <Instagram className="w-4 h-4" />
               </a>
@@ -54,7 +59,7 @@ const Footer = () => {
                 href="https://www.tripadvisor.com/LocationPhotoDirectLink-g676534-i473690580-Duhok_Duhok_Province.html" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-primary transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-white/25 transition-colors"
                 title="TripAdvisor"
               >
                 <Star className="w-4 h-4" />
@@ -63,7 +68,7 @@ const Footer = () => {
                 href="https://linktr.ee/saleem.andraws" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-primary transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-white/25 transition-colors"
               >
                 <ExternalLink className="w-4 h-4" />
               </a>
@@ -76,7 +81,7 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-background/70">
               {navLinks.map((link) => (
                 <li key={link.key}>
-                  <a href={link.href} className="hover:text-primary transition-colors">
+                  <a href={link.href} className="hover:text-white transition-colors">
                     {t(`nav.${link.key}`)}
                   </a>
                 </li>
@@ -91,16 +96,16 @@ const Footer = () => {
               href={mapDirectionsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex items-start gap-2 text-sm text-background/70 hover:text-primary transition-colors ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+              className={`flex items-start gap-2 text-sm text-background/70 hover:text-white transition-colors ${dir === "rtl" ? "flex-row-reverse" : ""}`}
             >
-              <MapPin className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+              <MapPin className="w-4 h-4 text-[hsl(214,55%,72%)] mt-0.5 flex-shrink-0" />
               <span>{t("contact.address")}</span>
             </a>
             <div className={`flex items-start gap-2 text-sm text-background/70 mt-3 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
-              <Phone className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+              <Phone className="w-4 h-4 text-[hsl(214,55%,72%)] mt-0.5 flex-shrink-0" />
               <div className={`flex flex-wrap gap-2 ${dir === "rtl" ? "flex-row-reverse justify-end" : ""}`}>
-                <a href="tel:07781665000" className="hover:text-primary transition-colors">07781665000</a>
-                <a href="tel:07507816500" className="hover:text-primary transition-colors">07507816500</a>
+                <a href="tel:07781665000" className="hover:text-white transition-colors">07781665000</a>
+                <a href="tel:07507816500" className="hover:text-white transition-colors">07507816500</a>
               </div>
             </div>
             <p className="text-sm text-background/50 mt-4">{t("footer.openDaily")}</p>
@@ -109,7 +114,7 @@ const Footer = () => {
 
         <div className={`mt-12 pt-8 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-background/60 ${dir === "rtl" ? "md:flex-row-reverse" : ""}`}>
           <p>© {new Date().getFullYear()} Dr. Saleem Andraws Dental Clinic. {t("footer.rights")}</p>
-          <Link to="/admin" className={`flex items-center gap-1.5 hover:text-primary transition-colors ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+          <Link to="/admin" className={`flex items-center gap-1.5 hover:text-white transition-colors ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
             <Shield className="w-3.5 h-3.5" />
             Admin
           </Link>

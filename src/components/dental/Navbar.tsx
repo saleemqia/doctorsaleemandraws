@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, Calendar, Globe, ChevronDown } from "lucide-react";
+import { Menu, X, Phone, Calendar, Globe, ChevronDown, Instagram } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import clinicLogo from "@/assets/clinic-logo.png";
+import { INSTAGRAM_URL } from "@/config/clinic";
 
 const navLinks = [
   { key: "home", href: "#home" },
@@ -98,6 +99,11 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
               </AnimatePresence>
             </div>
 
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
+              <Button variant="ghost" size="sm">
+                <Instagram className="w-4 h-4" />
+              </Button>
+            </a>
             <a href="tel:07781665000">
               <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                 <Phone className="w-4 h-4" />
@@ -169,6 +175,12 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
                   </a>
                 ))}
                 <div className="pt-4 border-t border-border flex flex-col gap-3">
+                  <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="w-full">
+                    <Button variant="outline" className="w-full justify-center gap-2">
+                      <Instagram className="w-4 h-4" />
+                      {t("nav.instagram")}
+                    </Button>
+                  </a>
                   <a href="tel:07781665000" className="w-full">
                     <Button variant="outline" className={`w-full justify-center gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
                       <Phone className="w-4 h-4" />

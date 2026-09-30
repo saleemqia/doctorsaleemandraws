@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { applySeo, languageFromPath, LANGUAGE_PATHS } from "@/config/seo";
 
 type Language = "en" | "ar" | "ku";
 
@@ -11,6 +12,19 @@ interface LanguageContextType {
 
 const translations: Record<Language, Record<string, string>> = {
   en: {
+    "hero.googleRating": "Rating on Google",
+    "testimonials.googleReview": "Google review",
+    "testimonials.readAll": "Read all our reviews on Google",
+    "testimonials.leaveReview": "Leave us a review",
+    "contact.openInMaps": "Open in Google Maps",
+    "contact.instagram": "Follow us on Instagram",
+    "booking.fridayClosed": "The clinic is closed on Fridays. Please choose another day.",
+    "instagram.badge": "Instagram",
+    "instagram.title1": "Our Cases on",
+    "instagram.title2": "Instagram",
+    "instagram.description": "See real before-and-after cases from our clinic, updated live from our Instagram page.",
+    "instagram.follow": "Follow",
+    "nav.instagram": "Instagram",
     // Navbar
     "nav.home": "Home",
     "nav.services": "Services",
@@ -22,7 +36,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.call": "Call",
     
     // Hero
-    "hero.badge": "Professional Dental Care in Duhok",
+    "hero.badge": "Dentist & Dental Clinic in Duhok",
     "hero.title1": "Your Smile Is Our",
     "hero.title2": "Priority",
     "hero.description": "Experience exceptional dental care with Dr. Saleem Andraws. Combining advanced techniques with a gentle approach for your perfect smile.",
@@ -33,7 +47,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.workingHours": "Working Hours",
     "hero.workingHoursValue": "3 PM - 9 PM (Except Fri)",
     "hero.location": "Location",
-    "hero.locationValue": "Duhok - KRO",
+    "hero.locationValue": "Duhok - Qazi Mohammad Rd",
     "hero.experience": "Experience",
     "hero.years": "15+ Years",
     "hero.happyPatients": "500+ Happy Patients",
@@ -46,17 +60,17 @@ const translations: Record<Language, Record<string, string>> = {
     "services.teethWhitening": "Teeth Whitening",
     "services.teethWhiteningDesc": "Professional whitening treatments for a brighter, more confident smile.",
     "services.dentalImplants": "Dental Implants",
-    "services.dentalImplantsDesc": "Permanent tooth replacement solutions that look and feel natural.",
-    "services.cosmeticDentistry": "Cosmetic Dentistry",
-    "services.cosmeticDentistryDesc": "Veneers, bonding, and smile makeovers for aesthetic perfection.",
+    "services.dentalImplantsDesc": "Permanent implants that replace missing teeth and look and feel natural.",
+    "services.cosmeticDentistry": "Veneers & Hollywood Smile",
+    "services.cosmeticDentistryDesc": "Veneers, zircon and E-max crowns, and complete smile makeovers.",
     "services.rootCanal": "Root Canal Treatment",
     "services.rootCanalDesc": "Pain-free root canal therapy to save and restore damaged teeth.",
     "services.orthodontics": "Orthodontics",
-    "services.orthodonticsDesc": "Braces and aligners for perfectly aligned teeth and improved bite.",
+    "services.orthodonticsDesc": "Braces and clear aligners to straighten teeth and correct the bite.",
     "services.oralRadiology": "Oral Radiology",
     "services.oralRadiologyDesc": "Advanced digital X-rays and imaging for accurate diagnosis.",
-    "services.dentalCleaning": "Dental Cleaning",
-    "services.dentalCleaningDesc": "Professional cleaning and scaling for optimal oral hygiene.",
+    "services.dentalCleaning": "Fillings & Dental Cleaning",
+    "services.dentalCleaningDesc": "Tooth-coloured fillings, scaling and polishing for healthy teeth.",
     "services.pediatricDentistry": "Pediatric Dentistry",
     "services.pediatricDentistryDesc": "Gentle and caring dental treatments for children of all ages.",
     "services.startingFrom": "Starting from",
@@ -76,15 +90,7 @@ const translations: Record<Language, Record<string, string>> = {
     "testimonials.badge": "Testimonials",
     "testimonials.title1": "What Our Patients",
     "testimonials.title2": "Say",
-    "testimonials.description": "Don't just take our word for it. Here's what our patients have to say about their experience at our clinic.",
-    "testimonials.businessOwner": "Business Owner",
-    "testimonials.teacher": "Teacher",
-    "testimonials.engineer": "Engineer",
-    "testimonials.student": "Student",
-    "testimonials.review1": "Dr. Saleem transformed my smile completely. His expertise in cosmetic dentistry is remarkable. Highly recommend!",
-    "testimonials.review2": "The best dental experience I've ever had. The clinic is modern, clean, and Dr. Saleem is incredibly gentle and professional.",
-    "testimonials.review3": "I was terrified of dentists until I visited Dr. Saleem. He made me feel comfortable and explained everything clearly.",
-    "testimonials.review4": "Got my braces from Dr. Saleem's clinic. The results are amazing and the staff is always friendly and helpful.",
+    "testimonials.description": "Real reviews from our patients on Google.",
     
     // Contact
     "contact.badge": "Contact Us",
@@ -95,7 +101,7 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.emailUs": "Email Us",
     "contact.phone": "Phone",
     "contact.visitUs": "Visit Us",
-    "contact.address": "Duhok - KRO - Above Sherko Nuts - Opposite Hanasa Pharmacy",
+    "contact.address": "Qazi Mohammad Road, Duhok - Above Sherko Nuts, Opposite Hanasa Pharmacy",
     "contact.workingHours": "Working Hours",
     "contact.workingHoursValue": "Daily 3:00 PM - 9:00 PM (Except Friday)",
     "contact.whatsapp": "WhatsApp Us",
@@ -137,7 +143,6 @@ const translations: Record<Language, Record<string, string>> = {
     "chat.welcome": "Hello! 👋 Welcome to Dr. Saleem Andraws Dental Clinic. How can I help you today?",
     "chat.placeholder": "Type your message...",
     "chat.quickServices": "What services do you offer?",
-    "chat.quickPrices": "What are your prices?",
     "chat.quickHours": "Working hours?",
     "chat.quickBooking": "How to book an appointment?",
     
@@ -242,6 +247,19 @@ const translations: Record<Language, Record<string, string>> = {
     "welcome.skip": "Skip",
   },
   ar: {
+    "hero.googleRating": "التقييم على Google",
+    "testimonials.googleReview": "تقييم على Google",
+    "testimonials.readAll": "اقرأ جميع تقييماتنا على Google",
+    "testimonials.leaveReview": "اترك لنا تقييماً",
+    "contact.openInMaps": "افتح في خرائط Google",
+    "contact.instagram": "تابعنا على إنستغرام",
+    "booking.fridayClosed": "العيادة مغلقة أيام الجمعة. يرجى اختيار يوم آخر.",
+    "instagram.badge": "إنستغرام",
+    "instagram.title1": "حالاتنا على",
+    "instagram.title2": "إنستغرام",
+    "instagram.description": "شاهد حالات حقيقية قبل وبعد العلاج من عيادتنا، محدثة مباشرة من صفحتنا على إنستغرام.",
+    "instagram.follow": "تابع",
+    "nav.instagram": "إنستغرام",
     // Navbar
     "nav.home": "الرئيسية",
     "nav.services": "الخدمات",
@@ -253,7 +271,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.call": "اتصل",
     
     // Hero
-    "hero.badge": "رعاية أسنان احترافية في دهوك",
+    "hero.badge": "طبيب أسنان وعيادة أسنان في دهوك",
     "hero.title1": "ابتسامتك هي",
     "hero.title2": "أولويتنا",
     "hero.description": "استمتع برعاية أسنان استثنائية مع الدكتور سليم أندراوس. نجمع بين التقنيات المتقدمة والنهج اللطيف لابتسامتك المثالية.",
@@ -264,7 +282,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.workingHours": "ساعات العمل",
     "hero.workingHoursValue": "٣ - ٩ مساءً (عدا الجمعة)",
     "hero.location": "الموقع",
-    "hero.locationValue": "دهوك - KRO",
+    "hero.locationValue": "دهوك - شارع قاضي محمد",
     "hero.experience": "الخبرة",
     "hero.years": "+١٥ سنة",
     "hero.happyPatients": "+٥٠٠ مريض سعيد",
@@ -277,17 +295,17 @@ const translations: Record<Language, Record<string, string>> = {
     "services.teethWhitening": "تبييض الأسنان",
     "services.teethWhiteningDesc": "علاجات تبييض احترافية لابتسامة أكثر إشراقاً وثقة.",
     "services.dentalImplants": "زراعة الأسنان",
-    "services.dentalImplantsDesc": "حلول استبدال الأسنان الدائمة بمظهر وإحساس طبيعي.",
-    "services.cosmeticDentistry": "طب الأسنان التجميلي",
-    "services.cosmeticDentistryDesc": "قشور الأسنان والترابط وتجميل الابتسامة للكمال الجمالي.",
-    "services.rootCanal": "علاج قناة الجذر",
-    "services.rootCanalDesc": "علاج قناة الجذر بدون ألم لإنقاذ الأسنان التالفة.",
+    "services.dentalImplantsDesc": "زراعة أسنان دائمة لتعويض الأسنان المفقودة بمظهر وإحساس طبيعي.",
+    "services.cosmeticDentistry": "فينير وابتسامة هوليود",
+    "services.cosmeticDentistryDesc": "فينير (قشور الأسنان)، تيجان (كراس) زركون وإيماكس، وتصميم الابتسامة.",
+    "services.rootCanal": "علاج العصب (حشو العصب)",
+    "services.rootCanalDesc": "علاج وحشو عصب السن بدون ألم لإنقاذ الأسنان المتضررة.",
     "services.orthodontics": "تقويم الأسنان",
-    "services.orthodonticsDesc": "تقويم الأسنان والمصففات لأسنان مستقيمة تماماً.",
+    "services.orthodonticsDesc": "تقويم الأسنان الثابت والشفاف لأسنان مستقيمة وإطباق صحيح.",
     "services.oralRadiology": "أشعة الفم",
     "services.oralRadiologyDesc": "أشعة سينية رقمية متقدمة للتشخيص الدقيق.",
-    "services.dentalCleaning": "تنظيف الأسنان",
-    "services.dentalCleaningDesc": "تنظيف احترافي لصحة فم مثالية.",
+    "services.dentalCleaning": "حشو الأسنان وتنظيفها",
+    "services.dentalCleaningDesc": "حشوات تجميلية بلون الأسنان، وتنظيف وتلميع احترافي.",
     "services.pediatricDentistry": "طب أسنان الأطفال",
     "services.pediatricDentistryDesc": "علاجات لطيفة للأطفال من جميع الأعمار.",
     "services.startingFrom": "يبدأ من",
@@ -307,15 +325,7 @@ const translations: Record<Language, Record<string, string>> = {
     "testimonials.badge": "آراء المرضى",
     "testimonials.title1": "ماذا يقول",
     "testimonials.title2": "مرضانا",
-    "testimonials.description": "لا تأخذ كلمتنا فقط. إليك ما يقوله مرضانا عن تجربتهم في عيادتنا.",
-    "testimonials.businessOwner": "رجل أعمال",
-    "testimonials.teacher": "معلم",
-    "testimonials.engineer": "مهندس",
-    "testimonials.student": "طالب",
-    "testimonials.review1": "الدكتور سليم غيّر ابتسامتي بالكامل. خبرته في طب الأسنان التجميلي رائعة. أوصي به بشدة!",
-    "testimonials.review2": "أفضل تجربة أسنان مررت بها. العيادة حديثة ونظيفة والدكتور سليم لطيف ومحترف للغاية.",
-    "testimonials.review3": "كنت أخاف من أطباء الأسنان حتى زرت الدكتور سليم. جعلني أشعر بالراحة وشرح كل شيء بوضوح.",
-    "testimonials.review4": "حصلت على تقويم أسناني من عيادة الدكتور سليم. النتائج مذهلة والموظفون ودودون ومفيدون دائماً.",
+    "testimonials.description": "تقييمات حقيقية من مرضانا على Google.",
     
     // Contact
     "contact.badge": "اتصل بنا",
@@ -326,7 +336,7 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.emailUs": "راسلنا",
     "contact.phone": "الهاتف",
     "contact.visitUs": "زورنا",
-    "contact.address": "دهوك - كي ار او - فوق جرزات شيركو - مقابل صيدلية هناسة",
+    "contact.address": "دهوك - شارع قاضي محمد - فوق جرزات شيركو - مقابل صيدلية هناسة",
     "contact.workingHours": "ساعات العمل",
     "contact.workingHoursValue": "يومياً ٣:٠٠ - ٩:٠٠ مساءً (عدا الجمعة)",
     "contact.whatsapp": "واتساب",
@@ -368,7 +378,6 @@ const translations: Record<Language, Record<string, string>> = {
     "chat.welcome": "مرحباً! 👋 أهلاً بك في عيادة الدكتور سليم أندراوس لطب الأسنان. كيف يمكنني مساعدتك اليوم؟",
     "chat.placeholder": "اكتب رسالتك...",
     "chat.quickServices": "ما هي الخدمات المتوفرة؟",
-    "chat.quickPrices": "ما هي الأسعار؟",
     "chat.quickHours": "ساعات العمل؟",
     "chat.quickBooking": "كيف أحجز موعد؟",
     
@@ -474,6 +483,19 @@ const translations: Record<Language, Record<string, string>> = {
     "welcome.skip": "تخطي",
   },
   ku: {
+    "hero.googleRating": "هەڵسەنگاندن لە Google",
+    "testimonials.googleReview": "بۆچوون لە Google",
+    "testimonials.readAll": "هەموو بۆچوونەکانمان لە Google بخوێنەوە",
+    "testimonials.leaveReview": "بۆچوونێکمان بۆ بنووسە",
+    "contact.openInMaps": "لە نەخشەی Google بیکەرەوە",
+    "contact.instagram": "لە ئینستاگرام فۆڵۆومان بکە",
+    "booking.fridayClosed": "کلینیک ڕۆژی هەینی داخراوە. تکایە ڕۆژێکی تر هەڵبژێرە.",
+    "instagram.badge": "ئینستاگرام",
+    "instagram.title1": "کەیسەکانمان لە",
+    "instagram.title2": "ئینستاگرام",
+    "instagram.description": "کەیسی ڕاستەقینەی پێش و دوای چارەسەر لە کلینیکەکەمان ببینە، ڕاستەوخۆ لە پەڕەی ئینستاگرامەکەمانەوە.",
+    "instagram.follow": "فۆڵۆومان بکە",
+    "nav.instagram": "ئینستاگرام",
     // Navbar
     "nav.home": "سەرەتا",
     "nav.services": "خزمەتگوزارییەکان",
@@ -485,7 +507,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.call": "پەیوەندی",
     
     // Hero
-    "hero.badge": "چاودێری ددان بە شێوەیەکی پیشەگەری لە دهۆک",
+    "hero.badge": "دکتۆرێ ددانا و کلینیکا ددانا ل دهۆک",
     "hero.title1": "بزەیی تۆ",
     "hero.title2": "گرنگە بۆمان",
     "hero.description": "چاودێری ددانی نایاب لەگەڵ دکتۆر سەلیم ئەندراوس. تەکنیکی پێشکەوتوو لەگەڵ ڕێبازێکی نەرم بۆ بزەیی تەواوت.",
@@ -496,7 +518,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.workingHours": "کاتی کارکردن",
     "hero.workingHoursValue": "٣ - ٩ ئێوارە (جگە لە هەینی)",
     "hero.location": "شوێن",
-    "hero.locationValue": "دهۆک - KRO",
+    "hero.locationValue": "دهۆک - شەقامی قازی محەمەد",
     "hero.experience": "ئەزموون",
     "hero.years": "+١٥ ساڵ",
     "hero.happyPatients": "+٥٠٠ نەخۆشی دڵخۆش",
@@ -510,16 +532,16 @@ const translations: Record<Language, Record<string, string>> = {
     "services.teethWhiteningDesc": "چارەسەری سپیکردنەوەی پیشەگەری بۆ بزەیەکی درەوشاوەتر.",
     "services.dentalImplants": "چاندنی ددان",
     "services.dentalImplantsDesc": "چارەسەری دانانەوەی ددانی هەمیشەیی بە شێوەیەکی سروشتی.",
-    "services.cosmeticDentistry": "ددانی جوانکاری",
-    "services.cosmeticDentistryDesc": "ڤینیر و بۆندینگ و جوانکاری بزەی بۆ تەواوی جوانکاری.",
-    "services.rootCanal": "چارەسەری کەناڵی ڕەگ",
-    "services.rootCanalDesc": "چارەسەری کەناڵی ڕەگ بێ ئازار بۆ ڕزگارکردنی ددانی زیانمەند.",
-    "services.orthodontics": "ڕاستکردنەوەی ددان",
+    "services.cosmeticDentistry": "ڤینیر و بزەی هۆلیوود",
+    "services.cosmeticDentistryDesc": "ڤینیر، کراسی زیرکۆن و ئیماکس، و دیزاینی تەواوی بزە.",
+    "services.rootCanal": "چارەسەری دەمار (حەشوی دەمار)",
+    "services.rootCanalDesc": "چارەسەری و حەشوی دەماری ددان بێ ئازار بۆ ڕزگارکردنی ددان.",
+    "services.orthodontics": "ڕێکخستنی ددان (تقویم)",
     "services.orthodonticsDesc": "برەیسیس و ئەلایننەر بۆ ڕیزکردنی تەواوی ددان.",
     "services.oralRadiology": "تیشکی دەم",
     "services.oralRadiologyDesc": "تیشکی ئێکسی دیجیتاڵی پێشکەوتوو بۆ دەستنیشانکردنی وردی نەخۆشی.",
-    "services.dentalCleaning": "پاککردنەوەی ددان",
-    "services.dentalCleaningDesc": "پاککردنەوەی پیشەگەری بۆ تەندروستی باشی دەم.",
+    "services.dentalCleaning": "حەشو و پاککردنەوەی ددان",
+    "services.dentalCleaningDesc": "حەشوی ڕەنگی ددان، پاککردنەوە و بریقاندن بۆ ددانی تەندروست.",
     "services.pediatricDentistry": "ددانی منداڵان",
     "services.pediatricDentistryDesc": "چارەسەری نەرم بۆ منداڵانی هەموو تەمەنێک.",
     "services.startingFrom": "دەست پێدەکات لە",
@@ -539,15 +561,7 @@ const translations: Record<Language, Record<string, string>> = {
     "testimonials.badge": "بۆچوونەکان",
     "testimonials.title1": "نەخۆشەکانمان چی",
     "testimonials.title2": "دەڵێن",
-    "testimonials.description": "تەنها قسەی ئێمە وەرمەگرە. ئەمە ئەوەیە کە نەخۆشەکانمان دەیڵێن دەربارەی ئەزموونیان لە کلینیکەکەمان.",
-    "testimonials.businessOwner": "خاوەن کار",
-    "testimonials.teacher": "مامۆستا",
-    "testimonials.engineer": "ئەندازیار",
-    "testimonials.student": "خوێندکار",
-    "testimonials.review1": "دکتۆر سەلیم بزەیم بە تەواوی گۆڕی. شارەزاییەکەی لە ددانی جوانکاریدا نایابە. زۆر پێشنیاری دەکەم!",
-    "testimonials.review2": "باشترین ئەزموونی ددان بوو کە هەبووم. کلینیکەکە مۆدێرن و پاکە و دکتۆر سەلیم زۆر نەرم و پیشەگەرە.",
-    "testimonials.review3": "لە پزیشکی ددان دەترسام تا سەردانی دکتۆر سەلیمم کرد. هەستم بە ئارامی کرد و هەموو شتێکی بە ئاشکرا ڕوونکردەوە.",
-    "testimonials.review4": "برەیسیسم لە کلینیکی دکتۆر سەلیم وەرگرت. ئەنجامەکان نایابن و ستافەکە هەمیشە خۆشەویست و یارمەتیدەرن.",
+    "testimonials.description": "بۆچوونی ڕاستەقینەی نەخۆشەکانمان لە Google.",
     
     // Contact
     "contact.badge": "پەیوەندیمان پێوە بکە",
@@ -558,7 +572,7 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.emailUs": "ئیمەیڵمان بۆ بنێرە",
     "contact.phone": "تەلەفۆن",
     "contact.visitUs": "سەردانمان بکە",
-    "contact.address": "دهۆک - کەی ئار ئۆ - سەرووی جرزاتی شیرکۆ - بەرامبەر دەرمانخانەی هانەسە",
+    "contact.address": "دهۆک - شەقامی قازی محەمەد - سەرووی جرزاتی شیرکۆ - بەرامبەر دەرمانخانەی هانەسە",
     "contact.workingHours": "کاتی کارکردن",
     "contact.workingHoursValue": "ڕۆژانە ٣:٠٠ - ٩:٠٠ ئێوارە (جگە لە هەینی)",
     "contact.whatsapp": "واتساپ",
@@ -599,7 +613,6 @@ const translations: Record<Language, Record<string, string>> = {
     "chat.welcome": "سڵاو! 👋 بەخێربێیت بۆ کلینیکی دکتۆر سەلیم ئەندراوس بۆ ددان. چۆن دەتوانم یارمەتیت بدەم ئەمڕۆ؟",
     "chat.placeholder": "پەیامەکەت بنووسە...",
     "chat.quickServices": "چ خزمەتگوزارییەکان هەن؟",
-    "chat.quickPrices": "نرخەکان چەندن؟",
     "chat.quickHours": "کاتی کارکردن؟",
     "chat.quickBooking": "چۆن نۆرەی پزیشک دابنێم؟",
     
@@ -677,13 +690,25 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState<Language>(() => {
-    const saved = localStorage.getItem("language");
-    return (saved as Language) || "en";
+    // The address decides the language (/ar, /ku), so search engines can index each one.
+    const fromPath = languageFromPath(window.location.pathname);
+    if (fromPath && fromPath !== "en") return fromPath;
+    try {
+      const saved = localStorage.getItem("language") as Language | null;
+      if (fromPath === "en" && saved && saved !== "en") return saved;
+    } catch {
+      // storage unavailable
+    }
+    return "en";
   });
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem("language", lang);
+    try {
+      localStorage.setItem("language", lang);
+    } catch {
+      // storage unavailable
+    }
   };
 
   const t = (key: string): string => {
@@ -695,6 +720,14 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     document.documentElement.dir = dir;
     document.documentElement.lang = language;
+    // On the home page, keep the address and search info matched to the shown language.
+    if (languageFromPath(window.location.pathname)) {
+      const target = LANGUAGE_PATHS[language];
+      if (window.location.pathname !== target) {
+        window.history.replaceState(window.history.state, "", target + window.location.search + window.location.hash);
+      }
+      applySeo(language);
+    }
   }, [language, dir]);
 
   return (

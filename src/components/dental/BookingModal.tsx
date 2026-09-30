@@ -5,6 +5,7 @@ import { X, Calendar, Clock, User, Phone, FileText } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { WHATSAPP_NUMBER } from "@/config/clinic";
 
 const timeSlots = [
   "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM",
@@ -43,25 +44,18 @@ const BookingModal = ({ isOpen, onClose }: BookingModalProps) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const resetForm = () => {
+    onClose();
+    setStep(1);
+    setFormData({ name: "", phone: "", service: "", date: "", time: "", notes: "" });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
-    try {
-      // Save to database
-      const { error } = await supabase.from("appointments").insert({
-        name: formData.name.trim(),
-        phone: formData.phone.trim(),
-        service: formData.service,
-        preferred_date: formData.date,
-        preferred_time: formData.time,
-        notes: formData.notes?.trim() || null,
-      });
-
-      if (error) throw error;
-
-      // Create WhatsApp message
-      const message = `Hello Dr. Saleem! I'd like to book an appointment.
+    const message = `Hello Dr. Saleem! I'd like to book an appointment.
 
 Name: ${formData.name}
 Phone: ${formData.phone}
@@ -71,22 +65,51 @@ Time: ${formData.time}
 ${formData.notes ? `Notes: ${formData.notes}` : ""}
 
 Thank you!`;
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
-      const whatsappUrl = `https://wa.me/9647507816500?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, "_blank");
-      toast.success(t("booking.success") || "Appointment booked successfully!");
-    } catch (error) {
-      console.error("Booking error:", error);
-      toast.error(t("booking.error") || "Failed to book appointment. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-      onClose();
-      setStep(1);
-      setFormData({ name: "", phone: "", service: "", date: "", time: "", notes: "" });
+    // Open WhatsApp immediately, inside the click, so phones (especially iPhone Safari)
+    // don't block it as a popup. If a new tab can't open, go to WhatsApp in this tab.
+    const opened = window.open(whatsappUrl, "_blank");
+    if (opened) opened.opener = null;
+
+    // Save the request for the clinic's admin page. WhatsApp already carries the
+    // booking, so a failed save never loses the patient's request.
+    supabase
+      .from("appointments")
+      .insert({
+        name: formData.name.trim(),
+        phone: formData.phone.trim(),
+        service: formData.service,
+        preferred_date: formData.date,
+        preferred_time: formData.time,
+        notes: formData.notes?.trim() || null,
+      })
+      .then(({ error }) => {
+        if (error) console.error("Booking save error:", error);
+      });
+
+    toast.success(t("booking.success") || "Appointment request sent!");
+    setIsSubmitting(false);
+
+    if (!opened) {
+      window.location.href = whatsappUrl;
+      return;
     }
+    resetForm();
+  };
+
+  const isFriday = (value: string) => {
+    if (!value) return false;
+    const [y, m, d] = value.split("-").map(Number);
+    return new Date(y, m - 1, d).getDay() === 5;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    if (e.target.name === "date" && isFriday(e.target.value)) {
+      toast.error(t("booking.fridayClosed"));
+      setFormData({ ...formData, date: "" });
+      return;
+    }
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 

@@ -4,6 +4,7 @@ import Hero from "@/components/dental/Hero";
 import Services from "@/components/dental/Services";
 import About from "@/components/dental/About";
 import Gallery from "@/components/dental/Gallery";
+import InstagramFeed from "@/components/dental/InstagramFeed";
 import Appointments from "@/components/dental/Appointments";
 import Testimonials from "@/components/dental/Testimonials";
 import FAQ from "@/components/dental/FAQ";
@@ -20,6 +21,7 @@ const Index = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(() => {
     try {
+      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return false;
       return sessionStorage.getItem(WELCOME_KEY) !== "true";
     } catch {
       return true;
@@ -45,6 +47,7 @@ const Index = () => {
         <About />
         <Appointments />
         <Gallery />
+        <InstagramFeed />
         <Testimonials />
         <FAQ />
         <Contact onBookingClick={() => setIsBookingOpen(true)} />

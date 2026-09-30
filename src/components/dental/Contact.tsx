@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, ExternalLink, Navigation, Phone } from "lucide-react";
+import { MapPin, Clock, ExternalLink, Navigation, Phone, Instagram } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { GOOGLE_DIRECTIONS_URL, GOOGLE_MAPS_URL, GOOGLE_MAP_EMBED_URL, INSTAGRAM_URL } from "@/config/clinic";
 
 interface ContactProps {
   onBookingClick: () => void;
@@ -10,10 +11,9 @@ interface ContactProps {
 const Contact = ({ onBookingClick }: ContactProps) => {
   const { t, dir } = useLanguage();
 
-  // Google Maps links - Dr. Saleem's actual clinic location
-  const mapDirectionsUrl = "https://share.google/jfAOUXSkIEwwTg9fn";
-  // Embed using search query for accurate business location
-  const mapEmbedUrl = "https://maps.google.com/maps?q=Doctor+Saleem+Andraws+Dental+Clinic+Duhok&t=&z=17&ie=UTF8&iwloc=&output=embed";
+  // Exact clinic location (from the clinic's Google Maps listing)
+  const mapDirectionsUrl = GOOGLE_DIRECTIONS_URL;
+  const mapEmbedUrl = GOOGLE_MAP_EMBED_URL;
 
   return (
     <section id="contact" className="py-16 md:py-24 lg:py-28 bg-background relative overflow-hidden">
@@ -82,9 +82,27 @@ const Contact = ({ onBookingClick }: ContactProps) => {
             </div>
 
             {/* Action Buttons */}
-            <div className={`flex flex-col sm:flex-row gap-3 md:gap-4 ${dir === "rtl" ? "sm:flex-row-reverse" : ""}`}>
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
+              <a href={GOOGLE_DIRECTIONS_URL} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <Button variant="teal" size="lg" className="w-full gap-2">
+                  <Navigation className="w-5 h-5" />
+                  {t("contact.getDirections")}
+                </Button>
+              </a>
+              <a href={GOOGLE_MAPS_URL} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <Button variant="outline" size="lg" className="w-full gap-2">
+                  <MapPin className="w-5 h-5" />
+                  {t("contact.openInMaps")}
+                </Button>
+              </a>
+              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                <Button variant="outline" size="lg" className="w-full gap-2">
+                  <Instagram className="w-5 h-5" />
+                  {t("contact.instagram")}
+                </Button>
+              </a>
               <a href="https://linktr.ee/saleem.andraws" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                <Button variant="teal" size="lg" className={`w-full gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                <Button variant="ghost" size="lg" className="w-full gap-2">
                   <ExternalLink className="w-5 h-5" />
                   {t("contact.socialMedia")}
                 </Button>
