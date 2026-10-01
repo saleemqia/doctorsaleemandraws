@@ -133,6 +133,13 @@ const translations: Record<Language, Record<string, string>> = {
     "about.univBaghdad": "University of Baghdad",
     "about.happyPatients": "Happy Patients",
     "about.yearsExperience": "Years Experience",
+    "about.credTitle": "Qualifications",
+    "about.cred.bds": "Bachelor of Dental Surgery (B.D.S.), University of Baghdad",
+    "about.cred.msc": "Master's degree (M.Sc.) in Oral Radiology",
+    "about.cred.years": "More than 15 years treating patients",
+    "about.cred.syndicate": "Member of the Kurdistan Dentists Syndicate, Duhok Branch",
+    "about.cred.languages": "Speaks Kurdish (Badini), Arabic and English",
+    "about.photoCaption": "Dr. Saleem Andraws, dentist in Duhok",
     
     // Testimonials
     "testimonials.badge": "Testimonials",
@@ -414,6 +421,13 @@ const translations: Record<Language, Record<string, string>> = {
     "about.univBaghdad": "جامعة بغداد",
     "about.happyPatients": "مريض سعيد",
     "about.yearsExperience": "سنوات خبرة",
+    "about.credTitle": "المؤهلات",
+    "about.cred.bds": "بكالوريوس طب وجراحة الفم والأسنان (⁦B.D.S.⁩)، جامعة بغداد",
+    "about.cred.msc": "ماجستير (⁦M.Sc.⁩) في أشعة الفم والأسنان",
+    "about.cred.years": "أكثر من ١٥ عاماً في علاج المرضى",
+    "about.cred.syndicate": "عضو نقابة أطباء أسنان كوردستان، فرع دهوك",
+    "about.cred.languages": "يتحدث الكردية (البادينية) والعربية والإنجليزية",
+    "about.photoCaption": "الدكتور سليم أندراوس، طبيب أسنان في دهوك",
     
     // Testimonials
     "testimonials.badge": "آراء المرضى",
@@ -696,6 +710,13 @@ const translations: Record<Language, Record<string, string>> = {
     "about.univBaghdad": "زانکۆی بەغدا",
     "about.happyPatients": "نەخۆشی دڵخۆش",
     "about.yearsExperience": "ساڵ ئەزموون",
+    "about.credTitle": "بڕوانامە",
+    "about.cred.bds": "بەکالۆریۆس ل نوژداریا ددانا (⁦B.D.S.⁩)، زانکۆیا بەغدا",
+    "about.cred.msc": "ماستەر (⁦M.Sc.⁩) ل تیشکا دەم و ددانا",
+    "about.cred.years": "زێدەتر ژ ١٥ ساڵان چارەسەریا نەخۆشان",
+    "about.cred.syndicate": "ئەندامێ سەندیکایا نوژدارێن ددانا یا کوردستانێ، لقێ دهوکێ",
+    "about.cred.languages": "ب کوردی (بادینی)، عەرەبی و ئینگلیزی دئاخڤیت",
+    "about.photoCaption": "دکتۆر سەلیم ئەندراوس، نوژدارێ ددانا ل دهوکێ",
     
     // Testimonials
     "testimonials.badge": "بۆچوونەکان",

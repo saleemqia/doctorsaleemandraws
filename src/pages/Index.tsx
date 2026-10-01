@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { track, startClickTracking } from "@/lib/track";
 import Navbar from "@/components/dental/Navbar";
 import Hero from "@/components/dental/Hero";
 import Services from "@/components/dental/Services";
@@ -19,6 +20,15 @@ const WELCOME_KEY = "diamond-welcome-shown";
 
 const Index = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const openBooking = (place: string) => () => {
+    track("book_open", place);
+    setIsBookingOpen(true);
+  };
+
+  useEffect(() => {
+    track("page_view");
+    startClickTracking();
+  }, []);
   const [showWelcome, setShowWelcome] = useState(() => {
     try {
       if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return false;
@@ -40,22 +50,22 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background scroll-smooth pb-[calc(56px+env(safe-area-inset-bottom,0px))] md:pb-0">
       {showWelcome && <WelcomeScreen onComplete={handleWelcomeComplete} />}
-      <Navbar onBookingClick={() => setIsBookingOpen(true)} />
+      <Navbar onBookingClick={openBooking("navbar")} />
       <main>
-        <Hero onBookingClick={() => setIsBookingOpen(true)} />
+        <Hero onBookingClick={openBooking("home")} />
         <Services />
         <About />
         <Gallery />
         <InstagramFeed />
         <Testimonials />
         <FAQ />
-        <Contact onBookingClick={() => setIsBookingOpen(true)} />
+        <Contact onBookingClick={openBooking("contact")} />
       </main>
       <Footer />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
-      <ChatBot onBookingClick={() => setIsBookingOpen(true)} />
+      <ChatBot onBookingClick={openBooking("chat")} />
       <ScrollToTop />
-      <MobileActionBar onBookingClick={() => setIsBookingOpen(true)} />
+      <MobileActionBar onBookingClick={openBooking("mobile_bar")} />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { MessageCircle, X, Send, Bot, Calendar, Phone, MapPin } from "lucide-rea
 import { useLanguage } from "@/contexts/LanguageContext";
 import { GOOGLE_DIRECTIONS_URL, WHATSAPP_NUMBER } from "@/config/clinic";
 import { findTopic, type AssistantAction } from "@/lib/assistant";
+import { track } from "@/lib/track";
 
 interface Message {
   id: number;
@@ -67,6 +68,7 @@ const ChatBot = ({ onBookingClick }: ChatBotProps) => {
 
   const answer = (question: string): Message => {
     const topic = findTopic(question);
+    track("chat_question", topic?.id ?? "not_understood");
     if (!topic) {
       return { id: Date.now() + 1, text: t("chat.fallback"), isBot: true, actions: ["whatsapp", "call"], suggestions: QUICK_KEYS.slice(0, 4) };
     }
@@ -134,7 +136,7 @@ const ChatBot = ({ onBookingClick }: ChatBotProps) => {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 1, type: "spring" }}
-        onClick={() => setIsOpen(true)}
+        onClick={() => { setIsOpen(true); track("chat_open"); }}
         aria-label={t("chat.title")}
         className={`fixed bottom-[84px] md:bottom-6 ${dir === "rtl" ? "left-4 md:left-6" : "right-4 md:right-6"} z-30 w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-primary text-white shadow-teal hover:shadow-elevated transition-shadow flex items-center justify-center ${isOpen ? "hidden" : ""}`}
       >
@@ -150,6 +152,7 @@ const ChatBot = ({ onBookingClick }: ChatBotProps) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             role="dialog"
+            data-track="chat"
             aria-label={t("chat.title")}
             className={`fixed bottom-[84px] md:bottom-6 ${dir === "rtl" ? "left-4 md:left-6" : "right-4 md:right-6"} z-50 w-[370px] max-w-[calc(100vw-32px)] h-[540px] max-h-[calc(100dvh-170px)] md:max-h-[calc(100vh-120px)] bg-card rounded-2xl shadow-elevated border border-border overflow-hidden flex flex-col`}
           >

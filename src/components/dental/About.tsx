@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Award, GraduationCap, Users, Heart } from "lucide-react";
+import { Award, GraduationCap, Users, Heart, CheckCircle2, Star } from "lucide-react";
+import { GOOGLE_MAPS_URL } from "@/config/clinic";
 import { useLanguage } from "@/contexts/LanguageContext";
 import drSaleem from "@/assets/dr-saleem.jpg";
 
@@ -12,6 +13,8 @@ const About = () => {
     { icon: Users, value: "500+", labelKey: "about.happyPatients" },
     { icon: Heart, value: "15+", labelKey: "about.yearsExperience" },
   ];
+
+  const credentials = ["about.cred.bds", "about.cred.msc", "about.cred.years", "about.cred.syndicate", "about.cred.languages"];
 
   return (
     <section id="about" className="py-20 md:py-28 bg-background relative overflow-hidden">
@@ -28,9 +31,16 @@ const About = () => {
             <div className="relative rounded-3xl overflow-hidden shadow-elevated">
               <img
                 src={drSaleem}
-                alt="Dr. Saleem Andraws"
+                alt={t("about.photoCaption")}
+                loading="lazy"
                 className="w-full h-auto object-cover"
               />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 pt-10">
+                <p className="text-white font-semibold">{t("about.photoCaption")}</p>
+                <a href={GOOGLE_MAPS_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-white/90 hover:underline">
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" /> 5.0 · Google
+                </a>
+              </div>
             </div>
             
             {/* Decorative elements */}
@@ -60,9 +70,20 @@ const About = () => {
               {t("about.description1")}
             </p>
 
-            <p className="text-muted-foreground leading-relaxed mb-8">
+            <p className="text-muted-foreground leading-relaxed mb-6">
               {t("about.description2")}
             </p>
+
+            {/* Qualifications: what Google and patients look for on a doctor's page */}
+            <h3 className="font-display font-semibold text-lg text-foreground mb-3">{t("about.credTitle")}</h3>
+            <ul className="space-y-2.5 mb-8">
+              {credentials.map((key) => (
+                <li key={key} className="flex items-start gap-2.5 text-foreground">
+                  <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span>{t(key)}</span>
+                </li>
+              ))}
+            </ul>
 
             {/* Achievements */}
             <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${dir === "rtl" ? "direction-rtl" : ""}`}>

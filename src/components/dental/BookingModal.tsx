@@ -1,3 +1,4 @@
+import { track } from "@/lib/track";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,7 @@ const BookingModal = ({ isOpen, onClose }: BookingModalProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
+    track("book_submit");
     setIsSubmitting(true);
 
     const message = `Hello Dr. Saleem! I'd like to book an appointment.

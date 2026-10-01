@@ -1,9 +1,14 @@
+// Cloudflare Pages settings for the "doctorsaleem-site" project (builds from GitHub main).
+// DB = anonymous click statistics, written by functions/api/track.ts.
 {
-  "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "doctorsaleemandraws",
+  "name": "doctorsaleem-site",
+  "pages_build_output_dir": "./dist",
   "compatibility_date": "2026-06-13",
-  "assets": {
-    "directory": "./dist",
-    "not_found_handling": "single-page-application"
-  }
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "doctorsaleem-analytics",
+      "database_id": "a3cdd29c-e2b1-411e-8918-a48f537296f1"
+    }
+  ]
 }
