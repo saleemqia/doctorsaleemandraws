@@ -12,6 +12,7 @@ const navLinks = [
   { key: "about", href: "#about" },
   { key: "gallery", href: "#gallery" },
   { key: "testimonials", href: "#testimonials" },
+  { key: "kids", href: "#kids" },
   { key: "contact", href: "#contact" },
 ];
 

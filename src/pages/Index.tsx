@@ -8,6 +8,7 @@ import Gallery from "@/components/dental/Gallery";
 import InstagramFeed from "@/components/dental/InstagramFeed";
 import Testimonials from "@/components/dental/Testimonials";
 import FAQ from "@/components/dental/FAQ";
+import KidsTeeth from "@/components/dental/KidsTeeth";
 import Contact from "@/components/dental/Contact";
 import Footer from "@/components/dental/Footer";
 import BookingModal from "@/components/dental/BookingModal";
@@ -59,6 +60,7 @@ const Index = () => {
         <InstagramFeed />
         <Testimonials />
         <FAQ />
+        <KidsTeeth onBookingClick={openBooking("kids")} />
         <Contact onBookingClick={openBooking("contact")} />
       </main>
       <Footer />
