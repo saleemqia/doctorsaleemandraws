@@ -12,6 +12,12 @@ interface LanguageContextType {
 
 const translations: Record<Language, Record<string, string>> = {
   en: {
+    "services.allTitle": "All our treatments",
+    "services.allList": "Tooth extraction|Hollywood smile|Veneers|Teeth cleaning & scaling|Teeth whitening|Dental implants|Crowns|Bridges|Zircon crowns|Ceramic (porcelain) crowns|E-max crowns|Dentures|Orthodontics (braces)|Children's dentistry|Cavity treatment & fillings|Root canal treatment|Dental X-ray",
+    "faq.q12": "Do you do tooth extraction?",
+    "faq.a12": "Yes. When a tooth cannot be saved, the doctor extracts it gently under local anaesthetic and explains how to care for the area afterwards, and what can replace the tooth (an implant, a bridge or a denture).",
+    "faq.q13": "Do you make bridges, crowns and dentures?",
+    "faq.a13": "Yes. We make crowns and bridges in zircon, ceramic (porcelain) and E-max, and full or partial dentures. The doctor helps you choose the material that suits your teeth and budget.",
     "faq.q7": "Where can I find a dentist in Duhok?",
     "faq.a7": "Dr. Saleem Andraws Dental Clinic is on Qazi Mohammad Road in Duhok, above Sherko Nuts and opposite Hanasa Pharmacy. We are open every day from 3:00 PM to 9:00 PM except Friday. Use the Get Directions button to open the route in Google Maps.",
     "faq.q8": "Do you offer dental implants?",
@@ -262,6 +268,12 @@ const translations: Record<Language, Record<string, string>> = {
     "welcome.skip": "Skip",
   },
   ar: {
+    "services.allTitle": "جميع علاجاتنا",
+    "services.allList": "قلع الأسنان|ابتسامة هوليود|فينير|تنظيف الأسنان وإزالة الجير|تبييض الأسنان|زراعة الأسنان|تيجان (كراس)|جسور الأسنان|زركون|سيراميك|إيماكس|طقم أسنان (طخم)|تقويم الأسنان|أسنان الأطفال|علاج التسوس والحشوات|حشو العصب|أشعة الأسنان",
+    "faq.q12": "هل تعملون قلع الأسنان؟",
+    "faq.a12": "نعم. عندما لا يمكن إنقاذ السن، يقلعه الطبيب بلطف تحت التخدير الموضعي، ويشرح لك طريقة العناية بعد القلع وما يمكن أن يعوض السن (زراعة أو جسر أو طقم).",
+    "faq.q13": "هل تعملون الجسور والكراس وطقم الأسنان؟",
+    "faq.a13": "نعم. نعمل التيجان (الكراس) والجسور من الزركون والسيراميك والإيماكس، ونعمل طقم الأسنان (الطخم) الكامل والجزئي. يساعدك الطبيب في اختيار المادة المناسبة لأسنانك وميزانيتك.",
     "faq.q7": "أين أجد طبيب أسنان في دهوك؟",
     "faq.a7": "عيادة الدكتور سليم أندراوس لطب الأسنان في شارع قاضي محمد في دهوك، فوق جرزات شيركو ومقابل صيدلية هناسة. نستقبلكم يومياً من الساعة ٣ إلى ٩ مساءً عدا الجمعة. اضغط على زر الاتجاهات لفتح الطريق في خرائط Google.",
     "faq.q8": "هل تقدمون زراعة الأسنان؟",
@@ -513,6 +525,12 @@ const translations: Record<Language, Record<string, string>> = {
     "welcome.skip": "تخطي",
   },
   ku: {
+    "services.allTitle": "هەمی چارەسەریێن مە",
+    "services.allList": "هەلکێشانا ددانا (هلكيشان، قلع)|بزەیا هۆلیوود (هوليود سمايل)|ڤینیر|پاقژکرنا ددانا (تنظيف)|سپیکرنا ددانا (تبييض)|چاندنا ددانا (جاندن)|کراس|جسر|زیرکۆن|سیرامیک|ئیماکس|تەخمێ ددانا (طخم)|تقویم|ددانێن زارۆکان|چارەسەریا کڕمبوونێ (تسوس)|حەشوا دەمارێ|تیشکا ددانا",
+    "faq.q12": "ئەرێ هوین ددانا هەلدکێشن (قلع)؟",
+    "faq.a12": "بەلێ. دەمێ ددان نەهێتە ڕزگارکرن، دکتۆر ب نەرمی و ب سڕکرنا جهی هەلدکێشیت، و بۆ تە دبێژیت پشتی هەلکێشانێ چاوا خۆ بپارێزی و چ دشێت جهێ ددانی بگریت (چاندن، جسر یان تەخم).",
+    "faq.q13": "ئەرێ هوین جسر، کراس و تەخمێ ددانا دکەن؟",
+    "faq.a13": "بەلێ. کراس و جسران ژ زیرکۆن، سیرامیک و ئیماکس دکەین، و تەخمێ ددانا (طخم) یێ تەمام و یێ پشکی. دکتۆر هاریکاریا تە دکەت ماددێ گونجای بۆ ددانێن تە و بودجەیا تە هەلبژێری.",
     "faq.q7": "ل دهوکێ دکتورێ ددانا ل کیرێ یە؟",
     "faq.a7": "کلینیکا ددانا یا دکتۆر سەلیم ئەندراوس ل شەقامێ قازی محەمەد ل دهوکێ یە، سەرووی جرزاتی شیرکۆ و بەرامبەر دەرمانخانەی هانەسە. هەموو ڕۆژێ ژ دەمژمێر ٣ تا ٩ێ ئێڤاری ڤەکری یە، ژ بلی ئینیێ. دوگمەیا ئاراستەکان بکە دا ڕێ ل نەخشەیا Google ڤەبیت.",
     "faq.q8": "ئەرێ هوین چاندنا ددانا دکەن؟",

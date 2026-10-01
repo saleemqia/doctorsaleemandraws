@@ -120,6 +120,21 @@ const Services = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Full treatment list: the names patients actually search for, shown to everyone */}
+        <div className="mt-10 md:mt-14 max-w-4xl mx-auto text-center">
+          <h3 className="font-display text-xl md:text-2xl font-semibold mb-4 md:mb-5">{t("services.allTitle")}</h3>
+          <ul className="flex flex-wrap justify-center gap-2 md:gap-2.5">
+            {t("services.allList").split("|").map((name) => (
+              <li
+                key={name}
+                className="px-3.5 py-1.5 md:px-4 md:py-2 rounded-full bg-card border border-border text-sm md:text-[15px] text-foreground"
+              >
+                {name}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

@@ -24,6 +24,8 @@ const FAQ = () => {
     { qKey: "faq.q9", aKey: "faq.a9" },
     { qKey: "faq.q10", aKey: "faq.a10" },
     { qKey: "faq.q11", aKey: "faq.a11" },
+    { qKey: "faq.q12", aKey: "faq.a12" },
+    { qKey: "faq.q13", aKey: "faq.a13" },
   ];
 
   // Tell Google about the questions shown on the page (FAQ structured data, in the current language).
