@@ -14,7 +14,7 @@ interface LanguageContextType {
 const translations: Record<Language, Record<string, string>> = {
   en: {
     "services.allTitle": "All our treatments",
-    "services.allList": "Tooth extraction|Hollywood smile|Veneers|Teeth cleaning & scaling|Teeth whitening|Dental implants|Crowns|Bridges|Zircon crowns|Ceramic (porcelain) crowns|E-max crowns|Dentures|Orthodontics (braces)|Children's dentistry|Cavity treatment & fillings|Root canal treatment|Dental X-ray",
+    "services.allList": "Tooth extraction|Hollywood smile|Veneers|Teeth cleaning & scaling|Teeth whitening|Dental implants|Crowns|Bridges|Zircon crowns|Ceramic (porcelain) crowns|E-max crowns|Dentures|Orthodontics (braces)|Children's dentistry|Cavity treatment & fillings|Root canal treatment|Dental X-ray|Digital impressions (3D scanner)|Guided implant surgery",
     "faq.q12": "Do you do tooth extraction?",
     "faq.a12": "Yes. When a tooth cannot be saved, the doctor extracts it gently under local anaesthetic and explains how to care for the area afterwards, and what can replace the tooth (an implant, a bridge or a denture).",
     "faq.q13": "Do you make bridges, crowns and dentures?",
@@ -304,7 +304,7 @@ const translations: Record<Language, Record<string, string>> = {
   },
   ar: {
     "services.allTitle": "جميع علاجاتنا",
-    "services.allList": "قلع الأسنان|ابتسامة هوليود|فينير|تنظيف الأسنان وإزالة الجير|تبييض الأسنان|زراعة الأسنان|تيجان (كراس)|جسور الأسنان|زركون|سيراميك|إيماكس|طقم أسنان (طخم)|تقويم الأسنان|أسنان الأطفال|علاج التسوس والحشوات|حشو العصب|أشعة الأسنان",
+    "services.allList": "قلع الأسنان|ابتسامة هوليود|فينير|تنظيف الأسنان وإزالة الجير|تبييض الأسنان|زراعة الأسنان|تيجان (كراس)|جسور الأسنان|زركون|سيراميك|إيماكس|طقم أسنان (طخم)|تقويم الأسنان|أسنان الأطفال|علاج التسوس والحشوات|حشو العصب|أشعة الأسنان|الطبعة الرقمية (ماسح ثلاثي الأبعاد)|زراعة موجهة بالدليل الجراحي",
     "faq.q12": "هل تعملون قلع الأسنان؟",
     "faq.a12": "نعم. عندما لا يمكن إنقاذ السن، يقلعه الطبيب بلطف تحت التخدير الموضعي، ويشرح لك طريقة العناية بعد القلع وما يمكن أن يعوض السن (زراعة أو جسر أو طقم).",
     "faq.q13": "هل تعملون الجسور والكراس وطقم الأسنان؟",
@@ -595,7 +595,7 @@ const translations: Record<Language, Record<string, string>> = {
   },
   ku: {
     "services.allTitle": "هەمی چارەسەریێن مە",
-    "services.allList": "هەلکێشانا ددانا (هلكيشان، قلع)|بزەیا هۆلیوود (هوليود سمايل)|ڤینیر|پاقژکرنا ددانا (تنظيف)|سپیکرنا ددانا (تبييض)|چاندنا ددانا (جاندن)|کراس|جسر|زیرکۆن|سیرامیک|ئیماکس|تەخمێ ددانا (طخم)|تقویم|ددانێن زارۆکان|چارەسەریا کڕمبوونێ (تسوس)|حەشوا دەمارێ|تیشکا ددانا",
+    "services.allList": "هەلکێشانا ددانا (هلكيشان، قلع)|بزەیا هۆلیوود (هوليود سمايل)|ڤینیر|پاقژکرنا ددانا (تنظيف)|سپیکرنا ددانا (تبييض)|چاندنا ددانا (جاندن)|کراس|جسر|زیرکۆن|سیرامیک|ئیماکس|تەخمێ ددانا (طخم)|تقویم|ددانێن زارۆکان|چارەسەریا کڕمبوونێ (تسوس)|حەشوا دەمارێ|تیشکا ددانا|قالبێ دیجیتالی (سکانەرا ٣D)|چاندنا ب ڕێبەرێ نەشتەرگەری",
     "faq.q12": "ئەرێ هوین ددانا هەلدکێشن (قلع)؟",
     "faq.a12": "بەلێ. دەمێ ددان نەهێتە ڕزگارکرن، دکتۆر ب نەرمی و ب سڕکرنا جهی هەلدکێشیت، و بۆ تە دبێژیت پشتی هەلکێشانێ چاوا خۆ بپارێزی و چ دشێت جهێ ددانی بگریت (چاندن، جسر یان تەخم).",
     "faq.q13": "ئەرێ هوین جسر، کراس و تەخمێ ددانا دکەن؟",

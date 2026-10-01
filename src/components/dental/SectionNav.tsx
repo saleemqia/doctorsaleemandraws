@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Home, Stethoscope, UserRound, Building2, Images, Instagram, MessageSquareQuote,
-  HelpCircle, Baby, BookOpen, CalendarClock, MapPin, List, X,
+  HelpCircle, Baby, ScanLine, BookOpen, CalendarClock, MapPin, List, X,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -14,6 +14,7 @@ const SECTIONS: { id: string; icon: typeof Home; label: Record<L, string> }[] = 
   { id: "services", icon: Stethoscope, label: { en: "Services", ar: "الخدمات", ku: "خزمەتگوزاری" } },
   { id: "about", icon: UserRound, label: { en: "The doctor", ar: "عن الطبيب", ku: "دەربارەی دکتۆری" } },
   { id: "clinic", icon: Building2, label: { en: "Our clinic", ar: "العيادة", ku: "کلینیک" } },
+  { id: "technology", icon: ScanLine, label: { en: "3D technology", ar: "التقنيات الرقمية", ku: "تەکنەلۆژیا ٣D" } },
   { id: "gallery", icon: Images, label: { en: "Before & after", ar: "المعرض", ku: "پێشانگە" } },
   { id: "instagram", icon: Instagram, label: { en: "Instagram", ar: "إنستغرام", ku: "ئینستاگرام" } },
   { id: "testimonials", icon: MessageSquareQuote, label: { en: "Reviews", ar: "آراء المرضى", ku: "بۆچوونێن نەخۆشان" } },

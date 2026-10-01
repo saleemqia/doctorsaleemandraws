@@ -9,6 +9,7 @@ import InstagramFeed from "@/components/dental/InstagramFeed";
 import Testimonials from "@/components/dental/Testimonials";
 import FAQ from "@/components/dental/FAQ";
 import ClinicTour from "@/components/dental/ClinicTour";
+import DigitalDentistry from "@/components/dental/DigitalDentistry";
 import Posters from "@/components/dental/Posters";
 import WeeklyHours from "@/components/dental/WeeklyHours";
 import SectionNav from "@/components/dental/SectionNav";
@@ -61,6 +62,7 @@ const Index = () => {
         <Services />
         <About />
         <ClinicTour />
+        <DigitalDentistry />
         <Gallery />
         <InstagramFeed />
         <Testimonials />
