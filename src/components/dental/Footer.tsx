@@ -98,11 +98,11 @@ const Footer = () => {
               rel="noopener noreferrer"
               className={`flex items-start gap-2 text-sm text-background/70 hover:text-white transition-colors ${dir === "rtl" ? "" : ""}`}
             >
-              <MapPin className="w-4 h-4 text-[hsl(214,55%,72%)] mt-0.5 flex-shrink-0" />
+              <MapPin className="w-4 h-4 text-[hsl(199,85%,70%)] mt-0.5 flex-shrink-0" />
               <span>{t("contact.address")}</span>
             </a>
             <div className={`flex items-start gap-2 text-sm text-background/70 mt-3 ${dir === "rtl" ? "" : ""}`}>
-              <Phone className="w-4 h-4 text-[hsl(214,55%,72%)] mt-0.5 flex-shrink-0" />
+              <Phone className="w-4 h-4 text-[hsl(199,85%,70%)] mt-0.5 flex-shrink-0" />
               <div className={`flex flex-wrap gap-2 ${dir === "rtl" ? "" : ""}`}>
                 <a href="tel:07781665000" className="hover:text-white transition-colors">07781665000</a>
                 <a href="tel:07507816500" className="hover:text-white transition-colors">07507816500</a>
