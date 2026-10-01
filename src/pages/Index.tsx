@@ -8,6 +8,7 @@ import Gallery from "@/components/dental/Gallery";
 import InstagramFeed from "@/components/dental/InstagramFeed";
 import Testimonials from "@/components/dental/Testimonials";
 import FAQ from "@/components/dental/FAQ";
+import ClinicTour from "@/components/dental/ClinicTour";
 import KidsTeeth from "@/components/dental/KidsTeeth";
 import Contact from "@/components/dental/Contact";
 import Footer from "@/components/dental/Footer";
@@ -56,6 +57,7 @@ const Index = () => {
         <Hero onBookingClick={openBooking("home")} />
         <Services />
         <About />
+        <ClinicTour />
         <Gallery />
         <InstagramFeed />
         <Testimonials />
