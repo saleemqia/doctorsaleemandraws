@@ -32,7 +32,7 @@ const FAQ = () => {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-10 md:mb-16"
         >
-          <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+          <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "" : ""}`}>
             <HelpCircle className="w-4 h-4" />
             {t("faq.badge")}
           </span>
@@ -59,7 +59,7 @@ const FAQ = () => {
                 value={`item-${index}`}
                 className="rounded-xl border border-border/50 bg-card px-4 md:px-6 shadow-soft data-[state=open]:border-primary/30 data-[state=open]:shadow-card transition-all duration-300"
               >
-                <AccordionTrigger className={`text-sm md:text-base font-semibold hover:text-primary transition-colors py-4 md:py-5 ${dir === "rtl" ? "text-right flex-row-reverse" : ""}`}>
+                <AccordionTrigger className={`text-sm md:text-base font-semibold hover:text-primary transition-colors py-4 md:py-5 ${dir === "rtl" ? "text-right" : ""}`}>
                   {t(faq.qKey)}
                 </AccordionTrigger>
                 <AccordionContent className={`text-muted-foreground text-sm md:text-base leading-relaxed pb-4 md:pb-5 ${dir === "rtl" ? "text-right" : ""}`}>

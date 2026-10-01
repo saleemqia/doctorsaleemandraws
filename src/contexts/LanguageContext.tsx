@@ -12,6 +12,11 @@ interface LanguageContextType {
 
 const translations: Record<Language, Record<string, string>> = {
   en: {
+    "gallery.showAll": "Show all photos",
+    "gallery.showLess": "Show fewer photos",
+    "mobile.call": "Call",
+    "mobile.whatsapp": "WhatsApp",
+    "mobile.book": "Book",
     "hero.googleRating": "Rating on Google",
     "testimonials.googleReview": "Google review",
     "testimonials.readAll": "Read all our reviews on Google",
@@ -247,6 +252,11 @@ const translations: Record<Language, Record<string, string>> = {
     "welcome.skip": "Skip",
   },
   ar: {
+    "gallery.showAll": "عرض كل الصور",
+    "gallery.showLess": "عرض صور أقل",
+    "mobile.call": "اتصال",
+    "mobile.whatsapp": "واتساب",
+    "mobile.book": "حجز موعد",
     "hero.googleRating": "التقييم على Google",
     "testimonials.googleReview": "تقييم على Google",
     "testimonials.readAll": "اقرأ جميع تقييماتنا على Google",
@@ -483,6 +493,11 @@ const translations: Record<Language, Record<string, string>> = {
     "welcome.skip": "تخطي",
   },
   ku: {
+    "gallery.showAll": "هەموو وێنەکان ببینە",
+    "gallery.showLess": "وێنەی کەمتر",
+    "mobile.call": "پەیوەندی",
+    "mobile.whatsapp": "واتساپ",
+    "mobile.book": "نۆرە",
     "hero.googleRating": "هەڵسەنگاندن لە Google",
     "testimonials.googleReview": "بۆچوون لە Google",
     "testimonials.readAll": "هەموو بۆچوونەکانمان لە Google بخوێنەوە",

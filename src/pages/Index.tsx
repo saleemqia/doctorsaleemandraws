@@ -5,7 +5,6 @@ import Services from "@/components/dental/Services";
 import About from "@/components/dental/About";
 import Gallery from "@/components/dental/Gallery";
 import InstagramFeed from "@/components/dental/InstagramFeed";
-import Appointments from "@/components/dental/Appointments";
 import Testimonials from "@/components/dental/Testimonials";
 import FAQ from "@/components/dental/FAQ";
 import Contact from "@/components/dental/Contact";
@@ -13,6 +12,7 @@ import Footer from "@/components/dental/Footer";
 import BookingModal from "@/components/dental/BookingModal";
 import ChatBot from "@/components/dental/ChatBot";
 import ScrollToTop from "@/components/dental/ScrollToTop";
+import MobileActionBar from "@/components/dental/MobileActionBar";
 import WelcomeScreen from "@/components/dental/WelcomeScreen";
 
 const WELCOME_KEY = "diamond-welcome-shown";
@@ -38,14 +38,13 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background scroll-smooth">
+    <div className="min-h-screen bg-background scroll-smooth pb-[calc(56px+env(safe-area-inset-bottom,0px))] md:pb-0">
       {showWelcome && <WelcomeScreen onComplete={handleWelcomeComplete} />}
       <Navbar onBookingClick={() => setIsBookingOpen(true)} />
       <main>
         <Hero onBookingClick={() => setIsBookingOpen(true)} />
         <Services />
         <About />
-        <Appointments />
         <Gallery />
         <InstagramFeed />
         <Testimonials />
@@ -56,6 +55,7 @@ const Index = () => {
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
       <ChatBot />
       <ScrollToTop />
+      <MobileActionBar onBookingClick={() => setIsBookingOpen(true)} />
     </div>
   );
 };

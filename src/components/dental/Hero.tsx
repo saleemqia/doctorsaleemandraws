@@ -30,65 +30,65 @@ const Hero = ({ onBookingClick }: HeroProps) => {
       />
 
       <div className="container relative z-10 py-12 lg:py-20">
-        <div className={`grid lg:grid-cols-2 gap-12 lg:gap-16 items-center ${dir === "rtl" ? "lg:grid-flow-dense" : ""}`}>
+        <div className={`grid xl:grid-cols-2 gap-10 lg:gap-12 xl:gap-16 items-center ${dir === "rtl" ? "" : ""}`}>
           {/* Content */}
           <motion.div
             initial={{ opacity: 0, x: dir === "rtl" ? 30 : -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className={dir === "rtl" ? "lg:col-start-2 text-right" : ""}
+            className={dir === "rtl" ? "text-right" : ""}
           >
             {/* The page's main heading (H1) names what we are and where — what people search for. */}
-            <h1 className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium font-sans text-primary mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <h1 className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium font-sans text-primary mb-6 ${dir === "rtl" ? "" : ""}`}>
               <Award className="w-4 h-4" />
               {t("hero.badge")}
             </h1>
 
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground mb-6">
+            <h2 className="font-display text-[2.1rem] leading-[1.15] sm:text-5xl lg:text-6xl font-bold sm:leading-tight text-foreground mb-5 sm:mb-6 text-balance">
               {t("hero.title1")}{" "}
               <span className="text-gradient">{t("hero.title2")}</span>
             </h2>
 
-            <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6 sm:mb-8 max-w-xl">
               {t("hero.description")}
             </p>
 
             {/* Credentials */}
-            <div className={`flex flex-wrap gap-4 mb-8 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
-              <div className={`flex items-center gap-2 text-sm text-muted-foreground ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <div className={`flex flex-wrap gap-4 mb-8 ${dir === "rtl" ? "" : ""}`}>
+              <div className={`flex items-center gap-2 text-sm text-muted-foreground ${dir === "rtl" ? "" : ""}`}>
                 <GraduationCap className="w-4 h-4 text-primary" />
                 <span>{t("hero.credential1")}</span>
               </div>
-              <div className={`flex items-center gap-2 text-sm text-muted-foreground ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+              <div className={`flex items-center gap-2 text-sm text-muted-foreground ${dir === "rtl" ? "" : ""}`}>
                 <Award className="w-4 h-4 text-primary" />
                 <span>{t("hero.credential2")}</span>
               </div>
             </div>
 
-            {/* CTA Buttons */}
-            <div className={`flex flex-col sm:flex-row gap-4 mb-10 ${dir === "rtl" ? "sm:flex-row-reverse" : ""}`}>
-              <Button variant="teal" size="lg" onClick={onBookingClick} className={`gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            {/* CTA Buttons: Book on its own row on phones, the two call buttons side by side */}
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 mb-8 sm:mb-10">
+              <Button variant="teal" size="lg" onClick={onBookingClick} className="col-span-2 sm:col-span-1 gap-2">
                 <Calendar className="w-5 h-5" />
                 {t("hero.bookBtn")}
               </Button>
-              <a href="tel:07781665000">
-                <Button variant="tealOutline" size="lg" className={`w-full sm:w-auto gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
-                  <Phone className="w-5 h-5" />
-                  {t("hero.callBtn")}
+              <a href="tel:07781665000" className="min-w-0">
+                <Button variant="tealOutline" size="lg" className="w-full gap-2 px-3 sm:px-6">
+                  <Phone className="w-5 h-5 shrink-0" />
+                  <span className="truncate">{t("hero.callBtn")}</span>
                 </Button>
               </a>
-              <a href="tel:07507816500">
-                <Button variant="tealOutline" size="lg" className={`w-full sm:w-auto gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
-                  <Phone className="w-5 h-5" />
-                  07507816500
+              <a href="tel:07507816500" className="min-w-0">
+                <Button variant="tealOutline" size="lg" className="w-full gap-2 px-3 sm:px-6">
+                  <Phone className="w-5 h-5 shrink-0" />
+                  <span dir="ltr" className="truncate">0750 781 6500</span>
                 </Button>
               </a>
             </div>
 
             {/* Info Cards */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className={`flex items-center gap-3 p-4 rounded-xl bg-card border border-border/50 shadow-soft ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-xl">
+              <div className={`flex items-center gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-xl bg-card border border-border/50 shadow-soft min-w-0 ${dir === "rtl" ? "text-right" : ""}`}>
+                <div className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-lg bg-primary/10">
                   <Clock className="w-5 h-5 text-primary" />
                 </div>
                 <div>
@@ -96,8 +96,8 @@ const Hero = ({ onBookingClick }: HeroProps) => {
                   <p className="text-xs text-muted-foreground">{t("hero.workingHoursValue")}</p>
                 </div>
               </div>
-              <div className={`flex items-center gap-3 p-4 rounded-xl bg-card border border-border/50 shadow-soft ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
+              <div className={`flex items-center gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-xl bg-card border border-border/50 shadow-soft min-w-0 ${dir === "rtl" ? "text-right" : ""}`}>
+                <div className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-lg bg-primary/10">
                   <MapPin className="w-5 h-5 text-primary" />
                 </div>
                 <div>
@@ -113,7 +113,7 @@ const Hero = ({ onBookingClick }: HeroProps) => {
             initial={{ opacity: 0, x: dir === "rtl" ? -30 : 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className={`relative ${dir === "rtl" ? "lg:col-start-1 lg:row-start-1" : ""}`}
+            className="relative w-full max-w-[22rem] sm:max-w-md mx-auto xl:max-w-none"
           >
             <div className="relative">
               {/* Main image */}
@@ -133,7 +133,7 @@ const Hero = ({ onBookingClick }: HeroProps) => {
                 transition={{ duration: 0.6, delay: 0.5 }}
                 className={`absolute -bottom-6 ${dir === "rtl" ? "-right-6" : "-left-6"} p-4 rounded-xl bg-card border border-border/50 shadow-card animate-float`}
               >
-                <div className={`flex items-center gap-3 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                <div className={`flex items-center gap-3 ${dir === "rtl" ? "" : ""}`}>
                   <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-primary">
                     <span className="text-2xl">🦷</span>
                   </div>
@@ -151,7 +151,7 @@ const Hero = ({ onBookingClick }: HeroProps) => {
                 transition={{ duration: 0.6, delay: 0.7 }}
                 className={`absolute -top-4 ${dir === "rtl" ? "-left-4" : "-right-4"} p-4 rounded-xl bg-card border border-border/50 shadow-card`}
               >
-                <div className={`flex items-center gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                <div className={`flex items-center gap-2 ${dir === "rtl" ? "" : ""}`}>
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
                       <span key={i} className="text-gold">⭐</span>

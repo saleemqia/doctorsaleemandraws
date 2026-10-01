@@ -25,7 +25,7 @@ const Footer = () => {
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ${dir === "rtl" ? "text-right" : ""}`}>
           {/* Brand */}
           <div className="lg:col-span-1">
-            <div className={`flex items-center gap-3 mb-4 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <div className={`flex items-center gap-3 mb-4 ${dir === "rtl" ? "" : ""}`}>
               <img 
                 src={clinicLogo} 
                 alt="Dr. Saleem Andraws Dental Clinic" 
@@ -35,7 +35,7 @@ const Footer = () => {
             <p className="text-background/70 text-sm leading-relaxed max-w-md mb-4">
               {t("footer.description")}
             </p>
-            <div className={`flex gap-3 ${dir === "rtl" ? "flex-row-reverse justify-end" : ""}`}>
+            <div className={`flex gap-3 ${dir === "rtl" ? "" : ""}`}>
               <a 
                 href="https://www.facebook.com/doctor.saleem.diamond.dental.duhok/" 
                 aria-label="Facebook"
@@ -78,7 +78,7 @@ const Footer = () => {
           {/* Quick Links */}
           <div>
             <h4 className="font-semibold mb-4">{t("footer.quickLinks")}</h4>
-            <ul className="space-y-2 text-sm text-background/70">
+            <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-6 gap-y-2 text-sm text-background/70">
               {navLinks.map((link) => (
                 <li key={link.key}>
                   <a href={link.href} className="hover:text-white transition-colors">
@@ -96,14 +96,14 @@ const Footer = () => {
               href={mapDirectionsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex items-start gap-2 text-sm text-background/70 hover:text-white transition-colors ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+              className={`flex items-start gap-2 text-sm text-background/70 hover:text-white transition-colors ${dir === "rtl" ? "" : ""}`}
             >
               <MapPin className="w-4 h-4 text-[hsl(214,55%,72%)] mt-0.5 flex-shrink-0" />
               <span>{t("contact.address")}</span>
             </a>
-            <div className={`flex items-start gap-2 text-sm text-background/70 mt-3 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <div className={`flex items-start gap-2 text-sm text-background/70 mt-3 ${dir === "rtl" ? "" : ""}`}>
               <Phone className="w-4 h-4 text-[hsl(214,55%,72%)] mt-0.5 flex-shrink-0" />
-              <div className={`flex flex-wrap gap-2 ${dir === "rtl" ? "flex-row-reverse justify-end" : ""}`}>
+              <div className={`flex flex-wrap gap-2 ${dir === "rtl" ? "" : ""}`}>
                 <a href="tel:07781665000" className="hover:text-white transition-colors">07781665000</a>
                 <a href="tel:07507816500" className="hover:text-white transition-colors">07507816500</a>
               </div>
@@ -112,9 +112,9 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className={`mt-12 pt-8 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-background/60 ${dir === "rtl" ? "md:flex-row-reverse" : ""}`}>
+        <div className={`mt-12 pt-8 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-background/60 ${dir === "rtl" ? "" : ""}`}>
           <p>© {new Date().getFullYear()} Dr. Saleem Andraws Dental Clinic. {t("footer.rights")}</p>
-          <Link to="/admin" className={`flex items-center gap-1.5 hover:text-white transition-colors ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+          <Link to="/admin" className={`flex items-center gap-1.5 hover:text-white transition-colors ${dir === "rtl" ? "" : ""}`}>
             <Shield className="w-3.5 h-3.5" />
             Admin
           </Link>

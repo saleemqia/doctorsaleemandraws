@@ -135,7 +135,7 @@ Thank you!`;
           >
             {/* Header */}
             <div className="bg-gradient-primary p-6 text-white">
-              <div className={`flex items-center justify-between ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+              <div className={`flex items-center justify-between ${dir === "rtl" ? "" : ""}`}>
                 <div className={dir === "rtl" ? "text-right" : ""}>
                   <h2 className="font-display text-2xl font-bold">{t("booking.title")}</h2>
                   <p className="text-white/80 text-sm mt-1">{t("booking.subtitle")}</p>
@@ -149,7 +149,7 @@ Thank you!`;
               </div>
 
               {/* Progress */}
-              <div className={`flex gap-2 mt-4 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+              <div className={`flex gap-2 mt-4 ${dir === "rtl" ? "" : ""}`}>
                 {[1, 2].map((s) => (
                   <div
                     key={s}
@@ -170,7 +170,7 @@ Thank you!`;
                   className="space-y-4"
                 >
                   <div>
-                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "" : ""}`}>
                       <User className="w-4 h-4 text-primary" />
                       {t("booking.fullName")}
                     </label>
@@ -187,7 +187,7 @@ Thank you!`;
                   </div>
 
                   <div>
-                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "" : ""}`}>
                       <Phone className="w-4 h-4 text-primary" />
                       {t("booking.phone")}
                     </label>
@@ -203,7 +203,7 @@ Thank you!`;
                   </div>
 
                   <div>
-                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "" : ""}`}>
                       <FileText className="w-4 h-4 text-primary" />
                       {t("booking.service")}
                     </label>
@@ -241,7 +241,7 @@ Thank you!`;
                   className="space-y-4"
                 >
                   <div>
-                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "" : ""}`}>
                       <Calendar className="w-4 h-4 text-primary" />
                       {t("booking.preferredDate")}
                     </label>
@@ -258,7 +258,7 @@ Thank you!`;
                   </div>
 
                   <div>
-                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                    <label className={`flex items-center gap-2 text-sm font-medium mb-2 ${dir === "rtl" ? "" : ""}`}>
                       <Clock className="w-4 h-4 text-primary" />
                       {t("booking.preferredTime")}
                     </label>
@@ -293,7 +293,7 @@ Thank you!`;
                     />
                   </div>
 
-                  <div className={`flex gap-3 mt-4 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                  <div className={`flex gap-3 mt-4 ${dir === "rtl" ? "" : ""}`}>
                     <Button
                       type="button"
                       variant="outline"

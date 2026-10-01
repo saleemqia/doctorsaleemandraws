@@ -77,7 +77,7 @@ const Appointments = () => {
           transition={{ duration: 0.6 }}
           className={`text-center mb-10 md:mb-12 ${dir === "rtl" ? "text-right md:text-center" : ""}`}
         >
-          <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+          <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "" : ""}`}>
             <Calendar className="w-4 h-4" />
             {t("appointments.badge")}
           </span>
@@ -105,8 +105,8 @@ const Appointments = () => {
             >
               <div className={`p-4 md:p-5 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-card transition-all duration-300 ${dir === "rtl" ? "text-right" : ""}`}>
                 {/* Header */}
-                <div className={`flex items-center justify-between mb-4 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
-                  <div className={`flex items-center gap-3 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                <div className={`flex items-center justify-between mb-4 ${dir === "rtl" ? "" : ""}`}>
+                  <div className={`flex items-center gap-3 ${dir === "rtl" ? "" : ""}`}>
                     <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-sm">
                       {t(appointment.nameKey).charAt(0)}
                     </div>
@@ -119,19 +119,19 @@ const Appointments = () => {
                     appointment.status === "confirmed" 
                       ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" 
                       : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                  } ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                  } ${dir === "rtl" ? "" : ""}`}>
                     <CheckCircle2 className="w-3 h-3" />
                     {appointment.status === "confirmed" ? t("appointments.confirmed") : t("appointments.pending")}
                   </div>
                 </div>
 
                 {/* Details */}
-                <div className={`flex items-center gap-4 text-sm text-muted-foreground ${dir === "rtl" ? "flex-row-reverse justify-end" : ""}`}>
-                  <div className={`flex items-center gap-1.5 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                <div className={`flex items-center gap-4 text-sm text-muted-foreground ${dir === "rtl" ? "" : ""}`}>
+                  <div className={`flex items-center gap-1.5 ${dir === "rtl" ? "" : ""}`}>
                     <Calendar className="w-4 h-4 text-primary" />
                     <span>{formatDate(appointment.date)}</span>
                   </div>
-                  <div className={`flex items-center gap-1.5 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                  <div className={`flex items-center gap-1.5 ${dir === "rtl" ? "" : ""}`}>
                     <Clock className="w-4 h-4 text-primary" />
                     <span>{appointment.time}</span>
                   </div>

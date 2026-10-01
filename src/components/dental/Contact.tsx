@@ -18,16 +18,16 @@ const Contact = ({ onBookingClick }: ContactProps) => {
   return (
     <section id="contact" className="py-16 md:py-24 lg:py-28 bg-background relative overflow-hidden">
       <div className="container px-4 sm:px-6">
-        <div className={`grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 ${dir === "rtl" ? "lg:grid-flow-dense" : ""}`}>
+        <div className={`grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 ${dir === "rtl" ? "" : ""}`}>
           {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: dir === "rtl" ? 30 : -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className={dir === "rtl" ? "lg:col-start-2 text-right" : ""}
+            className={dir === "rtl" ? "text-right" : ""}
           >
-            <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "" : ""}`}>
               <MapPin className="w-4 h-4" />
               {t("contact.badge")}
             </span>
@@ -43,34 +43,34 @@ const Contact = ({ onBookingClick }: ContactProps) => {
 
             {/* Contact Cards */}
             <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
-              <a href={mapDirectionsUrl} target="_blank" rel="noopener noreferrer" className={`group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-soft transition-all ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
+              <a href={mapDirectionsUrl} target="_blank" rel="noopener noreferrer" className={`group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-soft transition-all ${dir === "rtl" ? "text-right" : ""}`}>
                 <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 group-hover:bg-gradient-primary transition-colors flex-shrink-0">
                   <MapPin className="w-4 h-4 md:w-5 md:h-5 text-primary group-hover:text-white transition-colors" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-sm md:text-base">{t("contact.visitUs")}</p>
                   <p className="text-muted-foreground text-sm leading-relaxed">{t("contact.address")}</p>
-                  <span className={`inline-flex items-center gap-1 text-primary text-xs md:text-sm mt-1 group-hover:underline ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                  <span className={`inline-flex items-center gap-1 text-primary text-xs md:text-sm mt-1 group-hover:underline ${dir === "rtl" ? "" : ""}`}>
                     <Navigation className="w-3 h-3" />
                     {t("contact.getDirections")}
                   </span>
                 </div>
               </a>
 
-              <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
+              <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 ${dir === "rtl" ? "text-right" : ""}`}>
                 <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 flex-shrink-0">
                   <Phone className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-sm md:text-base">{t("contact.phone") || "Phone"}</p>
-                  <div className={`flex flex-wrap gap-2 mt-1 ${dir === "rtl" ? "flex-row-reverse justify-end" : ""}`}>
+                  <div className={`flex flex-wrap gap-2 mt-1 ${dir === "rtl" ? "" : ""}`}>
                     <a href="tel:07781665000" className="text-primary text-sm hover:underline">07781665000</a>
                     <a href="tel:07507816500" className="text-primary text-sm hover:underline">07507816500</a>
                   </div>
                 </div>
               </div>
 
-              <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}>
+              <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 ${dir === "rtl" ? "text-right" : ""}`}>
                 <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 flex-shrink-0">
                   <Clock className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 </div>
@@ -82,27 +82,27 @@ const Contact = ({ onBookingClick }: ContactProps) => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3">
               <a href={GOOGLE_DIRECTIONS_URL} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                <Button variant="teal" size="lg" className="w-full gap-2">
+                <Button variant="teal" size="lg" className="w-full gap-2 px-3 sm:px-6 text-sm sm:text-base whitespace-normal h-auto min-h-12 py-2.5 leading-tight text-center">
                   <Navigation className="w-5 h-5" />
                   {t("contact.getDirections")}
                 </Button>
               </a>
               <a href={GOOGLE_MAPS_URL} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full gap-2">
+                <Button variant="outline" size="lg" className="w-full gap-2 px-3 sm:px-6 text-sm sm:text-base whitespace-normal h-auto min-h-12 py-2.5 leading-tight text-center">
                   <MapPin className="w-5 h-5" />
                   {t("contact.openInMaps")}
                 </Button>
               </a>
               <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full gap-2">
+                <Button variant="outline" size="lg" className="w-full gap-2 px-3 sm:px-6 text-sm sm:text-base whitespace-normal h-auto min-h-12 py-2.5 leading-tight text-center">
                   <Instagram className="w-5 h-5" />
                   {t("contact.instagram")}
                 </Button>
               </a>
               <a href="https://linktr.ee/saleem.andraws" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                <Button variant="ghost" size="lg" className="w-full gap-2">
+                <Button variant="ghost" size="lg" className="w-full gap-2 px-3 sm:px-6 text-sm sm:text-base whitespace-normal h-auto min-h-12 py-2.5 leading-tight text-center">
                   <ExternalLink className="w-5 h-5" />
                   {t("contact.socialMedia")}
                 </Button>
@@ -116,7 +116,7 @@ const Contact = ({ onBookingClick }: ContactProps) => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className={`relative ${dir === "rtl" ? "lg:col-start-1 lg:row-start-1" : ""}`}
+            className={`relative ${dir === "rtl" ? "" : ""}`}
           >
             <div className="rounded-2xl overflow-hidden shadow-elevated h-full min-h-[300px] md:min-h-[400px]">
               <iframe

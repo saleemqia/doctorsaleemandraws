@@ -72,7 +72,7 @@ const Services = () => {
           transition={{ duration: 0.5 }}
           className={`text-center max-w-2xl mx-auto mb-10 md:mb-16 ${dir === "rtl" ? "text-center" : ""}`}
         >
-          <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+          <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "" : ""}`}>
             <Sparkles className="w-4 h-4" />
             {t("services.badge")}
           </span>
@@ -85,7 +85,7 @@ const Services = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {services.map((service, index) => (
             <motion.div
               key={index}
@@ -93,12 +93,12 @@ const Services = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.08 }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
+              whileHover={{ y: -6, transition: { duration: 0.3 } }}
               className="group"
             >
               <div className={`h-full rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-elevated transition-all duration-300 overflow-hidden ${dir === "rtl" ? "text-right" : ""}`}>
                 {/* Service Image */}
-                <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
+                <div className="relative h-28 sm:h-40 md:h-48 overflow-hidden">
                   <img
                     src={service.image}
                     alt={t(service.titleKey)}
@@ -108,11 +108,11 @@ const Services = () => {
                 </div>
                 
                 {/* Service Content */}
-                <div className="p-4 md:p-5">
-                  <h3 className="font-display text-lg md:text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+                <div className="p-3 sm:p-4 md:p-5">
+                  <h3 className="font-display text-base sm:text-lg md:text-xl font-semibold leading-snug mb-1.5 sm:mb-2 group-hover:text-primary transition-colors">
                     {t(service.titleKey)}
                   </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed line-clamp-3">
                     {t(service.descKey)}
                   </p>
                 </div>

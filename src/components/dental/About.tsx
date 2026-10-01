@@ -16,14 +16,14 @@ const About = () => {
   return (
     <section id="about" className="py-20 md:py-28 bg-background relative overflow-hidden">
       <div className="container">
-        <div className={`grid lg:grid-cols-2 gap-12 lg:gap-20 items-center ${dir === "rtl" ? "lg:grid-flow-dense" : ""}`}>
+        <div className={`grid lg:grid-cols-2 gap-12 lg:gap-20 items-center ${dir === "rtl" ? "" : ""}`}>
           {/* Image */}
           <motion.div
             initial={{ opacity: 0, x: dir === "rtl" ? 30 : -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className={dir === "rtl" ? "lg:col-start-2" : ""}
+            className={dir === "rtl" ? "" : ""}
           >
             <div className="relative rounded-3xl overflow-hidden shadow-elevated">
               <img
@@ -44,9 +44,9 @@ const About = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className={dir === "rtl" ? "lg:col-start-1 lg:row-start-1 text-right" : ""}
+            className={dir === "rtl" ? "text-right" : ""}
           >
-            <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 ${dir === "rtl" ? "" : ""}`}>
               <Award className="w-4 h-4" />
               {t("about.badge")}
             </span>

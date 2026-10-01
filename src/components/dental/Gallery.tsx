@@ -186,6 +186,8 @@ const Gallery = () => {
   const { t, dir } = useLanguage();
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [filter, setFilter] = useState<"all" | "clinic" | "results" | "educational">("all");
+  const [showAll, setShowAll] = useState(false);
+  const PREVIEW_COUNT = 8;
 
   const filteredImages = filter === "all" 
     ? galleryImages 
@@ -283,7 +285,7 @@ const Gallery = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "" : ""}`}
           >
             <Camera className="w-4 h-4" />
             {t("gallery.badge")}
@@ -305,12 +307,12 @@ const Gallery = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className={`flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-10 ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+          className={`flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-10 ${dir === "rtl" ? "" : ""}`}
         >
           <Button
             variant={filter === "all" ? "teal" : "outline"}
             size="sm"
-            onClick={() => setFilter("all")}
+            onClick={() => { setFilter("all"); setShowAll(false); }}
             className="rounded-full transition-all duration-300 hover:scale-105 text-xs md:text-sm"
           >
             {t("gallery.filterAll")}
@@ -318,8 +320,8 @@ const Gallery = () => {
           <Button
             variant={filter === "results" ? "teal" : "outline"}
             size="sm"
-            onClick={() => setFilter("results")}
-            className={`rounded-full gap-1 md:gap-2 transition-all duration-300 hover:scale-105 text-xs md:text-sm ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+            onClick={() => { setFilter("results"); setShowAll(false); }}
+            className={`rounded-full gap-1 md:gap-2 transition-all duration-300 hover:scale-105 text-xs md:text-sm ${dir === "rtl" ? "" : ""}`}
           >
             <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
             {t("gallery.filterResults")}
@@ -327,8 +329,8 @@ const Gallery = () => {
           <Button
             variant={filter === "educational" ? "teal" : "outline"}
             size="sm"
-            onClick={() => setFilter("educational")}
-            className={`rounded-full gap-1 md:gap-2 transition-all duration-300 hover:scale-105 text-xs md:text-sm ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+            onClick={() => { setFilter("educational"); setShowAll(false); }}
+            className={`rounded-full gap-1 md:gap-2 transition-all duration-300 hover:scale-105 text-xs md:text-sm ${dir === "rtl" ? "" : ""}`}
           >
             <BookOpen className="w-3 h-3 md:w-4 md:h-4" />
             {t("gallery.filterEducational")}
@@ -336,8 +338,8 @@ const Gallery = () => {
           <Button
             variant={filter === "clinic" ? "teal" : "outline"}
             size="sm"
-            onClick={() => setFilter("clinic")}
-            className={`rounded-full gap-1 md:gap-2 transition-all duration-300 hover:scale-105 text-xs md:text-sm ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+            onClick={() => { setFilter("clinic"); setShowAll(false); }}
+            className={`rounded-full gap-1 md:gap-2 transition-all duration-300 hover:scale-105 text-xs md:text-sm ${dir === "rtl" ? "" : ""}`}
           >
             <Camera className="w-3 h-3 md:w-4 md:h-4" />
             {t("gallery.filterClinic")}
@@ -353,7 +355,7 @@ const Gallery = () => {
           className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5"
         >
           <AnimatePresence mode="popLayout">
-            {filteredImages.map((image, index) => (
+            {(showAll ? filteredImages : filteredImages.slice(0, PREVIEW_COUNT)).map((image, index) => (
               <motion.div
                 key={image.src}
                 variants={itemVariants}
@@ -414,7 +416,7 @@ const Gallery = () => {
                         : image.category === "educational"
                         ? "bg-blue-500/80 text-white"
                         : "bg-primary/80 text-primary-foreground"
-                    } ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                    } ${dir === "rtl" ? "" : ""}`}>
                       {getCategoryIcon(image.category)}
                       <span className="hidden sm:inline">{getCategoryTag(image.category)}</span>
                     </span>
@@ -424,6 +426,15 @@ const Gallery = () => {
             ))}
           </AnimatePresence>
         </motion.div>
+
+        {/* Show a short preview first so the page stays short on phones */}
+        {filteredImages.length > PREVIEW_COUNT && (
+          <div className="flex justify-center mt-6 md:mt-8">
+            <Button variant="outline" size="lg" onClick={() => setShowAll((v) => !v)} className="min-w-[200px]">
+              {showAll ? t("gallery.showLess") : `${t("gallery.showAll")} (${filteredImages.length})`}
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Lightbox */}

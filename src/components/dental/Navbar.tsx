@@ -34,19 +34,19 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      <div className="mx-4 md:mx-8 mt-4">
-        <nav className={`flex items-center justify-between px-6 py-4 rounded-2xl bg-card/90 backdrop-blur-xl border border-border/50 shadow-soft ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+      <div className="mx-3 sm:mx-4 md:mx-8 mt-3 sm:mt-4">
+        <nav className={`flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl bg-card/90 backdrop-blur-xl border border-border/50 shadow-soft ${dir === "rtl" ? "" : ""}`}>
           {/* Logo */}
-          <a href="#home" className={`flex items-center gap-3 group ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+          <a href="#home" className={`flex items-center gap-3 group ${dir === "rtl" ? "" : ""}`}>
             <img 
               src={clinicLogo} 
               alt="Dr. Saleem Andraws Dental Clinic" 
-              className="h-12 w-auto object-contain"
+              className="h-10 sm:h-12 w-auto object-contain shrink-0"
             />
           </a>
 
           {/* Desktop Navigation */}
-          <div className={`hidden lg:flex items-center gap-8 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+          <div className={`hidden xl:flex items-center gap-6 2xl:gap-8 ${dir === "rtl" ? "" : ""}`}>
             {navLinks.map((link) => (
               <a
                 key={link.key}
@@ -59,12 +59,12 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
           </div>
 
           {/* Desktop CTA */}
-          <div className={`hidden md:flex items-center gap-3 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+          <div className={`hidden md:flex items-center gap-3 ${dir === "rtl" ? "" : ""}`}>
             {/* Language Selector */}
             <div className="relative">
               <button
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-secondary transition-colors ${dir === "rtl" ? "flex-row-reverse" : ""}`}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-secondary transition-colors ${dir === "rtl" ? "" : ""}`}
               >
                 <Globe className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm">{currentLang?.flag}</span>
@@ -88,7 +88,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
                         }}
                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-secondary transition-colors ${
                           language === lang.code ? "bg-primary/10 text-primary" : ""
-                        } ${dir === "rtl" ? "flex-row-reverse text-right" : ""}`}
+                        } ${dir === "rtl" ? "text-right" : ""}`}
                       >
                         <span>{lang.flag}</span>
                         <span>{lang.label}</span>
@@ -104,19 +104,19 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
                 <Instagram className="w-4 h-4" />
               </Button>
             </a>
-            <a href="tel:07781665000">
-              <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <a href="tel:07781665000" className="hidden xl:inline-flex">
+              <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "" : ""}`}>
                 <Phone className="w-4 h-4" />
-                <span className="hidden xl:inline">07781665000</span>
+                <span className="hidden 2xl:inline">07781665000</span>
               </Button>
             </a>
-            <a href="tel:07507816500">
-              <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <a href="tel:07507816500" className="hidden xl:inline-flex">
+              <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "" : ""}`}>
                 <Phone className="w-4 h-4" />
-                <span className="hidden xl:inline">07507816500</span>
+                <span className="hidden 2xl:inline">07507816500</span>
               </Button>
             </a>
-            <Button variant="teal" size="sm" onClick={onBookingClick} className={`gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+            <Button variant="teal" size="sm" onClick={onBookingClick} className={`gap-2 ${dir === "rtl" ? "" : ""}`}>
               <Calendar className="w-4 h-4" />
               {t("nav.bookAppointment")}
             </Button>
@@ -125,7 +125,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-secondary transition-colors"
+            className="xl:hidden p-2.5 -m-1 rounded-lg hover:bg-secondary transition-colors" aria-label="Menu"
           >
             {mobileMenuOpen ? (
               <X className="w-5 h-5" />
@@ -143,11 +143,11 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="lg:hidden mt-2 p-6 rounded-2xl bg-card/95 backdrop-blur-xl border border-border/50 shadow-elevated"
+              className="xl:hidden mt-2 p-5 sm:p-6 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl bg-card/95 backdrop-blur-xl border border-border/50 shadow-elevated"
             >
               <div className="flex flex-col gap-4">
                 {/* Language Selector Mobile */}
-                <div className={`flex gap-2 pb-4 border-b border-border ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                <div className={`flex gap-2 pb-4 border-b border-border ${dir === "rtl" ? "" : ""}`}>
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
@@ -182,18 +182,18 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
                     </Button>
                   </a>
                   <a href="tel:07781665000" className="w-full">
-                    <Button variant="outline" className={`w-full justify-center gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                    <Button variant="outline" className={`w-full justify-center gap-2 ${dir === "rtl" ? "" : ""}`}>
                       <Phone className="w-4 h-4" />
                       {t("nav.call")}: 07781665000
                     </Button>
                   </a>
                   <a href="tel:07507816500" className="w-full">
-                    <Button variant="outline" className={`w-full justify-center gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+                    <Button variant="outline" className={`w-full justify-center gap-2 ${dir === "rtl" ? "" : ""}`}>
                       <Phone className="w-4 h-4" />
                       {t("nav.call")}: 07507816500
                     </Button>
                   </a>
-                  <Button variant="teal" className={`w-full justify-center gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`} onClick={() => { setMobileMenuOpen(false); onBookingClick(); }}>
+                  <Button variant="teal" className={`w-full justify-center gap-2 ${dir === "rtl" ? "" : ""}`} onClick={() => { setMobileMenuOpen(false); onBookingClick(); }}>
                     <Calendar className="w-4 h-4" />
                     {t("nav.bookAppointment")}
                   </Button>

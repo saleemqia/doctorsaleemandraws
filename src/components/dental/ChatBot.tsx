@@ -136,7 +136,7 @@ const ChatBot = () => {
         animate={{ scale: 1 }}
         transition={{ delay: 1, type: "spring" }}
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 ${dir === "rtl" ? "left-6" : "right-6"} z-40 w-14 h-14 rounded-full bg-gradient-primary text-white shadow-teal hover:shadow-elevated transition-shadow flex items-center justify-center ${isOpen ? "hidden" : ""}`}
+        className={`fixed bottom-[84px] md:bottom-6 ${dir === "rtl" ? "left-4 md:left-6" : "right-4 md:right-6"} z-30 w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-primary text-white shadow-teal hover:shadow-elevated transition-shadow flex items-center justify-center ${isOpen ? "hidden" : ""}`}
       >
         <MessageCircle className="w-6 h-6" />
       </motion.button>
@@ -148,11 +148,11 @@ const ChatBot = () => {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed bottom-6 ${dir === "rtl" ? "left-6" : "right-6"} z-50 w-[360px] max-w-[calc(100vw-48px)] h-[500px] max-h-[calc(100vh-120px)] bg-card rounded-2xl shadow-elevated border border-border overflow-hidden flex flex-col`}
+            className={`fixed bottom-[84px] md:bottom-6 ${dir === "rtl" ? "left-4 md:left-6" : "right-4 md:right-6"} z-50 w-[360px] max-w-[calc(100vw-32px)] h-[500px] max-h-[calc(100dvh-170px)] md:max-h-[calc(100vh-120px)] bg-card rounded-2xl shadow-elevated border border-border overflow-hidden flex flex-col`}
           >
             {/* Header */}
             <div className="bg-gradient-primary p-4 text-white flex items-center justify-between">
-              <div className={`flex items-center gap-3 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+              <div className={`flex items-center gap-3 ${dir === "rtl" ? "" : ""}`}>
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                   <Bot className="w-5 h-5" />
                 </div>
@@ -212,7 +212,7 @@ const ChatBot = () => {
 
             {/* Input */}
             <div className="p-4 border-t border-border">
-              <div className={`flex gap-2 ${dir === "rtl" ? "flex-row-reverse" : ""}`}>
+              <div className={`flex gap-2 ${dir === "rtl" ? "" : ""}`}>
                 <input
                   type="text"
                   value={input}
