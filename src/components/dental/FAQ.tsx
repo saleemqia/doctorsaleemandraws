@@ -12,21 +12,9 @@ import {
 const FAQ = () => {
   const { t, dir } = useLanguage();
 
-  const faqs = [
-    { qKey: "faq.q1", aKey: "faq.a1" },
-    { qKey: "faq.q2", aKey: "faq.a2" },
-    { qKey: "faq.q3", aKey: "faq.a3" },
-    { qKey: "faq.q4", aKey: "faq.a4" },
-    { qKey: "faq.q5", aKey: "faq.a5" },
-    { qKey: "faq.q6", aKey: "faq.a6" },
-    { qKey: "faq.q7", aKey: "faq.a7" },
-    { qKey: "faq.q8", aKey: "faq.a8" },
-    { qKey: "faq.q9", aKey: "faq.a9" },
-    { qKey: "faq.q10", aKey: "faq.a10" },
-    { qKey: "faq.q11", aKey: "faq.a11" },
-    { qKey: "faq.q12", aKey: "faq.a12" },
-    { qKey: "faq.q13", aKey: "faq.a13" },
-  ];
+  // Most-asked first: when, today?, how to book, price, where. Then treatments.
+  const order = [1, 14, 5, 15, 2, 7, 3, 8, 9, 13, 17, 11, 12, 16, 10, 6, 18, 4];
+  const faqs = order.map((n) => ({ qKey: `faq.q${n}`, aKey: `faq.a${n}` }));
 
   // Tell Google about the questions shown on the page (FAQ structured data, in the current language).
   useEffect(() => {

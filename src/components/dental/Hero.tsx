@@ -39,10 +39,19 @@ const Hero = ({ onBookingClick }: HeroProps) => {
             className={dir === "rtl" ? "text-right" : ""}
           >
             {/* The page's main heading (H1) names what we are and where — what people search for. */}
-            <h1 className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium font-sans text-primary mb-6 ${dir === "rtl" ? "" : ""}`}>
-              <Award className="w-4 h-4" />
-              {t("hero.badge")}
-            </h1>
+            <div className="flex flex-wrap items-center gap-2 mb-6">
+              <h1 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium font-sans text-primary">
+                <Award className="w-4 h-4" />
+                {t("hero.badge")}
+              </h1>
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-sm font-semibold text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300">
+                <span className="relative flex w-2 h-2" aria-hidden="true">
+                  <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-500 opacity-60 motion-safe:animate-ping" />
+                  <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-500" />
+                </span>
+                {t("hero.sameDay")}
+              </span>
+            </div>
 
             <h2 className="font-display text-[2.1rem] leading-[1.15] sm:text-5xl lg:text-6xl font-bold sm:leading-tight text-foreground mb-5 sm:mb-6 text-balance">
               {t("hero.title1")}{" "}

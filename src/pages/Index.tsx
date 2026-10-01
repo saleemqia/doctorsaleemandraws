@@ -53,7 +53,7 @@ const Index = () => {
       </main>
       <Footer />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
-      <ChatBot />
+      <ChatBot onBookingClick={() => setIsBookingOpen(true)} />
       <ScrollToTop />
       <MobileActionBar onBookingClick={() => setIsBookingOpen(true)} />
     </div>

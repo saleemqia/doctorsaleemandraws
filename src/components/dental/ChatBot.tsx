@@ -1,132 +1,131 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, X, Send, Bot } from "lucide-react";
+import { MessageCircle, X, Send, Bot, Calendar, Phone, MapPin } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { GOOGLE_MAPS_URL } from "@/config/clinic";
+import { GOOGLE_DIRECTIONS_URL, WHATSAPP_NUMBER } from "@/config/clinic";
+import { findTopic, type AssistantAction } from "@/lib/assistant";
 
 interface Message {
   id: number;
   text: string;
   isBot: boolean;
+  actions?: AssistantAction[];
+  suggestions?: string[]; // translation keys of follow-up questions
 }
 
-const ChatBot = () => {
+interface ChatBotProps {
+  onBookingClick?: () => void;
+}
+
+// Questions offered as one-tap chips. Each chip's text is also matched by findTopic.
+const QUICK_KEYS = ["chat.quickSameDay", "chat.quickPrices", "chat.quickServices", "chat.quickHours", "chat.quickLocation", "chat.quickBooking"];
+
+// After answering a topic, suggest a few related questions (FAQ question keys).
+const FOLLOW_UPS: Record<string, string[]> = {
+  sameDay: ["chat.quickLocation", "chat.quickPrices"],
+  prices: ["chat.quickSameDay", "chat.quickServices"],
+  hours: ["chat.quickSameDay", "chat.quickLocation"],
+  location: ["chat.quickHours", "chat.quickSameDay"],
+  booking: ["chat.quickHours", "chat.quickLocation"],
+  services: ["faq.q8", "faq.q9", "faq.q17"],
+  implants: ["chat.quickPrices", "faq.q13"],
+  veneers: ["chat.quickPrices", "faq.q10"],
+  crowns: ["faq.q8", "chat.quickPrices"],
+  whitening: ["faq.q16", "faq.q9"],
+  rootCanal: ["chat.quickSameDay", "faq.q13"],
+  extraction: ["faq.q8", "chat.quickSameDay"],
+  braces: ["chat.quickPrices", "chat.quickBooking"],
+  children: ["chat.quickSameDay", "faq.q16"],
+  cleaning: ["faq.q10", "chat.quickBooking"],
+};
+
+const ChatBot = ({ onBookingClick }: ChatBotProps) => {
   const { t, language, dir } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [typing, setTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const quickReplies = [
-    t("chat.quickServices"),
-    t("chat.quickHours"),
-    t("chat.quickBooking"),
-  ];
+  const welcome = (): Message => ({ id: 1, text: t("chat.welcome"), isBot: true, suggestions: QUICK_KEYS });
 
-  const getBotResponses = () => ({
-    services: language === "ar" 
-      ? "نقدم مجموعة واسعة من خدمات طب الأسنان:\n\n🦷 تبييض الأسنان\n🔧 زراعة الأسنان\n✨ طب الأسنان التجميلي\n🛡️ علاج قناة الجذر\n📐 تقويم الأسنان\n🔬 أشعة الفم\n🧹 تنظيف الأسنان\n👶 طب أسنان الأطفال\n\nهل تريد معرفة المزيد عن أي خدمة؟"
-      : language === "ku"
-      ? "کۆمەڵێک خزمەتگوزاری ددان پێشکەش دەکەین:\n\n🦷 سپیکردنەوەی ددان\n🔧 چاندنی ددان\n✨ ددانی جوانکاری\n🛡️ چارەسەری کەناڵی ڕەگ\n📐 ڕاستکردنەوەی ددان\n🔬 تیشکی دەم\n🧹 پاککردنەوەی ددان\n👶 ددانی منداڵان\n\nئایا دەتەوێت زیاتر بزانیت دەربارەی هەر خزمەتگوزارییەک؟"
-      : "We offer a wide range of dental services:\n\n🦷 Teeth Whitening\n🔧 Dental Implants\n✨ Cosmetic Dentistry\n🛡️ Root Canal Treatment\n📐 Orthodontics (Braces)\n🔬 Oral Radiology\n🧹 Dental Cleaning\n👶 Pediatric Dentistry\n\nWould you like to know more about any specific service?",
-    prices: language === "ar"
-      ? "تعتمد الأسعار على حالة كل مريض، ويحددها الطبيب بعد الفحص.\n\nاحجز استشارة أو راسلنا على واتساب وسنجيب على أسئلتك:\n📞 07781665000 أو 07507816500"
-      : language === "ku"
-      ? "نرخەکان بەپێی حاڵەتی هەر نەخۆشێک جیاوازن و دوای پشکنین دیاری دەکرێن.\n\nنۆرەی ڕاوێژ دابنێ یان لە واتساپ پەیوەندیمان پێوە بکە:\n📞 07781665000 یان 07507816500"
-      : "Prices depend on each patient's case and are set by the doctor after an examination.\n\nBook a consultation or message us on WhatsApp and we'll answer your questions:\n📞 07781665000 or 07507816500",
-    hours: language === "ar"
-      ? "عيادتنا مفتوحة:\n\n🕒 3:00 - 9:00 مساءً\n🚫 مغلق أيام الجمعة\n\n📍 الموقع: دهوك - شارع قاضي محمد - فوق جرزات شيركو\n🗺️ " + GOOGLE_MAPS_URL + "\n📞 اتصل بنا: 07781665000 أو 07507816500\n\nهل تريد حجز موعد؟"
-      : language === "ku"
-      ? "کلینیکەکەمان کراوەیە:\n\n🕒 ٣:٠٠ - ٩:٠٠ ئێوارە\n🚫 داخراوە ڕۆژی هەینی\n\n📍 شوێن: دهۆک - شەقامی قازی محەمەد - سەرووی جرزاتی شیرکۆ\n🗺️ " + GOOGLE_MAPS_URL + "\n📞 پەیوەندیمان پێوە بکە: 07781665000 یان 07507816500\n\nدەتەوێت نۆرەی پزیشک دابنێیت؟"
-      : "Our clinic is open:\n\n🕒 3:00 PM - 9:00 PM\n🚫 Closed on Fridays\n\n📍 Location: Qazi Mohammad Road, Duhok - Above Sherko Nuts\n🗺️ " + GOOGLE_MAPS_URL + "\n📞 Call us: 07781665000 or 07507816500\n\nWould you like to book an appointment?",
-    booking: language === "ar"
-      ? "يمكنك حجز موعد عبر:\n\n1️⃣ انقر على زر 'حجز موعد' في هذه الصفحة\n2️⃣ اتصل بنا مباشرة: 07781665000 أو 07507816500\n3️⃣ واتساب: انقر على الزر الأخضر\n4️⃣ البريد الإلكتروني: dr.saleemo@gmail.com\n\nسنؤكد موعدك خلال 24 ساعة!"
-      : language === "ku"
-      ? "دەتوانیت نۆرەی پزیشک دابنێیت لە ڕێگای:\n\n1️⃣ کلیک بکە لەسەر دوگمەی 'نۆرەی پزیشک' لەم لاپەڕەیەدا\n2️⃣ ڕاستەوخۆ پەیوەندیمان پێوە بکە: 07781665000 یان 07507816500\n3️⃣ واتساپ: کلیک بکە لەسەر دوگمەی سەوز\n4️⃣ ئیمەیڵ: dr.saleemo@gmail.com\n\nنۆرەی پزیشکت دڵنیا دەکەینەوە لە ماوەی ٢٤ کاتژمێردا!"
-      : "You can book an appointment through:\n\n1️⃣ Click the 'Book Appointment' button on this page\n2️⃣ Call us directly: 07781665000 or 07507816500\n3️⃣ WhatsApp us: Click the green button\n4️⃣ Email: dr.saleemo@gmail.com\n\nWe'll confirm your appointment within 24 hours!",
-    default: language === "ar"
-      ? "شكراً لرسالتك! للحصول على معلومات مفصلة، يرجى الاتصال بنا على:\n\n📞 الهاتف: 07781665000 أو 07507816500\n📧 البريد الإلكتروني: dr.saleemo@gmail.com\n💬 واتساب: انقر على الزر الأخضر\n\nأو يمكنك أن تسألني عن خدماتنا أو أسعارنا أو ساعات العمل!"
-      : language === "ku"
-      ? "سوپاس بۆ پەیامەکەت! بۆ زانیاری وردتر، تکایە پەیوەندیمان پێوە بکە لە:\n\n📞 تەلەفۆن: 07781665000 یان 07507816500\n📧 ئیمەیڵ: dr.saleemo@gmail.com\n💬 واتساپ: کلیک بکە لەسەر دوگمەی سەوز\n\nیان دەتوانیت پرسیارم لێبکەیت دەربارەی خزمەتگوزارییەکانمان، نرخەکان، یان کاتی کارکردن!"
-      : "Thank you for your message! For detailed information, please contact us at:\n\n📞 Phone: 07781665000 or 07507816500\n📧 Email: dr.saleemo@gmail.com\n💬 WhatsApp: Click the green button\n\nOr you can ask me about our services, prices, or working hours!",
-  });
-
-  // Initialize welcome message when language changes or chat opens
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      setMessages([{
-        id: 1,
-        text: t("chat.welcome"),
-        isBot: true,
-      }]);
-    }
-  }, [isOpen, t, messages.length]);
+    if (isOpen && messages.length === 0) setMessages([welcome()]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
-  // Reset messages when language changes
+  // Start the conversation again in the new language.
   useEffect(() => {
-    if (messages.length > 0) {
-      setMessages([{
-        id: 1,
-        text: t("chat.welcome"),
-        isBot: true,
-      }]);
-    }
+    if (messages.length > 0) setMessages([welcome()]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, typing]);
+
+  const answer = (question: string): Message => {
+    const topic = findTopic(question);
+    if (!topic) {
+      return { id: Date.now() + 1, text: t("chat.fallback"), isBot: true, actions: ["whatsapp", "call"], suggestions: QUICK_KEYS.slice(0, 4) };
+    }
+    if (topic.id === "greeting") return { ...welcome(), id: Date.now() + 1 };
+    return {
+      id: Date.now() + 1,
+      text: t(topic.answerKey),
+      isBot: true,
+      actions: topic.actions,
+      suggestions: FOLLOW_UPS[topic.id],
+    };
+  };
 
   const handleSend = (text: string = input) => {
-    if (!text.trim()) return;
-
-    const userMessage: Message = {
-      id: Date.now(),
-      text: text.trim(),
-      isBot: false,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
+    const q = text.trim();
+    if (!q || typing) return;
+    setMessages((prev) => [...prev, { id: Date.now(), text: q, isBot: false }]);
     setInput("");
-
-    // Bot response after a short delay
+    setTyping(true);
     setTimeout(() => {
-      const lowerText = text.toLowerCase().trim();
-      const responses = getBotResponses();
-      
-      let response = responses.default;
-      
-      if (lowerText.includes("service") || lowerText.includes("خدم") || lowerText.includes("خزمەت")) {
-        response = responses.services;
-      } else if (lowerText.includes("price") || lowerText.includes("سعر") || lowerText.includes("نرخ") || lowerText.includes("cost") || lowerText.includes("اسعار") || lowerText.includes("أسعار")) {
-        response = responses.prices;
-      } else if (lowerText.includes("hour") || lowerText.includes("time") || lowerText.includes("ساع") || lowerText.includes("کات") || lowerText.includes("open") || lowerText.includes("where") || lowerText.includes("location") || lowerText.includes("address") || lowerText.includes("موقع") || lowerText.includes("عنوان") || lowerText.includes("شوێن")) {
-        response = responses.hours;
-      } else if (lowerText.includes("book") || lowerText.includes("appointment") || lowerText.includes("حجز") || lowerText.includes("موعد") || lowerText.includes("نۆرە")) {
-        response = responses.booking;
-      }
-
-      const botMessage: Message = {
-        id: Date.now() + 1,
-        text: response,
-        isBot: true,
-      };
-
-      setMessages((prev) => [...prev, botMessage]);
-    }, 800);
+      setMessages((prev) => [...prev, answer(q)]);
+      setTyping(false);
+    }, 500);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+  const actionButton = (action: AssistantAction) => {
+    const base = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors";
+    switch (action) {
+      case "book":
+        return (
+          <button key={action} type="button" onClick={() => { setIsOpen(false); onBookingClick?.(); }}
+            className={`${base} bg-gradient-primary text-primary-foreground hover:opacity-90`}>
+            <Calendar className="w-3.5 h-3.5" />{t("chat.action.book")}
+          </button>
+        );
+      case "whatsapp":
+        return (
+          <a key={action} href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer"
+            className={`${base} bg-[#25D366] text-white hover:opacity-90`}>
+            <MessageCircle className="w-3.5 h-3.5" />{t("chat.action.whatsapp")}
+          </a>
+        );
+      case "call":
+        return (
+          <a key={action} href="tel:07507816500" className={`${base} border border-primary/40 text-primary hover:bg-primary/10`}>
+            <Phone className="w-3.5 h-3.5" />{t("chat.action.call")}
+          </a>
+        );
+      case "directions":
+        return (
+          <a key={action} href={GOOGLE_DIRECTIONS_URL} target="_blank" rel="noopener noreferrer"
+            className={`${base} border border-primary/40 text-primary hover:bg-primary/10`}>
+            <MapPin className="w-3.5 h-3.5" />{t("chat.action.directions")}
+          </a>
+        );
     }
   };
+
+  const last = messages[messages.length - 1];
 
   return (
     <>
@@ -136,9 +135,11 @@ const ChatBot = () => {
         animate={{ scale: 1 }}
         transition={{ delay: 1, type: "spring" }}
         onClick={() => setIsOpen(true)}
+        aria-label={t("chat.title")}
         className={`fixed bottom-[84px] md:bottom-6 ${dir === "rtl" ? "left-4 md:left-6" : "right-4 md:right-6"} z-30 w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-primary text-white shadow-teal hover:shadow-elevated transition-shadow flex items-center justify-center ${isOpen ? "hidden" : ""}`}
       >
         <MessageCircle className="w-6 h-6" />
+        <span className="absolute -top-0.5 -end-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white" aria-hidden="true" />
       </motion.button>
 
       {/* Chat Window */}
@@ -148,62 +149,76 @@ const ChatBot = () => {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed bottom-[84px] md:bottom-6 ${dir === "rtl" ? "left-4 md:left-6" : "right-4 md:right-6"} z-50 w-[360px] max-w-[calc(100vw-32px)] h-[500px] max-h-[calc(100dvh-170px)] md:max-h-[calc(100vh-120px)] bg-card rounded-2xl shadow-elevated border border-border overflow-hidden flex flex-col`}
+            role="dialog"
+            aria-label={t("chat.title")}
+            className={`fixed bottom-[84px] md:bottom-6 ${dir === "rtl" ? "left-4 md:left-6" : "right-4 md:right-6"} z-50 w-[370px] max-w-[calc(100vw-32px)] h-[540px] max-h-[calc(100dvh-170px)] md:max-h-[calc(100vh-120px)] bg-card rounded-2xl shadow-elevated border border-border overflow-hidden flex flex-col`}
           >
             {/* Header */}
             <div className="bg-gradient-primary p-4 text-white flex items-center justify-between">
-              <div className={`flex items-center gap-3 ${dir === "rtl" ? "" : ""}`}>
+              <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                   <Bot className="w-5 h-5" />
                 </div>
-                <div className={dir === "rtl" ? "text-right" : ""}>
+                <div>
                   <h3 className="font-semibold">{t("chat.title")}</h3>
-                  <p className="text-xs text-white/80">{t("chat.status")}</p>
+                  <p className="text-xs text-white/85 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" aria-hidden="true" />
+                    {t("chat.status")}
+                  </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-2 rounded-lg hover:bg-white/20 transition-colors"
-              >
+              <button onClick={() => setIsOpen(false)} aria-label="Close" className="p-2 rounded-lg hover:bg-white/20 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3" aria-live="polite">
               {messages.map((message) => (
                 <motion.div
                   key={message.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`flex ${message.isBot ? (dir === "rtl" ? "justify-end" : "justify-start") : (dir === "rtl" ? "justify-start" : "justify-end")}`}
+                  className={`flex flex-col ${message.isBot ? "items-start" : "items-end"}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-2xl text-sm whitespace-pre-line ${
+                    className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
                       message.isBot
-                        ? `bg-secondary text-secondary-foreground ${dir === "rtl" ? "rounded-br-md" : "rounded-bl-md"}`
-                        : `bg-primary text-primary-foreground ${dir === "rtl" ? "rounded-bl-md" : "rounded-br-md"}`
+                        ? "bg-secondary text-secondary-foreground rounded-es-md"
+                        : "bg-primary text-primary-foreground rounded-ee-md"
                     }`}
-                    dir={dir}
                   >
                     {message.text}
                   </div>
+                  {message.isBot && message.actions && message.actions.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2 max-w-[90%]">{message.actions.map(actionButton)}</div>
+                  )}
                 </motion.div>
               ))}
+              {typing && (
+                <div className="flex items-start">
+                  <div className="bg-secondary rounded-2xl rounded-es-md px-4 py-3 flex gap-1" aria-label="…">
+                    {[0, 1, 2].map((i) => (
+                      <span key={i} className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 motion-safe:animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+                    ))}
+                  </div>
+                </div>
+              )}
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick Replies */}
-            {messages.length < 3 && (
+            {/* Suggested questions for the latest answer */}
+            {!typing && last?.isBot && last.suggestions && last.suggestions.length > 0 && (
               <div className="px-4 pb-2">
-                <div className={`flex flex-wrap gap-2 ${dir === "rtl" ? "justify-end" : ""}`}>
-                  {quickReplies.map((reply) => (
+                {messages.length > 1 && <p className="text-[11px] text-muted-foreground mb-1.5">{t("chat.more")}</p>}
+                <div className="flex flex-wrap gap-1.5 max-h-[84px] overflow-y-auto">
+                  {last.suggestions.map((key) => (
                     <button
-                      key={reply}
-                      onClick={() => handleSend(reply)}
+                      key={key}
+                      onClick={() => handleSend(t(key))}
                       className="px-3 py-1.5 text-xs rounded-full border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
                     >
-                      {reply}
+                      {t(key)}
                     </button>
                   ))}
                 </div>
@@ -211,27 +226,22 @@ const ChatBot = () => {
             )}
 
             {/* Input */}
-            <div className="p-4 border-t border-border">
-              <div className={`flex gap-2 ${dir === "rtl" ? "" : ""}`}>
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder={t("chat.placeholder")}
-                  dir={dir}
-                  className={`flex-1 px-4 py-2 rounded-full border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-sm ${dir === "rtl" ? "text-right" : ""}`}
-                />
-                <Button
-                  variant="teal"
-                  size="icon"
-                  onClick={() => handleSend()}
-                  className="rounded-full"
-                >
-                  <Send className={`w-4 h-4 ${dir === "rtl" ? "rotate-180" : ""}`} />
-                </Button>
-              </div>
-            </div>
+            <form
+              className="p-3 border-t border-border flex gap-2"
+              onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+            >
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={t("chat.placeholder")}
+                aria-label={t("chat.placeholder")}
+                className="flex-1 min-w-0 px-4 py-2 rounded-full border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-base md:text-sm"
+              />
+              <Button type="submit" variant="teal" size="icon" className="rounded-full shrink-0" aria-label="Send">
+                <Send className="w-4 h-4 rtl:-scale-x-100" />
+              </Button>
+            </form>
           </motion.div>
         )}
       </AnimatePresence>
