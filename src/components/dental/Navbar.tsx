@@ -13,6 +13,7 @@ const navLinks = [
   { key: "gallery", href: "#gallery" },
   { key: "testimonials", href: "#testimonials" },
   { key: "kids", href: "#kids" },
+  { key: "posters", href: "#posters" },
   { key: "contact", href: "#contact" },
 ];
 
