@@ -25,6 +25,12 @@ export const BEHOLD_FEED_ID = "";
 
 export const WHATSAPP_NUMBER = "9647507816500";
 
+// Both clinic numbers take calls and WhatsApp.
+export const PHONES = [
+  { tel: "07781665000", shown: "0778 166 5000", whatsapp: "9647781665000" },
+  { tel: "07507816500", shown: "0750 781 6500", whatsapp: "9647507816500" },
+];
+
 // REAL PATIENT REVIEWS — copied word-for-word from the clinic's Google reviews.
 // To add or change a review, edit this list. Do not reword a patient's text.
 export type Review = { name: string; text: string; date: string };
