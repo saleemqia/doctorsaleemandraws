@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Home, Stethoscope, UserRound, Building2, Images, Instagram, MessageSquareQuote,
@@ -34,6 +34,23 @@ const SectionNav = () => {
   const [active, setActive] = useState("home");
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const railRef = useRef<HTMLElement>(null);
+  const skipNextClick = useRef(false);
+
+  // On phones: close the names again after a few seconds, or when touching elsewhere.
+  useEffect(() => {
+    if (!expanded) return;
+    const timer = setTimeout(() => setExpanded(false), 6000);
+    const outside = (e: Event) => {
+      if (railRef.current && !railRef.current.contains(e.target as Node)) setExpanded(false);
+    };
+    document.addEventListener("touchstart", outside, { passive: true });
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("touchstart", outside);
+    };
+  }, [expanded]);
 
   useEffect(() => {
     const els = SECTIONS.map((s) => document.getElementById(s.id)).filter(Boolean) as HTMLElement[];
@@ -52,30 +69,56 @@ const SectionNav = () => {
   }, []);
 
   const go = (id: string) => {
+    if (skipNextClick.current) {
+      skipNextClick.current = false;
+      return;
+    }
     setOpen(false);
+    setExpanded(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
     <>
-      {/* Dot rail, always on the left edge */}
+      {/* Dot rail on the left edge. Mouse over it (or touch it) and it opens to show
+          every section's name, so you can see where each dot will take you. */}
       <nav
+        ref={railRef}
         aria-label={TITLE[lang]}
         dir="ltr"
-        className={`fixed left-0.5 sm:left-1 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-0.5 transition-opacity duration-300 ${
+        onPointerEnter={(e) => e.pointerType === "mouse" && setExpanded(true)}
+        onPointerLeave={(e) => e.pointerType === "mouse" && setExpanded(false)}
+        onTouchStart={() => {
+          if (!expanded) {
+            // First touch only opens the names; the next touch moves to the section.
+            skipNextClick.current = true;
+            setExpanded(true);
+          }
+        }}
+        className={`fixed left-0.5 sm:left-1 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-0.5 transition-all duration-300 ${
           visible ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        } ${expanded ? "items-stretch bg-card/95 backdrop-blur-md border border-border shadow-elevated rounded-2xl p-1.5" : "items-center"}`}
       >
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            if (skipNextClick.current) {
+              skipNextClick.current = false;
+              return;
+            }
+            setOpen(true);
+          }}
           aria-label={TITLE[lang]}
-          className="w-6 h-6 mb-1.5 flex items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft ring-2 ring-white"
+          className={`flex items-center gap-2 mb-1.5 rounded-full bg-gradient-primary text-primary-foreground shadow-soft ring-2 ring-white ${
+            expanded ? "h-8 px-3 text-xs font-semibold" : "w-6 h-6 justify-center"
+          }`}
         >
-          <List className="w-3.5 h-3.5" />
+          <List className="w-3.5 h-3.5 shrink-0" />
+          {expanded && <span dir="auto">{TITLE[lang]}</span>}
         </button>
         {SECTIONS.map((s) => {
           const on = active === s.id;
+          const Icon = s.icon;
           return (
             <button
               key={s.id}
@@ -83,15 +126,27 @@ const SectionNav = () => {
               onClick={() => go(s.id)}
               aria-label={s.label[lang]}
               aria-current={on ? "true" : undefined}
-              className="group relative w-5 h-5 flex items-center justify-center"
+              className={`group relative flex items-center rounded-xl transition-colors ${
+                expanded
+                  ? `gap-2 h-8 ps-1.5 pe-3 text-start ${on ? "bg-primary/10 text-primary" : "text-foreground hover:bg-secondary active:bg-secondary"}`
+                  : "w-5 h-5 justify-center"
+              }`}
             >
-              <span className={`block rounded-full transition-all duration-300 ${on ? "w-2.5 h-5 bg-primary" : "w-2 h-2 bg-slate-400/80 group-hover:bg-primary/70"} ring-2 ring-white shadow-sm`} />
-              <span
-                className="pointer-events-none absolute left-7 whitespace-nowrap rounded-lg bg-foreground text-background text-xs font-semibold px-2.5 py-1 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 transition-all hidden md:block"
-                dir="auto"
-              >
-                {s.label[lang]}
+              <span className="w-5 flex justify-center shrink-0">
+                <span
+                  className={`block rounded-full transition-all duration-300 ring-2 ring-white shadow-sm ${
+                    on ? "w-2.5 h-5 bg-primary" : "w-2 h-2 bg-slate-400/80 group-hover:bg-primary group-hover:w-2.5 group-hover:h-2.5"
+                  }`}
+                />
               </span>
+              {expanded && (
+                <>
+                  <Icon className={`w-4 h-4 shrink-0 ${on ? "text-primary" : "text-muted-foreground group-hover:text-primary"}`} />
+                  <span dir="auto" className={`whitespace-nowrap text-xs sm:text-sm ${on ? "font-bold" : "font-medium group-hover:font-semibold"}`}>
+                    {s.label[lang]}
+                  </span>
+                </>
+              )}
             </button>
           );
         })}
