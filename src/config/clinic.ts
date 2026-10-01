@@ -1,6 +1,9 @@
 // Single source of truth for the clinic's location and public profiles.
 // Change these values here and every section of the site updates.
 
+// Dr. Saleem graduated from the College of Dentistry, University of Baghdad, in 2007.
+export const GRADUATION_YEAR = 2007;
+
 export const CLINIC_LAT = 36.8681965;
 export const CLINIC_LNG = 42.9613024;
 

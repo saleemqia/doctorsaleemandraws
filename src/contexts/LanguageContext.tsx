@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { applySeo, languageFromPath, LANGUAGE_PATHS } from "@/config/seo";
+import { GRADUATION_YEAR } from "@/config/clinic";
 
 type Language = "en" | "ar" | "ku";
 
@@ -97,7 +98,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.location": "Location",
     "hero.locationValue": "Duhok - Qazi Mohammad Rd",
     "hero.experience": "Experience",
-    "hero.years": "15+ Years",
+    "hero.years": "{years} Years",
     "hero.happyPatients": "500+ Happy Patients",
     
     // Services
@@ -127,16 +128,16 @@ const translations: Record<Language, Record<string, string>> = {
     "about.badge": "About Dr. Saleem",
     "about.title1": "Expert Dental Care You Can",
     "about.title2": "Trust",
-    "about.description1": "Dr. Saleem Andraws (also written Salim Andraws) is a dentist in Duhok and a highly qualified dental professional with over 15 years of experience in providing exceptional dental care. With a Master's degree in Oral Radiology and a Bachelor's degree from the prestigious University of Baghdad, Dr. Saleem brings expertise and dedication to every patient.",
+    "about.description1": "Dr. Saleem Andraws (also written Salim Andraws) is a dentist in Duhok. He has been treating patients since graduating from the College of Dentistry, University of Baghdad, in 2007: {years} years of experience. In 2023 he also earned a Master's degree in Oral and Maxillofacial Radiology, which helps him read X-rays precisely and plan each treatment carefully.",
     "about.description2": "At our clinic in Duhok, we combine state-of-the-art technology with a warm, patient-centered approach. Whether you need routine dental care or advanced treatments, we're committed to helping you achieve and maintain a healthy, beautiful smile.",
     "about.oralRadiology": "Oral Radiology",
     "about.univBaghdad": "University of Baghdad",
     "about.happyPatients": "Happy Patients",
     "about.yearsExperience": "Years Experience",
     "about.credTitle": "Qualifications",
-    "about.cred.bds": "Bachelor of Dental Surgery (B.D.S.), University of Baghdad",
-    "about.cred.msc": "Master's degree (M.Sc.) in Oral Radiology",
-    "about.cred.years": "More than 15 years treating patients",
+    "about.cred.bds": "Bachelor of Dental Surgery (B.D.S.), College of Dentistry, University of Baghdad, 2007",
+    "about.cred.msc": "Master's degree (M.Sc.) in Oral and Maxillofacial Radiology, 2023",
+    "about.cred.years": "{years} years treating patients",
     "about.cred.syndicate": "Member of the Kurdistan Dentists Syndicate, Duhok Branch",
     "about.cred.languages": "Speaks Kurdish (Badini), Arabic and English",
     "about.photoCaption": "Dr. Saleem Andraws, dentist in Duhok",
@@ -385,7 +386,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.location": "الموقع",
     "hero.locationValue": "دهوك - شارع قاضي محمد",
     "hero.experience": "الخبرة",
-    "hero.years": "+١٥ سنة",
+    "hero.years": "{years} سنة",
     "hero.happyPatients": "+٥٠٠ مريض سعيد",
     
     // Services
@@ -415,16 +416,16 @@ const translations: Record<Language, Record<string, string>> = {
     "about.badge": "عن الدكتور سليم",
     "about.title1": "رعاية أسنان خبيرة يمكنك",
     "about.title2": "الوثوق بها",
-    "about.description1": "الدكتور سليم أندراوس طبيب أسنان مؤهل تأهيلاً عالياً مع أكثر من ١٥ عاماً من الخبرة. حاصل على ماجستير في أشعة الفم وبكالوريوس من جامعة بغداد المرموقة.",
+    "about.description1": "الدكتور سليم أندراوس طبيب أسنان في دهوك، تخرج من كلية طب الأسنان في جامعة بغداد عام ٢٠٠٧، أي {years} عاماً من الخبرة في علاج المرضى. وفي عام ٢٠٢٣ حصل على الماجستير في أشعة الفم والأسنان، مما يساعده على قراءة الأشعة بدقة وتخطيط كل علاج بعناية.",
     "about.description2": "في عيادتنا في دهوك، نجمع بين أحدث التقنيات والنهج الدافئ المتمحور حول المريض. سواء كنت بحاجة إلى رعاية روتينية أو علاجات متقدمة، نحن ملتزمون بمساعدتك.",
     "about.oralRadiology": "أشعة الفم",
     "about.univBaghdad": "جامعة بغداد",
     "about.happyPatients": "مريض سعيد",
     "about.yearsExperience": "سنوات خبرة",
     "about.credTitle": "المؤهلات",
-    "about.cred.bds": "بكالوريوس طب وجراحة الفم والأسنان (⁦B.D.S.⁩)، جامعة بغداد",
-    "about.cred.msc": "ماجستير (⁦M.Sc.⁩) في أشعة الفم والأسنان",
-    "about.cred.years": "أكثر من ١٥ عاماً في علاج المرضى",
+    "about.cred.bds": "بكالوريوس طب وجراحة الفم والأسنان (⁦B.D.S.⁩)، كلية طب الأسنان، جامعة بغداد، ٢٠٠٧",
+    "about.cred.msc": "ماجستير (⁦M.Sc.⁩) في أشعة الفم والأسنان، ٢٠٢٣",
+    "about.cred.years": "{years} عاماً في علاج المرضى",
     "about.cred.syndicate": "عضو نقابة أطباء أسنان كوردستان، فرع دهوك",
     "about.cred.languages": "يتحدث الكردية (البادينية) والعربية والإنجليزية",
     "about.photoCaption": "الدكتور سليم أندراوس، طبيب أسنان في دهوك",
@@ -674,7 +675,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.location": "شوێن",
     "hero.locationValue": "دهۆک - شەقامی قازی محەمەد",
     "hero.experience": "ئەزموون",
-    "hero.years": "+١٥ ساڵ",
+    "hero.years": "{years} ساڵ",
     "hero.happyPatients": "+٥٠٠ نەخۆشی دڵخۆش",
     
     // Services
@@ -704,16 +705,16 @@ const translations: Record<Language, Record<string, string>> = {
     "about.badge": "دەربارەی دکتۆر سەلیم",
     "about.title1": "چاودێری ددانی شارەزا کە دەتوانیت",
     "about.title2": "متمانەی پێبکەیت",
-    "about.description1": "دکتۆر سەلیم ئەندراوس پزیشکی ددانی شارەزایە بە زیاتر لە ١٥ ساڵ ئەزموون. ماستەری تیشکی دەم و بەکالۆریۆس لە زانکۆی بەغدا.",
+    "about.description1": "دکتۆر سەلیم ئەندراوس نوژدارێ ددانا یە ل دهوکێ. ساڵا ٢٠٠٧ ژ کۆلیژا نوژداریا ددانا ل زانکۆیا بەغدا دەرچوویە، ئانکو {years} ساڵ ئەزموون د چارەسەریا نەخۆشان دا. ساڵا ٢٠٢٣ ماستەر ل تیشکا دەم و ددانا وەرگرت، کو هاریکاریا وی دکەت تیشکان ب دروستی بخوینیت و هەر چارەسەریەکێ ب هویری پلان بکەت.",
     "about.description2": "لە کلینیکەکەماندا لە دهۆک، تەکنەلۆژیای پێشکەوتوو دەگەڵ ڕێبازێکی گەرم و نەخۆش-ناوەندی تێکەڵ دەکەین.",
     "about.oralRadiology": "تیشکی دەم",
     "about.univBaghdad": "زانکۆی بەغدا",
     "about.happyPatients": "نەخۆشی دڵخۆش",
     "about.yearsExperience": "ساڵ ئەزموون",
     "about.credTitle": "بڕوانامە",
-    "about.cred.bds": "بەکالۆریۆس ل نوژداریا ددانا (⁦B.D.S.⁩)، زانکۆیا بەغدا",
-    "about.cred.msc": "ماستەر (⁦M.Sc.⁩) ل تیشکا دەم و ددانا",
-    "about.cred.years": "زێدەتر ژ ١٥ ساڵان چارەسەریا نەخۆشان",
+    "about.cred.bds": "بەکالۆریۆس ل نوژداریا ددانا (⁦B.D.S.⁩)، کۆلیژا نوژداریا ددانا، زانکۆیا بەغدا، ٢٠٠٧",
+    "about.cred.msc": "ماستەر (⁦M.Sc.⁩) ل تیشکا دەم و ددانا، ٢٠٢٣",
+    "about.cred.years": "{years} ساڵ چارەسەریا نەخۆشان",
     "about.cred.syndicate": "ئەندامێ سەندیکایا نوژدارێن ددانا یا کوردستانێ، لقێ دهوکێ",
     "about.cred.languages": "ب کوردی (بادینی)، عەرەبی و ئینگلیزی دئاخڤیت",
     "about.photoCaption": "دکتۆر سەلیم ئەندراوس، نوژدارێ ددانا ل دهوکێ",
@@ -870,8 +871,13 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // {years} = years since graduating in 2007; it updates itself every year.
+  const yearsOfExperience = new Date().getFullYear() - GRADUATION_YEAR;
   const t = (key: string): string => {
-    return translations[language][key] || translations.en[key] || key;
+    const text = translations[language][key] || translations.en[key] || key;
+    if (!text.includes("{years}")) return text;
+    const n = language === "en" ? String(yearsOfExperience) : yearsOfExperience.toLocaleString("ar-EG");
+    return text.replace("{years}", n);
   };
 
   const dir = language === "en" ? "ltr" : "rtl";

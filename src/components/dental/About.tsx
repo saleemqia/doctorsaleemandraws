@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Award, GraduationCap, Users, Heart, CheckCircle2, Star } from "lucide-react";
-import { GOOGLE_MAPS_URL } from "@/config/clinic";
+import { GOOGLE_MAPS_URL, GRADUATION_YEAR } from "@/config/clinic";
 import { useLanguage } from "@/contexts/LanguageContext";
 import drSaleem from "@/assets/dr-saleem.jpg";
 
@@ -11,7 +11,7 @@ const About = () => {
     { icon: GraduationCap, value: "M.Sc.", labelKey: "about.oralRadiology" },
     { icon: Award, value: "B.D.S.", labelKey: "about.univBaghdad" },
     { icon: Users, value: "500+", labelKey: "about.happyPatients" },
-    { icon: Heart, value: "15+", labelKey: "about.yearsExperience" },
+    { icon: Heart, value: String(new Date().getFullYear() - GRADUATION_YEAR), labelKey: "about.yearsExperience" },
   ];
 
   const credentials = ["about.cred.bds", "about.cred.msc", "about.cred.years", "about.cred.syndicate", "about.cred.languages"];
