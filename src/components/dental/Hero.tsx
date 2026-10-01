@@ -135,7 +135,7 @@ const Hero = ({ onBookingClick }: HeroProps) => {
             initial={{ opacity: 0, x: dir === "rtl" ? -30 : 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative w-full max-w-[22rem] sm:max-w-md mx-auto xl:max-w-none"
+            className="relative w-full max-w-[24rem] sm:max-w-lg mx-auto xl:max-w-none"
           >
             <div className="relative">
               {/* Main image */}
@@ -143,7 +143,7 @@ const Hero = ({ onBookingClick }: HeroProps) => {
                 <img
                   src={drSaleem}
                   alt="Dr. Saleem Andraws - Dental Specialist"
-                  className="w-full h-auto object-cover aspect-[4/5]"
+                  className="w-full h-auto object-cover object-[37%_center] aspect-[4/5]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
               </div>
