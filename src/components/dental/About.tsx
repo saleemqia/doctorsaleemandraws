@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
-import { Award, GraduationCap, Users, Heart, CheckCircle2, Star } from "lucide-react";
-import { GOOGLE_MAPS_URL, GRADUATION_YEAR } from "@/config/clinic";
+import { Award, GraduationCap, Users, Heart, CheckCircle2 } from "lucide-react";
+import { GRADUATION_YEAR } from "@/config/clinic";
 import { useLanguage } from "@/contexts/LanguageContext";
-import drSaleem from "@/assets/dr-saleem.jpg";
 
 const About = () => {
   const { t, dir } = useLanguage();
@@ -19,35 +18,7 @@ const About = () => {
   return (
     <section id="about" className="py-20 md:py-28 bg-background relative overflow-hidden">
       <div className="container">
-        <div className={`grid lg:grid-cols-2 gap-12 lg:gap-20 items-center ${dir === "rtl" ? "" : ""}`}>
-          {/* Image */}
-          <motion.div
-            initial={{ opacity: 0, x: dir === "rtl" ? 30 : -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className={dir === "rtl" ? "" : ""}
-          >
-            <div className="relative rounded-3xl overflow-hidden shadow-elevated">
-              <img
-                src={drSaleem}
-                alt={t("about.photoCaption")}
-                loading="lazy"
-                className="w-full h-auto object-cover"
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 pt-10">
-                <p className="text-white font-semibold">{t("about.photoCaption")}</p>
-                <a href={GOOGLE_MAPS_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-white/90 hover:underline">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" /> 5.0 · Google
-                </a>
-              </div>
-            </div>
-            
-            {/* Decorative elements */}
-            <div className={`absolute -bottom-6 ${dir === "rtl" ? "-left-6" : "-right-6"} w-48 h-48 bg-primary/10 rounded-3xl -z-10`} />
-            <div className={`absolute -top-6 ${dir === "rtl" ? "-right-6" : "-left-6"} w-32 h-32 bg-primary/5 rounded-3xl -z-10`} />
-          </motion.div>
-
+        <div className="max-w-4xl mx-auto">
           {/* Content */}
           <motion.div
             initial={{ opacity: 0, x: dir === "rtl" ? -30 : 30 }}
