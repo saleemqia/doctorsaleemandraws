@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Calendar, Globe, ChevronDown, Instagram } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import clinicLogo from "@/assets/clinic-logo.png";
+import AssyrianName from "@/components/dental/AssyrianName";
 import { INSTAGRAM_URL } from "@/config/clinic";
 
 const navLinks = [
@@ -39,22 +40,13 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
       <div className="mx-3 sm:mx-4 md:mx-8 mt-3 sm:mt-4">
         <nav className={`flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl bg-card/90 backdrop-blur-xl border border-border/50 shadow-soft ${dir === "rtl" ? "" : ""}`}>
           {/* Logo */}
-          <a href="#home" className={`flex items-center gap-3 group ${dir === "rtl" ? "" : ""}`}>
+          <a href="#home" className="flex flex-1 min-w-0 items-center gap-3 group">
             <img 
               src={clinicLogo} 
               alt="Dr. Saleem Andraws Dental Clinic" 
               className="h-10 sm:h-12 w-auto object-contain shrink-0"
             />
-            {/* The doctor's name in Assyrian (Syriac script). Fixed direction and font so it
-                looks exactly the same in every site language. */}
-            <span
-              dir="rtl"
-              lang="syr"
-              className="font-syriac text-[1.35rem] sm:text-2xl lg:text-[1.75rem] leading-none text-primary whitespace-nowrap select-none"
-              style={{ unicodeBidi: "isolate", fontFamily: "'Noto Sans Syriac Eastern', 'Noto Sans Syriac', serif", fontWeight: 700 }}
-            >
-              ܕܳܟܬܾܘܪ ܣܠܝܡ ܐܰܢܕܪܰܐܘܳܣ
-            </span>
+            <AssyrianName />
           </a>
 
           {/* Desktop Navigation */}
