@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
+/* Assyrian (Syriac) name in the header: font hosted on the site so it always looks the same. */
+@font-face {
+  font-family: 'Noto Sans Syriac Eastern';
+  src: url('/fonts/syriac-eastern-700.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0700-074F, U+0860-086F, U+200C-200D, U+25CC;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -119,6 +128,11 @@
 }
 
 @layer utilities {
+  .font-syriac {
+    font-family: 'Noto Sans Syriac Eastern', 'Noto Sans Syriac', 'Estrangelo Edessa', serif;
+    font-weight: 700;
+  }
+
   .text-gradient {
     background: var(--gradient-primary);
     -webkit-background-clip: text;

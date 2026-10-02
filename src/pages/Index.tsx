@@ -10,6 +10,7 @@ import Testimonials from "@/components/dental/Testimonials";
 import FAQ from "@/components/dental/FAQ";
 import ClinicTour from "@/components/dental/ClinicTour";
 import DigitalDentistry from "@/components/dental/DigitalDentistry";
+import CaseStudy from "@/components/dental/CaseStudy";
 import Posters from "@/components/dental/Posters";
 import WeeklyHours from "@/components/dental/WeeklyHours";
 import SectionNav from "@/components/dental/SectionNav";
@@ -63,6 +64,7 @@ const Index = () => {
         <About />
         <ClinicTour />
         <DigitalDentistry />
+        <CaseStudy />
         <Gallery />
         <InstagramFeed />
         <Testimonials />

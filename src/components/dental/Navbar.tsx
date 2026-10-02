@@ -45,10 +45,20 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
               alt="Dr. Saleem Andraws Dental Clinic" 
               className="h-10 sm:h-12 w-auto object-contain shrink-0"
             />
+            {/* The doctor's name in Assyrian (Syriac script). Fixed direction and font so it
+                looks exactly the same in every site language. */}
+            <span
+              dir="rtl"
+              lang="syr"
+              className="font-syriac text-[1.35rem] sm:text-2xl lg:text-[1.75rem] leading-none text-primary whitespace-nowrap select-none"
+              style={{ unicodeBidi: "isolate" }}
+            >
+              ܕܳܟܬܾܘܪ ܣܠܝܡ ܐܰܢܕܪܰܐܘܳܣ
+            </span>
           </a>
 
           {/* Desktop Navigation */}
-          <div className={`hidden xl:flex items-center gap-6 2xl:gap-8 ${dir === "rtl" ? "" : ""}`}>
+          <div className={`hidden min-[1700px]:flex items-center gap-6 ${dir === "rtl" ? "" : ""}`}>
             {navLinks.map((link) => (
               <a
                 key={link.key}
@@ -127,7 +137,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden p-2.5 -m-1 rounded-lg hover:bg-secondary transition-colors" aria-label="Menu"
+            className="min-[1700px]:hidden p-2.5 -m-1 rounded-lg hover:bg-secondary transition-colors" aria-label="Menu"
           >
             {mobileMenuOpen ? (
               <X className="w-5 h-5" />
@@ -145,7 +155,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="xl:hidden mt-2 p-5 sm:p-6 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl bg-card/95 backdrop-blur-xl border border-border/50 shadow-elevated"
+              className="min-[1700px]:hidden mt-2 p-5 sm:p-6 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl bg-card/95 backdrop-blur-xl border border-border/50 shadow-elevated"
             >
               <div className="flex flex-col gap-4">
                 {/* Language Selector Mobile */}
