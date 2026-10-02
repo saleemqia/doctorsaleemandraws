@@ -51,7 +51,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
               dir="rtl"
               lang="syr"
               className="font-syriac text-[1.35rem] sm:text-2xl lg:text-[1.75rem] leading-none text-primary whitespace-nowrap select-none"
-              style={{ unicodeBidi: "isolate" }}
+              style={{ unicodeBidi: "isolate", fontFamily: "'Noto Sans Syriac Eastern', 'Noto Sans Syriac', serif", fontWeight: 700 }}
             >
               ܕܳܟܬܾܘܪ ܣܠܝܡ ܐܰܢܕܪܰܐܘܳܣ
             </span>
