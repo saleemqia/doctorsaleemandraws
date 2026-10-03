@@ -4,7 +4,7 @@ import { Calendar, Phone, Clock, MapPin, Award, GraduationCap } from "lucide-rea
 import { PHONES } from "@/config/clinic";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { GOOGLE_MAPS_URL } from "@/config/clinic";
-import drSaleem from "@/assets/dr-saleem.jpg";
+import HeroSlideshow from "@/components/dental/HeroSlideshow";
 
 interface HeroProps {
   onBookingClick: () => void;
@@ -140,12 +140,7 @@ const Hero = ({ onBookingClick }: HeroProps) => {
             <div className="relative">
               {/* Main image */}
               <div className="relative rounded-3xl overflow-hidden shadow-elevated">
-                <img
-                  src={drSaleem}
-                  alt="Dr. Saleem Andraws - Dental Specialist"
-                  className="w-full h-auto object-cover object-[37%_center] aspect-[4/5]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <HeroSlideshow />
               </div>
 
               {/* Floating card */}
