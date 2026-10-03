@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import clinicLogo from "@/assets/clinic-logo.png";
 import { GOOGLE_MAPS_URL, INSTAGRAM_URL } from "@/config/clinic";
+import { parsePath, pathFor, type SitePage } from "@/config/seo";
 
 const Footer = () => {
-  const { t, dir } = useLanguage();
+  const { t, dir, language } = useLanguage();
 
   const mapDirectionsUrl = GOOGLE_MAPS_URL;
 
@@ -17,7 +18,12 @@ const Footer = () => {
     { key: "instagram", href: "#instagram" },
     { key: "testimonials", href: "#testimonials" },
     { key: "contact", href: "#contact" },
+    { key: "case", href: "/case" },
+    { key: "kids", href: "/kids" },
   ];
+  const onHome = parsePath(window.location.pathname)?.page === "";
+  const hrefFor = (href: string) =>
+    href.startsWith("/") ? pathFor(language, href as SitePage) : onHome ? href : pathFor(language, "") + href;
 
   return (
     <footer className="bg-foreground text-background">
@@ -81,7 +87,7 @@ const Footer = () => {
             <ul className="grid grid-cols-2 md:grid-cols-1 gap-x-6 gap-y-2 text-sm text-background/70">
               {navLinks.map((link) => (
                 <li key={link.key}>
-                  <a href={link.href} className="hover:text-white transition-colors">
+                  <a href={hrefFor(link.href)} className="hover:text-white transition-colors">
                     {t(`nav.${link.key}`)}
                   </a>
                 </li>

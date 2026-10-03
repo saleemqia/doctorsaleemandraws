@@ -1,11 +1,12 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ScanLine, Cpu, Crosshair, Play, Sparkles, CheckCircle2 } from "lucide-react";
+import { ScanLine, Cpu, Crosshair, Play, Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
+import { pathFor } from "@/config/seo";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 type L = "en" | "ar" | "ku";
 
-const TEXT: Record<L, { badge: string; title1: string; title2: string; intro: string; videosTitle: string; videoNote: string }> = {
+const TEXT: Record<L, { badge: string; title1: string; title2: string; intro: string; videosTitle: string; videoNote: string; moreLink: string }> = {
   en: {
     badge: "Digital dentistry",
     title1: "Modern Technology",
@@ -13,6 +14,7 @@ const TEXT: Record<L, { badge: string; title1: string; title2: string; intro: st
     intro: "We use the latest digital techniques in dentistry: a 3D intraoral scanner instead of traditional impressions, and digital planning with a surgical guide for dental implants.",
     videosTitle: "From our daily work: 3D scanning",
     videoNote: "Real videos from the clinic. Tap to play.",
+    moreLink: "See a real implant case and our scanning videos",
   },
   ar: {
     badge: "طب الأسنان الرقمي",
@@ -21,6 +23,7 @@ const TEXT: Record<L, { badge: string; title1: string; title2: string; intro: st
     intro: "نستخدم أحدث التقنيات الرقمية في طب الأسنان: الماسح الضوئي ثلاثي الأبعاد داخل الفم بدلاً من الطبعات التقليدية، والتخطيط الرقمي مع الدليل الجراحي لزراعة الأسنان.",
     videosTitle: "من عملنا اليومي: المسح ثلاثي الأبعاد",
     videoNote: "فيديوهات حقيقية من العيادة. اضغط للتشغيل.",
+    moreLink: "شاهد حالة زراعة حقيقية وفيديوهات المسح",
   },
   ku: {
     badge: "نوژداریا ددانا یا دیجیتالی",
@@ -29,6 +32,7 @@ const TEXT: Record<L, { badge: string; title1: string; title2: string; intro: st
     intro: "ئەم نوترین تەکنیکێن دیجیتالی د نوژداریا ددانا دا بکار دئینین: سکانەرا ٣D یا ناڤ دەڤی ل جهێ قالبێن کەڤن، و پلاندانانا دیجیتالی دگەل ڕێبەرێ نەشتەرگەری بۆ چاندنا ددانا.",
     videosTitle: "ژ کارێ مە یێ ڕۆژانە: سکانکرنا ٣D",
     videoNote: "ڤیدیۆیێن ڕاستەقینە ژ کلینیکێ. کلیک بکە دا لێبدەی.",
+    moreLink: "حالەتەکا چاندنێ و ڤیدیۆیێن سکانێ ببینە",
   },
 };
 
@@ -141,7 +145,7 @@ const DigitalDentistry = () => {
           <p className="text-muted-foreground text-base md:text-lg">{c.intro}</p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-4 md:gap-6 mb-12 md:mb-16">
+        <div className="grid md:grid-cols-3 gap-4 md:gap-6 mb-10">
           {FEATURES.map((f, i) => {
             const Icon = f.icon;
             return (
@@ -171,7 +175,29 @@ const DigitalDentistry = () => {
           })}
         </div>
 
-        <h3 className="font-display text-2xl md:text-3xl font-bold text-center mb-2">{c.videosTitle}</h3>
+        <div className="text-center">
+          <a
+            href={pathFor(language, "/case")}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-primary text-primary-foreground font-semibold shadow-teal hover:opacity-95 transition-opacity"
+          >
+            <Play className="w-5 h-5" />
+            {c.moreLink}
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// The 3D-scanning videos, shown on the /case page.
+export const ScanVideos = () => {
+  const { language } = useLanguage();
+  const c = TEXT[language as L];
+  return (
+    <section id="videos" className="py-14 md:py-20 bg-background">
+      <div className="container">
+        <h2 className="font-display text-2xl md:text-4xl font-bold text-center mb-2">{c.videosTitle}</h2>
         <p className="text-center text-sm text-muted-foreground mb-6">{c.videoNote}</p>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 max-w-5xl mx-auto">
           {VIDEOS.map((v) => (

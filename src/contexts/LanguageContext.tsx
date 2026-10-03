@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { applySeo, languageFromPath, LANGUAGE_PATHS } from "@/config/seo";
+import { applySeo, languageFromPath, parsePath, pathFor } from "@/config/seo";
 import { GRADUATION_YEAR } from "@/config/clinic";
 
 type Language = "en" | "ar" | "ku";
@@ -81,6 +81,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.gallery": "Gallery",
     "nav.testimonials": "Testimonials",
     "nav.kids": "Kids' Teeth",
+    "nav.case": "Implant case",
     "nav.posters": "Learn",
     "nav.contact": "Contact",
     "nav.bookAppointment": "Book Appointment",
@@ -371,6 +372,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.gallery": "المعرض",
     "nav.testimonials": "آراء المرضى",
     "nav.kids": "أسنان الأطفال",
+    "nav.case": "حالة زراعة",
     "nav.posters": "تعليمي",
     "nav.contact": "اتصل بنا",
     "nav.bookAppointment": "حجز موعد",
@@ -662,6 +664,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.gallery": "گەلەری",
     "nav.testimonials": "بۆچوونەکان",
     "nav.kids": "ددانێن زارۆکان",
+    "nav.case": "حالەتا چاندنێ",
     "nav.posters": "فێرکاری",
     "nav.contact": "پەیوەندی",
     "nav.bookAppointment": "نۆرەی پزیشک",
@@ -891,13 +894,14 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     document.documentElement.dir = dir;
     document.documentElement.lang = language;
-    // On the home page, keep the address and search info matched to the shown language.
-    if (languageFromPath(window.location.pathname)) {
-      const target = LANGUAGE_PATHS[language];
+    // On the site's pages, keep the address and search info matched to the shown language.
+    const parsed = parsePath(window.location.pathname);
+    if (parsed) {
+      const target = pathFor(language, parsed.page);
       if (window.location.pathname !== target) {
         window.history.replaceState(window.history.state, "", target + window.location.search + window.location.hash);
       }
-      applySeo(language);
+      applySeo(language, parsed.page);
     }
   }, [language, dir]);
 

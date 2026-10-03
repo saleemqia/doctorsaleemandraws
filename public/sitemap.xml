@@ -5,7 +5,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar" />
     <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku" />
-    <lastmod>2026-09-30</lastmod>
+    <lastmod>2026-10-03</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
@@ -13,7 +13,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar" />
     <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku" />
-    <lastmod>2026-09-30</lastmod>
+    <lastmod>2026-10-03</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
@@ -21,7 +21,55 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar" />
     <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku" />
-    <lastmod>2026-09-30</lastmod>
+    <lastmod>2026-10-03</lastmod>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/case</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/case" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/case" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/case" />
+    <lastmod>2026-10-03</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ar/case</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/case" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/case" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/case" />
+    <lastmod>2026-10-03</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ku/case</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/case" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/case" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/case" />
+    <lastmod>2026-10-03</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/kids</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/kids" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/kids" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/kids" />
+    <lastmod>2026-10-03</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ar/kids</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/kids" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/kids" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/kids" />
+    <lastmod>2026-10-03</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ku/kids</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/kids" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/kids" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/kids" />
+    <lastmod>2026-10-03</lastmod>
+    <priority>0.7</priority>
   </url>
 </urlset>

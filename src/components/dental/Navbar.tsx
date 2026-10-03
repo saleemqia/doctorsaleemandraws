@@ -6,6 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import clinicLogo from "@/assets/clinic-logo.png";
 import AssyrianName from "@/components/dental/AssyrianName";
 import { INSTAGRAM_URL } from "@/config/clinic";
+import { parsePath, pathFor, type SitePage } from "@/config/seo";
 
 const navLinks = [
   { key: "home", href: "#home" },
@@ -13,8 +14,8 @@ const navLinks = [
   { key: "about", href: "#about" },
   { key: "gallery", href: "#gallery" },
   { key: "testimonials", href: "#testimonials" },
-  { key: "kids", href: "#kids" },
-  { key: "posters", href: "#posters" },
+  { key: "case", href: "/case" },
+  { key: "kids", href: "/kids" },
   { key: "contact", href: "#contact" },
 ];
 
@@ -34,13 +35,17 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
   const { language, setLanguage, t, dir } = useLanguage();
 
   const currentLang = languages.find((l) => l.code === language);
+  // "#section" links work on the home page; from a sub-page they go to the home page first.
+  const onHome = parsePath(window.location.pathname)?.page === "";
+  const hrefFor = (href: string) =>
+    href.startsWith("/") ? pathFor(language, href as SitePage) : onHome ? href : pathFor(language, "") + href;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
       <div className="mx-3 sm:mx-4 md:mx-8 mt-3 sm:mt-4">
         <nav className={`flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl bg-card/90 backdrop-blur-xl border border-border/50 shadow-soft ${dir === "rtl" ? "" : ""}`}>
           {/* Logo */}
-          <a href="#home" className="flex flex-1 min-w-0 items-center gap-3 group">
+          <a href={pathFor(language, "")} className="flex flex-1 min-w-0 items-center gap-3 group">
             <img 
               src={clinicLogo} 
               alt="Dr. Saleem Andraws Dental Clinic" 
@@ -54,7 +59,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
             {navLinks.map((link) => (
               <a
                 key={link.key}
-                href={link.href}
+                href={hrefFor(link.href)}
                 className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 {t(`nav.${link.key}`)}
@@ -171,7 +176,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
                 {navLinks.map((link) => (
                   <a
                     key={link.key}
-                    href={link.href}
+                    href={hrefFor(link.href)}
                     className={`text-base font-medium text-foreground py-2 ${dir === "rtl" ? "text-right" : ""}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >

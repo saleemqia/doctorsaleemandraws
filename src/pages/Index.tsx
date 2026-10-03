@@ -10,12 +10,10 @@ import Testimonials from "@/components/dental/Testimonials";
 import FAQ from "@/components/dental/FAQ";
 import ClinicTour from "@/components/dental/ClinicTour";
 import DigitalDentistry from "@/components/dental/DigitalDentistry";
-import CaseStudy from "@/components/dental/CaseStudy";
-import Posters from "@/components/dental/Posters";
 import WeeklyHours from "@/components/dental/WeeklyHours";
 import SectionNav from "@/components/dental/SectionNav";
-import KidsTeeth from "@/components/dental/KidsTeeth";
 import Contact from "@/components/dental/Contact";
+import ExploreMore from "@/components/dental/ExploreMore";
 import Footer from "@/components/dental/Footer";
 import BookingModal from "@/components/dental/BookingModal";
 import ChatBot from "@/components/dental/ChatBot";
@@ -35,6 +33,11 @@ const Index = () => {
   useEffect(() => {
     track("page_view");
     startClickTracking();
+    // Coming back from a sub-page with a section in the address (e.g. /ar#contact): go there.
+    if (window.location.hash.length > 1) {
+      const id = decodeURIComponent(window.location.hash.slice(1));
+      setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }), 400);
+    }
   }, []);
   const [showWelcome, setShowWelcome] = useState(() => {
     try {
@@ -64,13 +67,11 @@ const Index = () => {
         <About />
         <ClinicTour />
         <DigitalDentistry />
-        <CaseStudy />
         <Gallery />
         <InstagramFeed />
         <Testimonials />
         <FAQ />
-        <KidsTeeth onBookingClick={openBooking("kids")} />
-        <Posters />
+        <ExploreMore />
         <WeeklyHours />
         <Contact onBookingClick={openBooking("contact")} />
       </main>

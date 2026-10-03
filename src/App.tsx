@@ -7,6 +7,8 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import CasePage from "./pages/CasePage";
+import KidsPage from "./pages/KidsPage";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
@@ -25,6 +27,10 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/ar" element={<Index />} />
               <Route path="/ku" element={<Index />} />
+              {["", "/ar", "/ku"].map((p) => [
+                <Route key={`${p}/case`} path={`${p}/case`} element={<CasePage />} />,
+                <Route key={`${p}/kids`} path={`${p}/kids`} element={<KidsPage />} />,
+              ])}
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
