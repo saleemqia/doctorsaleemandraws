@@ -111,8 +111,8 @@ const Footer = () => {
             <div className={`flex items-start gap-2 text-sm text-background/70 mt-3 ${dir === "rtl" ? "" : ""}`}>
               <Phone className="w-4 h-4 text-[hsl(199,85%,70%)] mt-0.5 flex-shrink-0" />
               <div className={`flex flex-wrap gap-2 ${dir === "rtl" ? "" : ""}`}>
-                <a href="tel:07781665000" className="hover:text-white transition-colors">07781665000</a>
                 <a href="tel:07507816500" className="hover:text-white transition-colors">07507816500</a>
+                <a href="tel:07781665000" className="hover:text-white transition-colors">07781665000</a>
               </div>
             </div>
             <p className="text-sm text-background/50 mt-4">{t("footer.openDaily")}</p>

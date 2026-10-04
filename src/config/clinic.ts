@@ -41,10 +41,10 @@ export const BEHOLD_FEED_ID = "";
 
 export const WHATSAPP_NUMBER = "9647507816500";
 
-// Both clinic numbers take calls and WhatsApp.
+// Both clinic numbers take calls and WhatsApp. The main number (0750) always comes first.
 export const PHONES = [
+  { tel: "07507816500", shown: "0750 781 6500", whatsapp: "9647507816500" }, // main number
   { tel: "07781665000", shown: "0778 166 5000", whatsapp: "9647781665000" },
-  { tel: "07507816500", shown: "0750 781 6500", whatsapp: "9647507816500" },
 ];
 
 // REAL PATIENT REVIEWS — copied word-for-word from the clinic's Google reviews.

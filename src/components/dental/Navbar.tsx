@@ -114,16 +114,16 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
                 <Instagram className="w-4 h-4" />
               </Button>
             </a>
-            <a href="tel:07781665000" className="hidden xl:inline-flex">
-              <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "" : ""}`}>
-                <Phone className="w-4 h-4" />
-                <span className="hidden 2xl:inline">07781665000</span>
-              </Button>
-            </a>
             <a href="tel:07507816500" className="hidden xl:inline-flex">
               <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "" : ""}`}>
                 <Phone className="w-4 h-4" />
                 <span className="hidden 2xl:inline">07507816500</span>
+              </Button>
+            </a>
+            <a href="tel:07781665000" className="hidden xl:inline-flex">
+              <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "" : ""}`}>
+                <Phone className="w-4 h-4" />
+                <span className="hidden 2xl:inline">07781665000</span>
               </Button>
             </a>
             <Button variant="teal" size="sm" onClick={onBookingClick} className={`gap-2 ${dir === "rtl" ? "" : ""}`}>
@@ -191,16 +191,16 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
                       {t("nav.instagram")}
                     </Button>
                   </a>
-                  <a href="tel:07781665000" className="w-full">
-                    <Button variant="outline" className={`w-full justify-center gap-2 ${dir === "rtl" ? "" : ""}`}>
-                      <Phone className="w-4 h-4" />
-                      {t("nav.call")}: 07781665000
-                    </Button>
-                  </a>
                   <a href="tel:07507816500" className="w-full">
                     <Button variant="outline" className={`w-full justify-center gap-2 ${dir === "rtl" ? "" : ""}`}>
                       <Phone className="w-4 h-4" />
                       {t("nav.call")}: 07507816500
+                    </Button>
+                  </a>
+                  <a href="tel:07781665000" className="w-full">
+                    <Button variant="outline" className={`w-full justify-center gap-2 ${dir === "rtl" ? "" : ""}`}>
+                      <Phone className="w-4 h-4" />
+                      {t("nav.call")}: 07781665000
                     </Button>
                   </a>
                   <Button variant="teal" className={`w-full justify-center gap-2 ${dir === "rtl" ? "" : ""}`} onClick={() => { setMobileMenuOpen(false); onBookingClick(); }}>
