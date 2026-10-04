@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Clock, ExternalLink, Navigation, Phone, Instagram } from "lucide-react";
 import { PHONES } from "@/config/clinic";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { GOOGLE_DIRECTIONS_URL, GOOGLE_MAPS_URL, GOOGLE_MAP_EMBED_URL, INSTAGRAM_URL, ENTRANCE_360_EMBED_URLS } from "@/config/clinic";
+import { GOOGLE_DIRECTIONS_URL, GOOGLE_MAPS_URL, GOOGLE_MAP_EMBED_URL, INSTAGRAM_URL, ENTRANCE_360_EMBED_URLS, MAP_APPS } from "@/config/clinic";
 import { useState } from "react";
 import { Map as MapIcon, Rotate3d } from "lucide-react";
 
@@ -15,9 +15,9 @@ const Contact = ({ onBookingClick }: ContactProps) => {
   const { t, dir, language } = useLanguage();
   const [view, setView] = useState<"map" | 0 | 1>("map");
   const VIEW_TEXT = {
-    en: { map: "Map", pano: "360°", hint: "Drag to look around the street and the clinic entrance" },
-    ar: { map: "الخريطة", pano: "360°", hint: "اسحب لتتجول في الشارع وترى مدخل العيادة" },
-    ku: { map: "نەخشە", pano: "360°", hint: "ڕابکێشە دا شەقام و دەرگەهێ کلینیکێ ببینی" },
+    en: { openIn: "Open the location in:", map: "Map", pano: "360°", hint: "Drag to look around the street and the clinic entrance" },
+    ar: { openIn: "افتح الموقع في:", map: "الخريطة", pano: "360°", hint: "اسحب لتتجول في الشارع وترى مدخل العيادة" },
+    ku: { openIn: "جهـ ڤەکە ل:", map: "نەخشە", pano: "360°", hint: "ڕابکێشە دا شەقام و دەرگەهێ کلینیکێ ببینی" },
   }[language];
 
   // Exact clinic location (from the clinic's Google Maps listing)
@@ -95,6 +95,25 @@ const Contact = ({ onBookingClick }: ContactProps) => {
                   <p className="font-semibold text-sm md:text-base">{t("contact.workingHours")}</p>
                   <p className="text-muted-foreground text-sm">{t("contact.workingHoursValue")}</p>
                 </div>
+              </div>
+            </div>
+
+            {/* The same location in every map app */}
+            <div className="mb-5">
+              <p className="text-sm font-semibold mb-2">{VIEW_TEXT.openIn}</p>
+              <div className="flex flex-wrap gap-2" dir="ltr">
+                {MAP_APPS.map((m) => (
+                  <a
+                    key={m.name}
+                    href={m.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card text-sm font-medium hover:border-primary hover:text-primary transition-colors"
+                  >
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: m.color }} aria-hidden="true" />
+                    {m.name}
+                  </a>
+                ))}
               </div>
             </div>
 

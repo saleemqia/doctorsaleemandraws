@@ -10,6 +10,17 @@ export const CLINIC_LNG = 42.9613024;
 // Official Google Maps listing (Google Business Profile)
 export const GOOGLE_MAPS_URL = "https://maps.google.com/maps?cid=12832058961737231247";
 export const GOOGLE_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${CLINIC_LAT},${CLINIC_LNG}`;
+// Open the clinic's exact location in the visitor's favourite map app.
+const NAME = encodeURIComponent("Dr. Saleem Andraws Dental Clinic");
+export const MAP_APPS = [
+  { name: "Google Maps", color: "#4285F4", url: "https://maps.google.com/maps?cid=12832058961737231247" },
+  { name: "Waze", color: "#33CCFF", url: "https://waze.com/ul?ll=36.8681965,42.9613024&navigate=yes&zoom=17" },
+  { name: "Apple Maps", color: "#111827", url: `https://maps.apple.com/?ll=36.8681965,42.9613024&q=${NAME}&z=18` },
+  { name: "Yandex Maps", color: "#FC3F1D", url: "https://yandex.com/maps/?pt=42.9613024,36.8681965&z=18&l=map" },
+  { name: "OpenStreetMap", color: "#7EBC6F", url: "https://www.openstreetmap.org/?mlat=36.8681965&mlon=42.9613024#map=19/36.8681965/42.9613024" },
+  { name: "Bing Maps", color: "#008373", url: `https://www.bing.com/maps?cp=36.8681965~42.9613024&lvl=18&sp=point.36.8681965_42.9613024_${NAME}` },
+];
+
 // 360° photos of the clinic entrance on Google Maps (embedded with Google's own viewer).
 export const ENTRANCE_360_EMBED_URLS = [
   "https://www.google.com/maps/embed?pb=!4v1791104043553!6m8!1m7!1sCAoSHENJQUJJaERNSkpZU1lNQ2JaNmhYY25lQWk1M0w.!2m2!1d36.86816889582164!2d42.96128315471151!3f29.15114!4f0!5f0.7820865974627469",

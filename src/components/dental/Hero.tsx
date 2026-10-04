@@ -109,7 +109,7 @@ const Hero = ({ onBookingClick }: HeroProps) => {
 
             {/* Info Cards */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-xl">
-              <div className={`flex items-center gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-xl bg-card border border-border/50 shadow-soft min-w-0 ${dir === "rtl" ? "text-right" : ""}`}>
+              <a href="#hours" className={`flex items-center gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-xl bg-card border border-border/50 shadow-soft min-w-0 hover:border-primary/50 hover:shadow-card transition-all ${dir === "rtl" ? "text-right" : ""}`}>
                 <div className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-lg bg-primary/10">
                   <Clock className="w-5 h-5 text-primary" />
                 </div>
@@ -117,16 +117,17 @@ const Hero = ({ onBookingClick }: HeroProps) => {
                   <p className="font-semibold text-sm">{t("hero.workingHours")}</p>
                   <p className="text-xs text-muted-foreground">{t("hero.workingHoursValue")}</p>
                 </div>
-              </div>
-              <div className={`flex items-center gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-xl bg-card border border-border/50 shadow-soft min-w-0 ${dir === "rtl" ? "text-right" : ""}`}>
+              </a>
+              <a href={GOOGLE_MAPS_URL} target="_blank" rel="noopener noreferrer" className={`group flex items-center gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-xl bg-card border border-border/50 shadow-soft min-w-0 hover:border-primary/50 hover:shadow-card transition-all ${dir === "rtl" ? "text-right" : ""}`}>
                 <div className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-lg bg-primary/10">
                   <MapPin className="w-5 h-5 text-primary" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="font-semibold text-sm">{t("hero.location")}</p>
                   <p className="text-xs text-muted-foreground">{t("hero.locationValue")}</p>
+                  <p className="text-xs font-semibold text-primary group-hover:underline mt-0.5">{t("contact.openInMaps")}</p>
                 </div>
-              </div>
+              </a>
             </div>
           </motion.div>
 
