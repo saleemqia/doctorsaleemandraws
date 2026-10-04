@@ -17,6 +17,7 @@ const navLinks = [
   { key: "treatments", href: "/treatments" },
   { key: "case", href: "/case" },
   { key: "kids", href: "/kids" },
+  { key: "infographics", href: "/infographics" },
   { key: "contact", href: "#contact" },
 ];
 

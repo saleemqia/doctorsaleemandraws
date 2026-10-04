@@ -37,8 +37,8 @@ export const SEO: Record<SeoLanguage, { title: string; description: string; loca
 
 // Pages of the site. "" is the home page; the others are sub-pages, each in 3 languages:
 // /case, /ar/case, /ku/case and /kids, /ar/kids, /ku/kids.
-export type SitePage = "" | "/case" | "/kids" | "/treatments";
-const PAGES: SitePage[] = ["", "/case", "/kids", "/treatments"];
+export type SitePage = "" | "/case" | "/kids" | "/treatments" | "/infographics";
+const PAGES: SitePage[] = ["", "/case", "/kids", "/treatments", "/infographics"];
 
 export const parsePath = (pathname: string): { lang: SeoLanguage; page: SitePage } | null => {
   let lang: SeoLanguage = "en";
@@ -57,7 +57,7 @@ export const pageUrl = (lang: SeoLanguage, page: SitePage = "") => `${SITE}${pat
 
 export const languageFromPath = (pathname: string): SeoLanguage | null => parsePath(pathname)?.lang ?? null;
 
-const PAGE_SEO: Record<"/case" | "/kids" | "/treatments", Record<SeoLanguage, { title: string; description: string }>> = {
+const PAGE_SEO: Record<"/case" | "/kids" | "/treatments" | "/infographics", Record<SeoLanguage, { title: string; description: string }>> = {
   "/case": {
     en: { title: "Digital Implant Case & 3D Scanning | Dr. Saleem Andraws, Duhok", description: "A real dental implant case step by step: CBCT, digital implant planning, surgical guide and the final result. Plus videos of 3D intraoral scanning at our clinic in Duhok." },
     ar: { title: "حالة زراعة رقمية والمسح ثلاثي الأبعاد | د. سليم أندراوس، دهوك", description: "حالة زراعة أسنان حقيقية خطوة بخطوة: أشعة ثلاثية الأبعاد، تخطيط رقمي للزراعة، دليل جراحي والنتيجة النهائية، مع فيديوهات المسح الضوئي في عيادتنا في دهوك." },
@@ -67,6 +67,11 @@ const PAGE_SEO: Record<"/case" | "/kids" | "/treatments", Record<SeoLanguage, { 
     en: { title: "How Dental Treatments Are Done (Animations) | Dr. Saleem Andraws, Duhok", description: "Step-by-step animations of root canal treatment, dental implants, crowns with a 3D scanner and tooth extraction, explained simply in English, Arabic and Kurdish." },
     ar: { title: "كيف يتم علاج الأسنان (رسوم متحركة) | د. سليم أندراوس، دهوك", description: "رسوم متحركة خطوة بخطوة تشرح علاج العصب وزراعة الأسنان والتيجان بالماسح الضوئي وقلع الأسنان بلغة بسيطة." },
     ku: { title: "چارەسەریا ددانا چاوا دئێتە کرن (ئەنیمەیشن) | د. سەلیم ئەندراوس، دهوک", description: "ئەنیمەیشنێن قۆناغ ب قۆناغ بۆ چارەسەریا دەمارێ، چاندنا ددانا، کراس ب سکانەرا ٣D و هەلکێشانا ددانی ب زمانەکێ سادە." },
+  },
+  "/infographics": {
+    en: { title: "Dental Health Infographics | Dr. Saleem Andraws, Duhok", description: "Clear one-page infographics on daily brushing, gum disease, tooth decay, tooth sensitivity, food for healthy teeth and children's smiles." },
+    ar: { title: "إنفوجرافيك صحة الأسنان | د. سليم أندراوس، دهوك", description: "صور توضيحية في صفحة واحدة عن التفريش اليومي وأمراض اللثة والتسوس وحساسية الأسنان والغذاء الصحي وابتسامات الأطفال." },
+    ku: { title: "ئینفۆگرافیکێن ساخلەمیا ددانا | د. سەلیم ئەندراوس، دهوک", description: "وێنەیێن ڕوونکەر ل سەر فلچەکرنا ڕۆژانە، نەخۆشیێن پوکێ، کڕمبوون، هەستیاریا ددانا، خوارنا ساخلەم و بزەیێن زارۆکان." },
   },
   "/kids": {
     en: { title: "Children's Teeth Guide for Parents | Dr. Saleem Andraws, Duhok", description: "When baby teeth come in and fall out, when permanent teeth arrive, care by age, tips for parents and dental emergencies, plus colourful posters for kids." },

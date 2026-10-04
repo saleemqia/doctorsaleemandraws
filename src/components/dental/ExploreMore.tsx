@@ -43,6 +43,16 @@ const CARDS: { page: SitePage; img: string; title: Record<L, string>; text: Reco
       ku: "ددان کەنگی دەردکەڤن و دکەڤن، چاڤدێری د هەر تەمەنەکی دا، شیرەت، حالەتێن لەز و پۆستەرێن ڕەنگین.",
     },
   },
+  {
+    page: "/infographics",
+    img: "/infographics/decay-stages-thumb.webp",
+    title: { en: "Dental health in pictures (infographics)", ar: "صحة أسنانك بالصور (إنفوجرافيك)", ku: "ساخلەمیا ددانا ب وێنە (ئینفۆگرافیک)" },
+    text: {
+      en: "One-page guides on brushing, gums, decay, sensitivity and food for healthy teeth. Easy to share.",
+      ar: "أدلة في صفحة واحدة عن التفريش واللثة والتسوس والحساسية والغذاء الصحي للأسنان. سهلة المشاركة.",
+      ku: "ڕێبەرێن د پەڕەکێ دا ل سەر فلچەکرن، پوک، کڕمبوون، هەستیاری و خوارنا ساخلەم. ب ساناهی پشک بکە.",
+    },
+  },
 ];
 
 // Small cards on the home page that lead to the sub-pages, so the home page stays short.
@@ -62,7 +72,7 @@ const ExploreMore = () => {
             {c.title1} <span className="text-gradient">{c.title2}</span>
           </h2>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
           {CARDS.map((card, i) => (
             <motion.a
               key={card.page}
