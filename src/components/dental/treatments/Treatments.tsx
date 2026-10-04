@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Clapperboard, Calendar, Info } from "lucide-react";
+import { Clapperboard, Calendar, Info, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TreatmentPlayer, { type Step } from "./TreatmentPlayer";
@@ -8,7 +8,7 @@ import type { ComponentType } from "react";
 
 type L = "en" | "ar" | "ku";
 
-const TEXT: Record<L, { badge: string; title1: string; title2: string; intro: string; note: string; cta: string }> = {
+const TEXT: Record<L, { badge: string; title1: string; title2: string; intro: string; note: string; cta: string; video: string; videoBy: string }> = {
   en: {
     badge: "How it works",
     title1: "How Is the",
@@ -16,6 +16,8 @@ const TEXT: Record<L, { badge: string; title1: string; title2: string; intro: st
     intro: "Short animations that show, step by step, what happens during common treatments. Knowing what to expect makes the visit easier.",
     note: "Simplified drawings for explanation. The doctor examines you and explains the plan that suits your own case.",
     cta: "Book a visit",
+    video: "Watch the 3D animation",
+    videoBy: "Video by",
   },
   ar: {
     badge: "كيف يتم العلاج",
@@ -24,6 +26,8 @@ const TEXT: Record<L, { badge: string; title1: string; title2: string; intro: st
     intro: "رسوم متحركة قصيرة تشرح خطوة بخطوة ما يحدث في أشهر العلاجات. عندما تعرف ماذا ينتظرك تصبح الزيارة أسهل.",
     note: "رسوم مبسطة للتوضيح. يفحصك الطبيب ويشرح لك الخطة المناسبة لحالتك.",
     cta: "احجز زيارة",
+    video: "شاهد الفيديو ثلاثي الأبعاد",
+    videoBy: "الفيديو من",
   },
   ku: {
     badge: "چاوا چارەسەری دئێتە کرن",
@@ -32,16 +36,20 @@ const TEXT: Record<L, { badge: string; title1: string; title2: string; intro: st
     intro: "وێنەیێن لڤۆکێن کورت کو قۆناغ ب قۆناغ نیشان ددەن د چارەسەریێن بەربەلاڤ دا چ دقەومیت. دەمێ تو بزانی چ چاڤەڕێیا تە دکەت، سەردان ئاسانتر دبیت.",
     note: "وێنەیێن سادەکری بۆ ڕوونکرنێ. دکتۆر تە دپشکنیت و پلانا گونجای بۆ حالەتێ تە ڕوون دکەت.",
     cta: "نۆرەیەکێ بگرە",
+    video: "ڤیدیۆیا 3D ببینە",
+    videoBy: "ڤیدیۆ ژ",
   },
 };
 
-interface Treatment { id: string; name: Record<L, string>; Scene: ComponentType<SceneProps>; steps: Step[] }
+// video: an optional 3D animation shown from YouTube (embedded with YouTube's own player, not copied).
+interface Treatment { id: string; name: Record<L, string>; Scene: ComponentType<SceneProps>; steps: Step[]; video?: { id: string; credit: string } }
 
 const TREATMENTS: Treatment[] = [
   {
     id: "root-canal",
     name: { en: "Root canal treatment", ar: "علاج العصب (حشو العصب)", ku: "چارەسەریا دەمارێ (حەشوا دەمارێ)" },
     Scene: RootCanalScene,
+    video: { id: "VR8IQ9QFdWw", credit: "VOKA 3D Anatomy & Pathology" },
     steps: [
       { title: { en: "The infected tooth", ar: "السن الملتهب", ku: "ددانێ هەوکری" },
         text: { en: "Deep decay reaches the nerve (pulp). It becomes inflamed and painful, and infection can form at the root tip.", ar: "يصل التسوس العميق إلى العصب (اللب) فيلتهب ويسبب الألم، وقد يتكوّن خراج عند طرف الجذر.", ku: "کڕمبوونا کویر دگەهیتە دەمارێ، هەو دکەت و ئێشێ چێدکەت، و دبیت کێم ل سەرێ ڕەهی چێببیت." } },
@@ -104,6 +112,37 @@ const TREATMENTS: Treatment[] = [
   },
 ];
 
+// Loads YouTube only when the visitor taps, using the privacy-enhanced (no-cookie) player.
+const YouTubeVideo = ({ id, title, label, credit }: { id: string; title: string; label: string; credit: string }) => {
+  const [on, setOn] = useState(false);
+  return (
+    <div className="mt-8 pt-6 border-t border-border">
+      <div className="relative aspect-video max-w-3xl mx-auto rounded-2xl overflow-hidden bg-black shadow-card">
+        {on ? (
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`}
+            title={title}
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+            className="absolute inset-0 w-full h-full"
+          />
+        ) : (
+          <button type="button" onClick={() => setOn(true)} className="group absolute inset-0 w-full h-full" aria-label={title}>
+            <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" loading="lazy" className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+            <span className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/35">
+              <span className="w-16 h-16 rounded-full bg-white/95 flex items-center justify-center shadow-elevated">
+                <Play className="w-7 h-7 text-primary fill-primary ms-1" />
+              </span>
+              <span className="text-white font-semibold drop-shadow">{label}</span>
+            </span>
+          </button>
+        )}
+      </div>
+      <p className="text-center text-xs text-muted-foreground mt-2">{credit}</p>
+    </div>
+  );
+};
+
 const Treatments = ({ onBookingClick }: { onBookingClick: () => void }) => {
   const { language } = useLanguage();
   const lang = language as L;
@@ -145,6 +184,7 @@ const Treatments = ({ onBookingClick }: { onBookingClick: () => void }) => {
         <div className="max-w-5xl mx-auto bg-card rounded-3xl border border-border shadow-soft p-4 sm:p-6 md:p-8">
           <h2 className="font-display text-2xl md:text-3xl font-bold mb-5 text-center md:text-start">{t.name[lang]}</h2>
           <TreatmentPlayer key={t.id} Scene={t.Scene} steps={t.steps} lang={lang} label={t.name[lang]} />
+          {t.video && <YouTubeVideo key={t.video.id} id={t.video.id} title={`${t.name[lang]} — ${c.video}`} label={c.video} credit={`${c.videoBy} ${t.video.credit} · YouTube`} />}
         </div>
 
         <p className="flex items-start justify-center gap-2 text-xs text-muted-foreground mt-6 max-w-2xl mx-auto text-center">
