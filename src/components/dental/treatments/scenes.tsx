@@ -111,7 +111,7 @@ const Pain = ({ on }: { on: boolean }) => (
 
 const Label = ({ on, x, y, children }: { on: boolean; x: number; y: number; children: string }) => (
   <motion.g {...fade(on, 0.3)}>
-    <rect x={x - 44} y={y - 14} width="88" height="22" rx="11" fill={C.skyDark} />
+    <rect x={x - Math.max(44, children.length * 3.6 + 12)} y={y - 14} width={Math.max(88, children.length * 7.2 + 24)} height="22" rx="11" fill={C.skyDark} />
     <text x={x} y={y + 2} textAnchor="middle" fontSize="11" fontWeight="700" fill="#ffffff" fontFamily="system-ui, sans-serif">
       {children}
     </text>
@@ -328,3 +328,92 @@ export const ExtractionScene = ({ step, lang }: SceneProps) => (
     <Label on={step === 3} x={120} y={88}>{lang === "en" ? "Healing" : lang === "ar" ? "التئام" : "ساخبوون"}</Label>
   </>
 );
+
+// ---------- How decay progresses: 5 steps ----------
+export const DecayScene = ({ step, lang }: SceneProps) => (
+  <>
+    <Defs />
+    <Jaw />
+    <Tooth pulpColor={step >= 3 ? C.pulp : "#f6c9c9"} />
+    {/* 1. white chalky spot on the enamel */}
+    <motion.ellipse cx="144" cy="36" rx="9" ry="6" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" {...fade(step === 0)} />
+    {/* 2-5. the brown cavity grows deeper */}
+    <motion.path
+      fill={C.decay}
+      initial={false}
+      animate={{
+        opacity: step >= 1 ? 1 : 0,
+        d:
+          step <= 1
+            ? "M136 30 Q146 26 154 32 Q150 42 142 42 Q136 38 136 30 Z"
+            : step === 2
+              ? "M130 28 Q148 22 158 32 Q154 62 140 70 Q128 58 130 28 Z"
+              : "M128 28 Q150 20 160 32 Q154 70 136 82 Q122 64 128 28 Z",
+      }}
+      transition={{ duration: 1.2, ease: "easeInOut" }}
+    />
+    {/* sensitivity arrows when decay reaches the dentin */}
+    <motion.g {...fade(step === 2, 0.4)}>
+      {[0, 1].map((i) => (
+        <motion.path key={i} d={`M${168 + i * 8} 48 l10 -6 m-10 6 l10 6`} stroke={C.sky} strokeWidth="2.5" fill="none" strokeLinecap="round"
+          animate={step === 2 ? { x: [0, 4, 0] } : {}} transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }} />
+      ))}
+    </motion.g>
+    <motion.path d={T_PULP} fill="none" stroke="#f87171" strokeWidth="5" initial={false}
+      animate={step >= 3 ? { opacity: [0.2, 0.9, 0.2] } : { opacity: 0 }}
+      transition={step >= 3 ? { duration: 1.4, repeat: Infinity } : { duration: 0.3 }} />
+    <Pain on={step >= 3} />
+    <motion.circle cx="140" cy="248" r="11" fill="#fbbf24" stroke="#f59e0b" strokeWidth="2"
+      style={{ transformBox: "fill-box", transformOrigin: "center" }}
+      initial={false}
+      animate={step >= 4 ? { opacity: 1, scale: [1, 1.15, 1] } : { opacity: 0, scale: 0.3 }}
+      transition={step >= 4 ? { duration: 1.4, repeat: Infinity } : { duration: 0.4 }} />
+    <Label on={step === 0} x={120} y={268}>{lang === "en" ? "Enamel" : lang === "ar" ? "المينا" : "مینا"}</Label>
+    <Label on={step === 2} x={120} y={268}>{lang === "en" ? "Dentin" : lang === "ar" ? "العاج" : "عاج"}</Label>
+    <Label on={step === 3} x={120} y={268}>{lang === "en" ? "Nerve" : lang === "ar" ? "العصب" : "دەمار"}</Label>
+  </>
+);
+
+// ---------- What happens when a lost tooth is not replaced: 4 steps ----------
+export const MissingToothScene = ({ step, lang }: SceneProps) => {
+  const NEIGHBOR_L = "M10 40 Q40 22 72 30 L74 108 Q70 150 66 240 Q60 250 50 240 L40 150 Q25 120 10 110Z";
+  const NEIGHBOR_R = "M230 40 Q200 22 168 30 L166 108 Q170 150 174 240 Q180 250 190 240 L200 150 Q215 120 230 110Z";
+  return (
+    <>
+      <Defs />
+      <rect width="240" height="280" fill={C.bg} />
+      {/* opposing upper tooth grows down into the gap */}
+      <motion.g initial={false} animate={{ y: step >= 2 ? 46 : 0 }} transition={{ duration: 1.4, ease: "easeInOut" }}>
+        <path d="M98 -40 L142 -40 L144 16 Q120 28 96 16 Z" fill={C.dentin} stroke={C.outline} strokeWidth="2" />
+        <path d="M96 0 Q120 12 144 0 L144 16 Q120 28 96 16 Z" fill={C.enamel} />
+      </motion.g>
+      <rect y="140" width="240" height="140" fill={C.bone} />
+      <rect y="140" width="240" height="140" fill="url(#boneDots)" />
+      {/* bone shrinks where the tooth is missing */}
+      <motion.path
+        fill={C.bg}
+        initial={false}
+        animate={{ d: step >= 3 ? "M74 139 Q120 190 166 139 Z" : "M74 139 Q120 140 166 139 Z" }}
+        transition={{ duration: 1.4 }}
+      />
+      <motion.path
+        fill={C.gum}
+        initial={false}
+        animate={{ d: step >= 3 ? "M0 168 L0 124 Q40 118 72 122 Q120 182 168 122 Q200 118 240 124 L240 168 Q120 214 0 168 Z" : "M0 168 L0 124 Q40 118 72 122 Q120 138 168 122 Q200 118 240 124 L240 168 Z" }}
+        transition={{ duration: 1.4 }}
+      />
+      {/* neighbours tilt into the gap */}
+      <motion.g style={{ transformBox: "fill-box", transformOrigin: "50% 100%" }} initial={false} animate={{ rotate: step >= 1 ? 9 : 0 }} transition={{ duration: 1.3 }}>
+        <path d={NEIGHBOR_L} fill={C.dentin} stroke={C.outline} strokeWidth="2" />
+        <path d="M10 40 Q40 22 72 30 L74 106 Q40 112 10 106 Z" fill={C.enamel} opacity="0.9" />
+      </motion.g>
+      <motion.g style={{ transformBox: "fill-box", transformOrigin: "50% 100%" }} initial={false} animate={{ rotate: step >= 1 ? -9 : 0 }} transition={{ duration: 1.3 }}>
+        <path d={NEIGHBOR_R} fill={C.dentin} stroke={C.outline} strokeWidth="2" />
+        <path d="M230 40 Q200 22 168 30 L166 106 Q200 112 230 106 Z" fill={C.enamel} opacity="0.9" />
+      </motion.g>
+      <Label on={step === 1} x={120} y={110}>{lang === "en" ? "Teeth tilt" : lang === "ar" ? "ميلان الأسنان" : "لاربوونا ددانا"}</Label>
+      <Label on={step === 2} x={120} y={110}>{lang === "en" ? "Over-eruption" : lang === "ar" ? "نزول السن المقابل" : "دابەزینا ددانێ بەرامبەر"}</Label>
+      <Label on={step === 3} x={120} y={110}>{lang === "en" ? "Bone loss" : lang === "ar" ? "ذوبان العظم" : "کێمبوونا هەستی"}</Label>
+    </>
+  );
+};

@@ -3,7 +3,8 @@ import { Clapperboard, Calendar, Info, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TreatmentPlayer, { type Step } from "./TreatmentPlayer";
-import { RootCanalScene, ImplantScene, CrownScene, ExtractionScene, type SceneProps } from "./scenes";
+import { RootCanalScene, ImplantScene, CrownScene, ExtractionScene, DecayScene, MissingToothScene, type SceneProps } from "./scenes";
+import VideoLibrary from "./VideoLibrary";
 import type { ComponentType } from "react";
 
 type L = "en" | "ar" | "ku";
@@ -45,6 +46,23 @@ const TEXT: Record<L, { badge: string; title1: string; title2: string; intro: st
 interface Treatment { id: string; name: Record<L, string>; Scene: ComponentType<SceneProps>; steps: Step[]; video?: { id: string; credit: string } }
 
 const TREATMENTS: Treatment[] = [
+  {
+    id: "decay",
+    name: { en: "How decay progresses", ar: "كيف يتطور التسوس", ku: "کڕمبوون چاوا پێش دکەڤیت" },
+    Scene: DecayScene,
+    steps: [
+      { title: { en: "A white spot", ar: "بقعة بيضاء", ku: "پەڵەیەکا سپی" },
+        text: { en: "Acid from sugar and bacteria softens the enamel. At this stage fluoride and good brushing can still stop it.", ar: "الأحماض من السكر والبكتيريا تُضعف المينا. في هذه المرحلة يمكن إيقافه بالفلورايد والتفريش الجيد.", ku: "ترشێن شەکر و بەکتریایان مینا لاواز دکەن. د ڤێ قۆناغێ دا هێشتا ب فلۆراید و فلچەکرنا باش دئێتە ڕاوەستاندن." } },
+      { title: { en: "A cavity in the enamel", ar: "تسوس في المينا", ku: "کڕمبوون د مینایێ دا" },
+        text: { en: "A small brown hole forms. It usually doesn't hurt yet, so a check-up finds it early. A small filling fixes it.", ar: "تتكوّن فجوة بنية صغيرة، غالباً بدون ألم، لذلك يكشفها الفحص الدوري مبكراً. حشوة صغيرة تعالجها.", ku: "کونەکێ قاوەیی یێ بچووک چێدبیت، ب گشتی بێ ئێش، لەوما پشکنین زوو دبینیت. حەشوەکا بچووک چارەسەر دکەت." } },
+      { title: { en: "Into the dentin", ar: "وصول التسوس إلى العاج", ku: "گەهشتن بۆ عاجێ" },
+        text: { en: "Decay spreads faster in the softer dentin. Cold and sweet foods start to cause sensitivity.", ar: "ينتشر التسوس أسرع في العاج الأطرى، وتبدأ الحساسية من البارد والحلو.", ku: "کڕمبوون د عاجێ نەرمتر دا زووتر بەلاڤ دبیت، و هەستیاری ژ سار و شرینیێ دەست پێدکەت." } },
+      { title: { en: "It reaches the nerve", ar: "الوصول إلى العصب", ku: "گەهشتن بۆ دەمارێ" },
+        text: { en: "The nerve becomes inflamed: strong pain, especially at night. Now the tooth needs root canal treatment.", ar: "يلتهب العصب: ألم شديد خاصة في الليل. الآن يحتاج السن إلى علاج العصب.", ku: "دەمار هەو دکەت: ئێشەکا توند ب تایبەتی ب شەڤ. نوکە ددان پێدڤی چارەسەریا دەمارێ یە." } },
+      { title: { en: "Abscess at the root", ar: "خراج عند الجذر", ku: "کێم ل سەرێ ڕەهی" },
+        text: { en: "Untreated infection spreads to the bone at the root tip and can cause swelling. Come in quickly.", ar: "الالتهاب غير المعالج ينتشر إلى العظم عند طرف الجذر وقد يسبب تورماً. راجعنا بسرعة.", ku: "هەوکرنا چارەسەرنەکری دگەهیتە هەستیێ سەرێ ڕەهی و دبیت نەپسینێ چێبکەت. زوو وەرە." } },
+    ],
+  },
   {
     id: "root-canal",
     name: { en: "Root canal treatment", ar: "علاج العصب (حشو العصب)", ku: "چارەسەریا دەمارێ (حەشوا دەمارێ)" },
@@ -108,6 +126,21 @@ const TREATMENTS: Treatment[] = [
         text: { en: "The doctor loosens the tooth gently and removes it, protecting the bone around it.", ar: "يحرّك الطبيب السن بلطف ثم يقلعه، مع الحفاظ على العظم حوله.", ku: "دکتۆر ددانی ب نەرمی دلەقینیت و هەلدکێشیت، دگەل پاراستنا هەستیێ دۆر." } },
       { title: { en: "Healing and what's next", ar: "الالتئام وما بعده", ku: "ساخبوون و پاشی" },
         text: { en: "Bite on gauze, avoid rinsing for the first day, and the gum heals. Later the gap can be replaced with an implant or a bridge.", ar: "اعضض على الشاش، ولا تمضمض في اليوم الأول، فتلتئم اللثة. لاحقاً يمكن تعويض الفراغ بزراعة أو جسر.", ku: "ل سەر گازێ بگەزە، ڕۆژا ئێکێ دەڤێ خۆ نەشۆ، و پوک ساخ دبیت. پاشی دشێی ڤالاهیێ ب چاندنێ یان جسرێ پڕ بکەی." } },
+    ],
+  },
+  {
+    id: "missing",
+    name: { en: "If a lost tooth is not replaced", ar: "إذا لم يُعوَّض السن المفقود", ku: "ئەگەر ددانێ کەفتی نەئێتە گوهۆڕین" },
+    Scene: MissingToothScene,
+    steps: [
+      { title: { en: "A tooth is lost", ar: "فقدان سن", ku: "ددانەک دکەڤیت" },
+        text: { en: "Right after losing a tooth, the gap seems harmless. But the teeth around it start to change.", ar: "بعد فقدان السن مباشرة يبدو الفراغ بلا ضرر، لكن الأسنان حوله تبدأ بالتغيّر.", ku: "پشتی کەفتنا ددانی، ڤالاهی بێ زیان دیار دبیت، بەلێ ددانێن دۆر دەست ب گوهۆڕینێ دکەن." } },
+      { title: { en: "Neighbouring teeth tilt", ar: "ميلان الأسنان المجاورة", ku: "ددانێن نێزیک لار دبن" },
+        text: { en: "The teeth next to the gap slowly lean into it. Gaps open, food gets trapped and the bite changes.", ar: "تميل الأسنان المجاورة ببطء نحو الفراغ، فتنفتح فراغات ويعلق الطعام ويتغير الإطباق.", ku: "ددانێن نێزیک هێدی بەرەو ڤالاهیێ لار دبن، کەلش ڤەدبن، خوارن تێدا دمینیت و گەستن دگوهۆڕیت." } },
+      { title: { en: "The opposite tooth moves", ar: "نزول السن المقابل", ku: "ددانێ بەرامبەر دلڤیت" },
+        text: { en: "With nothing to bite on, the tooth in the other jaw grows out of its place. This makes later treatment harder.", ar: "السن المقابل في الفك الآخر لا يجد ما يعض عليه فيخرج من مكانه، فيصعب العلاج لاحقاً.", ku: "ددانێ بەرامبەر د شویلکا دی دا چ نابینیت بگەزیت، لەوما ژ جهێ خۆ دەردکەڤیت و چارەسەری پاشی زەحمەتتر دبیت." } },
+      { title: { en: "The jaw bone shrinks", ar: "ذوبان عظم الفك", ku: "هەستیێ شویلکێ کێم دبیت" },
+        text: { en: "Without a root, the bone shrinks over time and the face can look older. Replacing the tooth early (implant or bridge) prevents this.", ar: "بدون جذر يذوب العظم مع الوقت وقد يبدو الوجه أكبر سناً. تعويض السن مبكراً (زراعة أو جسر) يمنع ذلك.", ku: "بێ ڕەه هەستی ب دەمی کێم دبیت و دبیت ڕوو پیرتر دیار ببیت. گوهۆڕینا ددانی زوو (چاندن یان جسر) ڤێ ڕێگری دکەت." } },
     ],
   },
 ];
@@ -186,6 +219,8 @@ const Treatments = ({ onBookingClick }: { onBookingClick: () => void }) => {
           <TreatmentPlayer key={t.id} Scene={t.Scene} steps={t.steps} lang={lang} label={t.name[lang]} />
           {t.video && <YouTubeVideo key={t.video.id} id={t.video.id} title={`${t.name[lang]} — ${c.video}`} label={c.video} credit={`${c.videoBy} ${t.video.credit} · YouTube`} />}
         </div>
+
+        <VideoLibrary lang={lang} />
 
         <p className="flex items-start justify-center gap-2 text-xs text-muted-foreground mt-6 max-w-2xl mx-auto text-center">
           <Info className="w-4 h-4 shrink-0" />
