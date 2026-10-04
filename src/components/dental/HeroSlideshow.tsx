@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import drClinic from "@/assets/dr-saleem-clinic.webp";
 import drSaleem from "@/assets/dr-saleem.jpg";
 import drOffice from "@/assets/dr-saleem-office.webp";
 import drConference from "@/assets/dr-saleem-conference.webp";
@@ -6,6 +7,7 @@ import drConference from "@/assets/dr-saleem-conference.webp";
 // Photos of the doctor in the hero, cross-fading every few seconds.
 // To add a photo: put it in src/assets (portrait 4:5 works best) and add it here.
 const SLIDES = [
+  { src: drClinic, pos: "center", alt: "Dr. Saleem Andraws in the treatment room of his clinic in Duhok" },
   { src: drSaleem, pos: "37% center", alt: "Dr. Saleem Andraws, dentist in Duhok" },
   { src: drOffice, pos: "center", alt: "Dr. Saleem Andraws in his office at the clinic" },
   { src: drConference, pos: "center", alt: "Dr. Saleem Andraws at a dental conference and exhibition" },
