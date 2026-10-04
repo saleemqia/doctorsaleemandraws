@@ -10,9 +10,11 @@ export const CLINIC_LNG = 42.9613024;
 // Official Google Maps listing (Google Business Profile)
 export const GOOGLE_MAPS_URL = "https://maps.google.com/maps?cid=12832058961737231247";
 export const GOOGLE_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${CLINIC_LAT},${CLINIC_LNG}`;
-// 360° photo of the clinic entrance on Google Maps (embedded with Google's own viewer).
-export const ENTRANCE_360_EMBED_URL =
-  "https://www.google.com/maps/embed?pb=!4v1791104043553!6m8!1m7!1sCAoSHENJQUJJaERNSkpZU1lNQ2JaNmhYY25lQWk1M0w.!2m2!1d36.86816889582164!2d42.96128315471151!3f29.15114!4f0!5f0.7820865974627469";
+// 360° photos of the clinic entrance on Google Maps (embedded with Google's own viewer).
+export const ENTRANCE_360_EMBED_URLS = [
+  "https://www.google.com/maps/embed?pb=!4v1791104043553!6m8!1m7!1sCAoSHENJQUJJaERNSkpZU1lNQ2JaNmhYY25lQWk1M0w.!2m2!1d36.86816889582164!2d42.96128315471151!3f29.15114!4f0!5f0.7820865974627469",
+  "https://www.google.com/maps/embed?pb=!4v1791104116795!6m8!1m7!1sCAoSHENJQUJJaEJhVGhXWUJDeU9EQWxTQUY2Y29ZUGY.!2m2!1d36.86816047669017!2d42.96125218312823!3f32.1230084584923!4f1.7327316840743805!5f0.7820865974627469",
+];
 export const GOOGLE_MAP_EMBED_URL = `https://www.google.com/maps?q=${CLINIC_LAT},${CLINIC_LNG}&z=17&output=embed`;
 export const GOOGLE_WRITE_REVIEW_URL =
   "https://search.google.com/local/writereview?placeid=ChIJHQVly9aNCEARjys3d6OhFLI";

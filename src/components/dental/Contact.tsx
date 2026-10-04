@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Clock, ExternalLink, Navigation, Phone, Instagram } from "lucide-react";
 import { PHONES } from "@/config/clinic";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { GOOGLE_DIRECTIONS_URL, GOOGLE_MAPS_URL, GOOGLE_MAP_EMBED_URL, INSTAGRAM_URL, ENTRANCE_360_EMBED_URL } from "@/config/clinic";
+import { GOOGLE_DIRECTIONS_URL, GOOGLE_MAPS_URL, GOOGLE_MAP_EMBED_URL, INSTAGRAM_URL, ENTRANCE_360_EMBED_URLS } from "@/config/clinic";
 import { useState } from "react";
 import { Map as MapIcon, Rotate3d } from "lucide-react";
 
@@ -13,11 +13,11 @@ interface ContactProps {
 
 const Contact = ({ onBookingClick }: ContactProps) => {
   const { t, dir, language } = useLanguage();
-  const [view, setView] = useState<"map" | "pano">("map");
+  const [view, setView] = useState<"map" | 0 | 1>("map");
   const VIEW_TEXT = {
-    en: { map: "Map", pano: "360° entrance view", hint: "Drag to look around the street and the clinic entrance" },
-    ar: { map: "الخريطة", pano: "مدخل العيادة 360°", hint: "اسحب لتتجول في الشارع وترى مدخل العيادة" },
-    ku: { map: "نەخشە", pano: "دەرگەهێ کلینیکێ 360°", hint: "ڕابکێشە دا شەقام و دەرگەهێ کلینیکێ ببینی" },
+    en: { map: "Map", pano: "360°", hint: "Drag to look around the street and the clinic entrance" },
+    ar: { map: "الخريطة", pano: "360°", hint: "اسحب لتتجول في الشارع وترى مدخل العيادة" },
+    ku: { map: "نەخشە", pano: "360°", hint: "ڕابکێشە دا شەقام و دەرگەهێ کلینیکێ ببینی" },
   }[language];
 
   // Exact clinic location (from the clinic's Google Maps listing)
@@ -138,9 +138,9 @@ const Contact = ({ onBookingClick }: ContactProps) => {
             {/* Map / 360° entrance switch */}
             <div role="tablist" className="absolute top-3 inset-x-3 z-10 flex justify-center">
               <div className="inline-flex gap-1 p-1 rounded-full bg-card/95 backdrop-blur border border-border shadow-card">
-                {(["map", "pano"] as const).map((v) => (
+                {(["map", 0, 1] as const).map((v) => (
                   <button
-                    key={v}
+                    key={String(v)}
                     type="button"
                     role="tab"
                     aria-selected={view === v}
@@ -150,16 +150,17 @@ const Contact = ({ onBookingClick }: ContactProps) => {
                     }`}
                   >
                     {v === "map" ? <MapIcon className="w-4 h-4" /> : <Rotate3d className="w-4 h-4" />}
-                    {VIEW_TEXT[v]}
+                    {v === "map" ? VIEW_TEXT.map : `${VIEW_TEXT.pano} ${language === "en" ? v + 1 : (v + 1).toLocaleString("ar-EG")}`}
                   </button>
                 ))}
               </div>
             </div>
             <div className="rounded-2xl overflow-hidden shadow-elevated h-full min-h-[340px] md:min-h-[420px] relative">
-              {view === "pano" && (
+              {view !== "map" && (
                 <>
                   <iframe
-                    src={ENTRANCE_360_EMBED_URL}
+                    key={view}
+                    src={ENTRANCE_360_EMBED_URLS[view]}
                     width="100%"
                     height="100%"
                     style={{ border: 0, minHeight: "340px" }}
