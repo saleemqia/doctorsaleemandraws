@@ -3,12 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Camera, Sparkles, ZoomIn, BookOpen } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { INFOGRAPHICS } from "@/components/dental/Infographics";
+import treatmentRoom from "@/assets/clinic/treatment-room.webp";
+import receptionPhoto from "@/assets/clinic/reception.webp";
+import waitingRoom from "@/assets/clinic/waiting-room.webp";
+import doctorOffice from "@/assets/clinic/doctor-office.webp";
+import entrancePhoto from "@/assets/clinic/entrance.webp";
 
 // Import gallery images
-import clinicInterior from "@/assets/gallery/clinic-interior.jpg";
-import receptionArea from "@/assets/gallery/reception-area.jpg";
 import implantResult from "@/assets/gallery/implant-result.jpg";
-import dentalEquipment from "@/assets/gallery/dental-equipment.jpg";
 import dentalCrowns from "@/assets/gallery/dental-crowns.jpg";
 // Before/after images
 import frontFilling from "@/assets/gallery/front-filling.jpeg";
@@ -22,19 +25,17 @@ import veneerCase from "@/assets/gallery/veneer-case.jpeg";
 import fullRestoration from "@/assets/gallery/full-restoration.jpeg";
 import beforeAfterComparison from "@/assets/gallery/before-after-comparison.jpeg";
 // Educational images
-import eduGumCleaning from "@/assets/gallery/edu-gum-cleaning.png";
-import eduGingivitis from "@/assets/gallery/edu-gingivitis.png";
-import eduKidsBrushing from "@/assets/gallery/edu-kids-brushing.png";
-import eduCheckup from "@/assets/gallery/edu-checkup.png";
-import eduPlaque from "@/assets/gallery/edu-plaque.png";
-import eduPrevention from "@/assets/gallery/edu-prevention.png";
-import eduModernCare from "@/assets/gallery/edu-modern-care.png";
-import eduHealthyGums from "@/assets/gallery/edu-healthy-gums.png";
+
+type L = "en" | "ar" | "ku";
 
 interface GalleryImage {
   src: string;
-  titleKey: string;
-  descKey: string;
+  full?: string; // bigger file for the full-size viewer, when src is a small thumbnail
+  top?: boolean; // tall picture: show its top part in the grid
+  titleKey?: string;
+  descKey?: string;
+  title?: Record<L, string>;
+  desc?: Record<L, string>;
   category: "clinic" | "results" | "educational";
 }
 
@@ -112,78 +113,33 @@ const galleryImages: GalleryImage[] = [
     descKey: "gallery.dentalCrownsDesc",
     category: "results",
   },
-  // Educational Images
-  {
-    src: eduGumCleaning,
-    titleKey: "gallery.eduGumCleaning",
-    descKey: "gallery.eduGumCleaningDesc",
-    category: "educational",
-  },
-  {
-    src: eduGingivitis,
-    titleKey: "gallery.eduGingivitis",
-    descKey: "gallery.eduGingivitisDesc",
-    category: "educational",
-  },
-  {
-    src: eduKidsBrushing,
-    titleKey: "gallery.eduKidsBrushing",
-    descKey: "gallery.eduKidsBrushingDesc",
-    category: "educational",
-  },
-  {
-    src: eduCheckup,
-    titleKey: "gallery.eduCheckup",
-    descKey: "gallery.eduCheckupDesc",
-    category: "educational",
-  },
-  {
-    src: eduPlaque,
-    titleKey: "gallery.eduPlaque",
-    descKey: "gallery.eduPlaqueDesc",
-    category: "educational",
-  },
-  {
-    src: eduPrevention,
-    titleKey: "gallery.eduPrevention",
-    descKey: "gallery.eduPreventionDesc",
-    category: "educational",
-  },
-  {
-    src: eduModernCare,
-    titleKey: "gallery.eduModernCare",
-    descKey: "gallery.eduModernCareDesc",
-    category: "educational",
-  },
-  {
-    src: eduHealthyGums,
-    titleKey: "gallery.eduHealthyGums",
-    descKey: "gallery.eduHealthyGumsDesc",
-    category: "educational",
-  },
-  // Clinic Images
-  {
-    src: clinicInterior,
-    titleKey: "gallery.clinicInterior",
-    descKey: "gallery.clinicInteriorDesc",
-    category: "clinic",
-  },
-  {
-    src: receptionArea,
-    titleKey: "gallery.receptionArea",
-    descKey: "gallery.receptionAreaDesc",
-    category: "clinic",
-  },
-  {
-    src: dentalEquipment,
-    titleKey: "gallery.dentalEquipment",
-    descKey: "gallery.dentalEquipmentDesc",
-    category: "clinic",
-  },
+  // Educational: the infographics (full collection on /infographics)
+  ...INFOGRAPHICS.map((i) => ({
+    src: `/infographics/${i.name}-thumb.webp`,
+    full: `/infographics/${i.name}.webp`,
+    top: true,
+    title: i.title,
+    desc: { en: "Infographic", ar: "إنفوجرافيك توعوي", ku: "ئینفۆگرافیکا فێرکاری" },
+    category: "educational" as const,
+  })),
+  // Clinic: real photos from inside the clinic
+  ...[
+    { src: treatmentRoom, title: { en: "Treatment room", ar: "غرفة العلاج", ku: "ژوورا چارەسەریێ" } },
+    { src: receptionPhoto, title: { en: "Reception", ar: "الاستقبال", ku: "پێشوازی" } },
+    { src: waitingRoom, title: { en: "Waiting room", ar: "غرفة الانتظار", ku: "ژوورا چاڤەڕێبوونێ" } },
+    { src: doctorOffice, title: { en: "Doctor's office", ar: "غرفة الطبيب", ku: "ژوورا دکتۆری" } },
+    { src: entrancePhoto, title: { en: "Clinic entrance", ar: "مدخل العيادة", ku: "دەرگەهێ کلینیکێ" } },
+  ].map((c) => ({
+    ...c,
+    desc: { en: "Inside our clinic in Duhok", ar: "من داخل عيادتنا في دهوك", ku: "ژ ناڤ کلینیکا مە ل دهوکێ" },
+    category: "clinic" as const,
+  })),
 ];
 
 const Gallery = () => {
-  const { t, dir } = useLanguage();
+  const { t, dir, language } = useLanguage();
+  const titleOf = (img: GalleryImage) => (img.title ? img.title[language as L] : t(img.titleKey ?? ""));
+  const descOf = (img: GalleryImage) => (img.desc ? img.desc[language as L] : t(img.descKey ?? ""));
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [filter, setFilter] = useState<"all" | "clinic" | "results" | "educational">("all");
   const [showAll, setShowAll] = useState(false);
@@ -213,34 +169,7 @@ const Gallery = () => {
     setSelectedImage(newIndex);
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.1,
-      },
-    },
-  };
 
-  const itemVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 60,
-      scale: 0.8,
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring" as const,
-        stiffness: 100,
-        damping: 12,
-      },
-    },
-  };
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -348,17 +277,16 @@ const Gallery = () => {
 
         {/* Gallery Grid */}
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5"
         >
           <AnimatePresence mode="popLayout">
             {(showAll ? filteredImages : filteredImages.slice(0, PREVIEW_COUNT)).map((image, index) => (
               <motion.div
                 key={image.src}
-                variants={itemVariants}
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.35, delay: Math.min(index, 8) * 0.05 }}
                 layout
                 className="group relative aspect-[4/5] rounded-xl md:rounded-2xl overflow-hidden cursor-pointer"
                 onClick={() => openLightbox(index)}
@@ -376,8 +304,9 @@ const Gallery = () => {
                 <div className="relative w-full h-full rounded-xl md:rounded-2xl overflow-hidden shadow-card group-hover:shadow-elevated transition-shadow duration-500">
                   <motion.img
                     src={image.src}
-                    alt={t(image.titleKey)}
-                    className="w-full h-full object-cover"
+                    alt={titleOf(image)}
+                    className={`w-full h-full object-cover ${image.top ? "object-top" : ""}`}
+                    loading="lazy"
                     initial={{ scale: 1.1 }}
                     whileHover={{ scale: 1.2 }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
@@ -389,10 +318,10 @@ const Gallery = () => {
                   {/* Content */}
                   <div className={`absolute bottom-0 left-0 right-0 p-2 md:p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ${dir === "rtl" ? "text-right" : ""}`}>
                     <h3 className="text-white font-semibold text-xs md:text-lg mb-0.5 md:mb-1 opacity-90 group-hover:opacity-100 line-clamp-1">
-                      {t(image.titleKey)}
+                      {titleOf(image)}
                     </h3>
                     <p className="text-white/70 text-xs line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 hidden md:block">
-                      {t(image.descKey)}
+                      {descOf(image)}
                     </p>
                   </div>
 
@@ -490,8 +419,8 @@ const Gallery = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={filteredImages[selectedImage].src}
-                alt={t(filteredImages[selectedImage].titleKey)}
+                src={filteredImages[selectedImage].full ?? filteredImages[selectedImage].src}
+                alt={titleOf(filteredImages[selectedImage])}
                 className="w-full h-full object-contain rounded-lg shadow-2xl"
               />
               
@@ -503,10 +432,10 @@ const Gallery = () => {
                 className={`absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent rounded-b-lg ${dir === "rtl" ? "text-right" : ""}`}
               >
                 <h3 className="text-white font-semibold text-xl md:text-2xl mb-2">
-                  {t(filteredImages[selectedImage].titleKey)}
+                  {titleOf(filteredImages[selectedImage])}
                 </h3>
                 <p className="text-white/80 text-sm md:text-base">
-                  {t(filteredImages[selectedImage].descKey)}
+                  {descOf(filteredImages[selectedImage])}
                 </p>
               </motion.div>
             </motion.div>

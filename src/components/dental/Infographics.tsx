@@ -45,7 +45,7 @@ const TOPICS: { id: Topic; label: Record<L, string> }[] = [
 ];
 
 // Files are in public/infographics/<name>.webp (full size) and <name>-thumb.webp.
-const ITEMS: { name: string; topic: Topic; title: Record<L, string> }[] = [
+export const INFOGRAPHICS: { name: string; topic: Topic; title: Record<L, string> }[] = [
   { name: "two-minute-routine", topic: "care", title: { en: "A 2-minute routine for a healthier smile", ar: "روتين دقيقتين لابتسامة أكثر صحة", ku: "ڕووتینێ ٢ خولەکان بۆ بزەیەکا ساخلەمتر" } },
   { name: "daily-care-essentials", topic: "care", title: { en: "Daily dental care essentials", ar: "أساسيات العناية اليومية (بالإنجليزية)", ku: "بنەمایێن چاڤدێریا ڕۆژانە (ب ئینگلیزی)" } },
   { name: "regular-checkup", topic: "care", title: { en: "Regular check-ups stop problems early", ar: "الفحص الدوري يحميك من المشاكل قبل حدوثها", ku: "پشکنینا هەمیکاتی کێشەیان پێش دەگرێ" } },
@@ -67,7 +67,7 @@ const Infographics = () => {
   const c = TEXT[lang];
   const [topic, setTopic] = useState<Topic | null>(null);
   const [open, setOpen] = useState<number | null>(null);
-  const shown = topic ? ITEMS.filter((i) => i.topic === topic) : ITEMS;
+  const shown = topic ? INFOGRAPHICS.filter((i) => i.topic === topic) : INFOGRAPHICS;
 
   const step = (d: number) => setOpen((i) => (i === null ? i : (i + d + shown.length) % shown.length));
 
@@ -114,7 +114,7 @@ const Infographics = () => {
 
         <div className="flex flex-wrap justify-center gap-2 mb-8">
           <button type="button" className={chip(topic === null)} onClick={() => setTopic(null)}>
-            {c.all} ({ITEMS.length})
+            {c.all} ({INFOGRAPHICS.length})
           </button>
           {TOPICS.map((t) => (
             <button key={t.id} type="button" className={chip(topic === t.id)} onClick={() => setTopic(t.id)}>
