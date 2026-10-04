@@ -14,6 +14,7 @@ const navLinks = [
   { key: "about", href: "#about" },
   { key: "gallery", href: "#gallery" },
   { key: "testimonials", href: "#testimonials" },
+  { key: "treatments", href: "/treatments" },
   { key: "case", href: "/case" },
   { key: "kids", href: "/kids" },
   { key: "contact", href: "#contact" },

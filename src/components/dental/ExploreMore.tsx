@@ -14,6 +14,16 @@ const TEXT: Record<L, { badge: string; title1: string; title2: string; open: str
 
 const CARDS: { page: SitePage; img: string; title: Record<L, string>; text: Record<L, string> }[] = [
   {
+    page: "/treatments",
+    img: "/treatments-card.svg",
+    title: { en: "How is the treatment done? (animations)", ar: "كيف يتم العلاج؟ (رسوم متحركة)", ku: "چارەسەری چاوا دئێتە کرن؟ (ئەنیمەیشن)" },
+    text: {
+      en: "Root canal, implant, crown and extraction explained step by step with simple animations.",
+      ar: "علاج العصب، الزراعة، التاج والقلع، مشروحة خطوة بخطوة برسوم متحركة بسيطة.",
+      ku: "چارەسەریا دەمارێ، چاندن، کراس و هەلکێشان، قۆناغ ب قۆناغ ب ئەنیمەیشنێن سادە.",
+    },
+  },
+  {
     page: "/case",
     img: afterFront,
     title: { en: "A real implant case, step by step", ar: "حالة زراعة حقيقية خطوة بخطوة", ku: "حالەتەکا چاندنێ قۆناغ ب قۆناغ" },
@@ -52,7 +62,7 @@ const ExploreMore = () => {
             {c.title1} <span className="text-gradient">{c.title2}</span>
           </h2>
         </div>
-        <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
           {CARDS.map((card, i) => (
             <motion.a
               key={card.page}
@@ -63,7 +73,7 @@ const ExploreMore = () => {
               transition={{ duration: 0.4, delay: i * 0.08 }}
               className="group flex gap-4 items-stretch bg-card rounded-2xl border border-border shadow-soft hover:shadow-card overflow-hidden transition-shadow"
             >
-              <img src={card.img} alt="" loading="lazy" className="w-28 sm:w-40 object-cover shrink-0" />
+              <img src={card.img} alt="" loading="lazy" className="w-28 sm:w-36 object-cover shrink-0" />
               <div className="py-4 pe-4 flex flex-col">
                 <h3 className="font-display text-lg md:text-xl font-bold mb-1.5 group-hover:text-primary transition-colors">{card.title[lang]}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3">{card.text[lang]}</p>

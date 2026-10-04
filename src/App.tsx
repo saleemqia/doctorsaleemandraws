@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import CasePage from "./pages/CasePage";
 import KidsPage from "./pages/KidsPage";
+import TreatmentsPage from "./pages/TreatmentsPage";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
@@ -30,6 +31,7 @@ const App = () => (
               {["", "/ar", "/ku"].map((p) => [
                 <Route key={`${p}/case`} path={`${p}/case`} element={<CasePage />} />,
                 <Route key={`${p}/kids`} path={`${p}/kids`} element={<KidsPage />} />,
+                <Route key={`${p}/treatments`} path={`${p}/treatments`} element={<TreatmentsPage />} />,
               ])}
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<Admin />} />

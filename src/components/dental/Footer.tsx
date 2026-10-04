@@ -18,6 +18,7 @@ const Footer = () => {
     { key: "instagram", href: "#instagram" },
     { key: "testimonials", href: "#testimonials" },
     { key: "contact", href: "#contact" },
+    { key: "treatments", href: "/treatments" },
     { key: "case", href: "/case" },
     { key: "kids", href: "/kids" },
   ];
