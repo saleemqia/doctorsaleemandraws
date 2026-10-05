@@ -13,6 +13,7 @@ import DigitalDentistry from "@/components/dental/DigitalDentistry";
 import WeeklyHours from "@/components/dental/WeeklyHours";
 import SectionNav from "@/components/dental/SectionNav";
 import Contact from "@/components/dental/Contact";
+import DuhokBand from "@/components/dental/DuhokBand";
 import ExploreMore from "@/components/dental/ExploreMore";
 import Footer from "@/components/dental/Footer";
 import BookingModal from "@/components/dental/BookingModal";
@@ -73,6 +74,7 @@ const Index = () => {
         <FAQ />
         <ExploreMore />
         <WeeklyHours />
+        <DuhokBand />
         <Contact onBookingClick={openBooking("contact")} />
       </main>
       <Footer />

@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Home, Stethoscope, UserRound, Building2, Images, Instagram, MessageSquareQuote,
-  HelpCircle, ScanLine, Compass, CalendarClock, MapPin, List, X,
-} from "lucide-react";
+  HelpCircle, ScanLine, Compass, CalendarClock, MapPin, List, X, Mountain } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 type L = "en" | "ar" | "ku";
@@ -21,6 +20,7 @@ const SECTIONS: { id: string; icon: typeof Home; label: Record<L, string> }[] = 
   { id: "faq", icon: HelpCircle, label: { en: "Questions", ar: "الأسئلة", ku: "پسیار" } },
   { id: "more", icon: Compass, label: { en: "Explore more", ar: "المزيد", ku: "زێدەتر" } },
   { id: "hours", icon: CalendarClock, label: { en: "Opening hours", ar: "أوقات الدوام", ku: "دەمێن کاری" } },
+  { id: "duhok", icon: Mountain, label: { en: "Our city", ar: "مدينتنا", ku: "باژێرێ مە" } },
   { id: "contact", icon: MapPin, label: { en: "Location & contact", ar: "الموقع والتواصل", ku: "جهـ و پەیوەندی" } },
 ];
 
