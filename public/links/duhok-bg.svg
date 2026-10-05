@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" preserveAspectRatio="xMidYMax slice">
+  <!-- Original illustration: Duhok at blue hour — the city in the valley between two mountains, lights coming on, the dam to the north. -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0A2457"/>
+      <stop offset=".42" stop-color="#2F67B5"/>
+      <stop offset=".62" stop-color="#8DBDE8"/>
+      <stop offset=".72" stop-color="#F3CF9E"/>
+      <stop offset=".78" stop-color="#F6B98A"/>
+    </linearGradient>
+    <linearGradient id="far" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6E8FC2"/><stop offset="1" stop-color="#4E70A8"/>
+    </linearGradient>
+    <linearGradient id="mid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#355A97"/><stop offset="1" stop-color="#21437D"/>
+    </linearGradient>
+    <linearGradient id="near" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#173465"/><stop offset="1" stop-color="#0C1F45"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9CC6EC"/><stop offset="1" stop-color="#4C7DBE"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#FFD9A0" stop-opacity=".55"/><stop offset="1" stop-color="#FFD9A0" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="win" width="14" height="16" patternUnits="userSpaceOnUse">
+      <rect x="3" y="4" width="3" height="4" fill="#FFD27A" opacity=".9"/>
+      <rect x="9" y="10" width="3" height="4" fill="#FFE3A8" opacity=".6"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="1600" fill="url(#sky)"/>
+  <!-- stars -->
+  <g fill="#fff" opacity=".7">
+    <circle cx="120" cy="90" r="1.6"/><circle cx="300" cy="170" r="1.2"/><circle cx="520" cy="70" r="1.4"/>
+    <circle cx="760" cy="140" r="1.1"/><circle cx="980" cy="60" r="1.7"/><circle cx="1110" cy="210" r="1.2"/>
+    <circle cx="420" cy="260" r="1"/><circle cx="860" cy="300" r="1"/><circle cx="60" cy="330" r="1.1"/>
+  </g>
+  <!-- crescent moon -->
+  <g transform="translate(330 200)"><circle r="34" fill="#FFF4D6"/><circle cx="14" cy="-8" r="30" fill="#2A5FAE"/></g>
+
+  <!-- far ridge -->
+  <path d="M0 1010 L90 960 L170 985 L260 930 L360 970 L450 925 L560 960 L640 915 L740 955 L830 920 L930 965 L1030 930 L1120 960 L1200 940 L1200 1600 L0 1600Z" fill="url(#far)"/>
+
+  <!-- left mountain (Mount Zawa side) -->
+  <path d="M0 860 L80 800 L150 830 L230 760 L310 820 L380 790 L470 880 L560 960 L620 1060 L0 1120Z" fill="url(#mid)"/>
+  <!-- right mountain (Chiya Spi side) with the small mountain-top lights -->
+  <path d="M1200 820 L1120 780 L1040 830 L960 790 L880 850 L800 900 L720 980 L660 1070 L1200 1120Z" fill="url(#mid)"/>
+  <g fill="#FFE3A8"><circle cx="1040" cy="836" r="3"/><circle cx="960" cy="798" r="2.6"/><circle cx="1122" cy="790" r="2.6"/></g>
+
+  <!-- dam and lake, upper right of the valley -->
+  <path d="M700 1020 Q790 990 880 1015 L880 1040 Q790 1022 700 1048Z" fill="url(#water)" opacity=".9"/>
+  <path d="M694 1046 Q790 1018 886 1040 L886 1056 Q790 1034 694 1062Z" fill="#DCE8F5"/>
+
+  <!-- warm glow over the city -->
+  <ellipse cx="600" cy="1150" rx="560" ry="150" fill="url(#glow)"/>
+
+  <!-- city in the valley: back row -->
+  <g fill="#2A4B86">
+    <rect x="180" y="1080" width="60" height="70"/><rect x="250" y="1060" width="44" height="90"/><rect x="300" y="1090" width="70" height="60"/>
+    <rect x="380" y="1050" width="40" height="100"/><rect x="430" y="1075" width="80" height="75"/><rect x="520" y="1040" width="48" height="110"/>
+    <rect x="575" y="1070" width="66" height="80"/><rect x="650" y="1055" width="42" height="95"/><rect x="700" y="1085" width="78" height="65"/>
+    <rect x="785" y="1065" width="46" height="85"/><rect x="840" y="1090" width="70" height="60"/><rect x="920" y="1075" width="52" height="75"/>
+  </g>
+  <g fill="url(#win)">
+    <rect x="250" y="1060" width="44" height="90"/><rect x="380" y="1050" width="40" height="100"/><rect x="520" y="1040" width="48" height="110"/>
+    <rect x="650" y="1055" width="42" height="95"/><rect x="785" y="1065" width="46" height="85"/>
+  </g>
+  <!-- minaret and church tower: the city's mixed skyline -->
+  <g fill="#2A4B86">
+    <rect x="606" y="985" width="12" height="90"/><path d="M600 990 L612 960 L624 990Z"/><circle cx="612" cy="955" r="3" fill="#FFE3A8"/>
+    <rect x="455" y="1010" width="22" height="70"/><path d="M450 1012 L466 985 L482 1012Z"/><rect x="464" y="972" width="4" height="14"/><rect x="459" y="977" width="14" height="3"/>
+  </g>
+
+  <!-- front row of houses -->
+  <g fill="#18356B">
+    <rect x="80" y="1130" width="90" height="80"/><rect x="175" y="1120" width="60" height="90"/><rect x="240" y="1140" width="110" height="70"/>
+    <rect x="355" y="1115" width="70" height="95"/><rect x="430" y="1135" width="95" height="75"/><rect x="530" y="1110" width="60" height="100"/>
+    <rect x="595" y="1130" width="100" height="80"/><rect x="700" y="1118" width="64" height="92"/><rect x="770" y="1138" width="100" height="72"/>
+    <rect x="875" y="1122" width="62" height="88"/><rect x="942" y="1140" width="96" height="70"/><rect x="1043" y="1128" width="80" height="82"/>
+  </g>
+  <g fill="url(#win)" opacity=".95">
+    <rect x="175" y="1120" width="60" height="90"/><rect x="355" y="1115" width="70" height="95"/><rect x="530" y="1110" width="60" height="100"/>
+    <rect x="700" y="1118" width="64" height="92"/><rect x="875" y="1122" width="62" height="88"/><rect x="1043" y="1128" width="80" height="82"/>
+  </g>
+
+  <!-- road with street lights -->
+  <path d="M0 1215 Q600 1185 1200 1215 L1200 1235 Q600 1205 0 1235Z" fill="#0E2550"/>
+  <g fill="#FFD27A">
+    <circle cx="60" cy="1214" r="3"/><circle cx="180" cy="1208" r="3"/><circle cx="300" cy="1203" r="3"/><circle cx="420" cy="1199" r="3"/>
+    <circle cx="540" cy="1197" r="3"/><circle cx="660" cy="1197" r="3"/><circle cx="780" cy="1199" r="3"/><circle cx="900" cy="1203" r="3"/>
+    <circle cx="1020" cy="1208" r="3"/><circle cx="1140" cy="1214" r="3"/>
+  </g>
+
+  <!-- foreground hills -->
+  <path d="M0 1260 Q300 1220 600 1255 T1200 1245 L1200 1600 L0 1600Z" fill="url(#near)"/>
+</svg>
