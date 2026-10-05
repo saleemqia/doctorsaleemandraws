@@ -4,3 +4,6 @@ Disallow: /admin
 Disallow: /login
 
 Sitemap: https://www.doctorsaleem.com/sitemap.xml
+
+User-agent: *
+Disallow: /p/
