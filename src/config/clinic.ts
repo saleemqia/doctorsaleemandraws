@@ -30,6 +30,7 @@ export const GOOGLE_MAP_EMBED_URL = `https://www.google.com/maps?q=${CLINIC_LAT}
 export const GOOGLE_WRITE_REVIEW_URL =
   "https://search.google.com/local/writereview?placeid=ChIJHQVly9aNCEARjys3d6OhFLI";
 
+export const CLINIC_EMAIL = "dr.saleemo@gmail.com";
 export const INSTAGRAM_URL = "https://www.instagram.com/dr.saleemandraws/";
 export const INSTAGRAM_HANDLE = "@dr.saleemandraws";
 
