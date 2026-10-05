@@ -8,7 +8,7 @@ import AssyrianName from "@/components/dental/AssyrianName";
 import { INSTAGRAM_URL } from "@/config/clinic";
 import { parsePath, pathFor, type SitePage } from "@/config/seo";
 
-const navLinks = [
+const navLinks: { key: string; href: string; mobileOnly?: boolean }[] = [
   { key: "home", href: "#home" },
   { key: "services", href: "#services" },
   { key: "about", href: "#about" },
@@ -18,6 +18,7 @@ const navLinks = [
   { key: "case", href: "/case" },
   { key: "kids", href: "/kids" },
   { key: "infographics", href: "/infographics" },
+  { key: "links", href: "/links", mobileOnly: true },
   { key: "contact", href: "#contact" },
 ];
 
@@ -39,8 +40,9 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
   const currentLang = languages.find((l) => l.code === language);
   // "#section" links work on the home page; from a sub-page they go to the home page first.
   const onHome = parsePath(window.location.pathname)?.page === "";
+  // "/links" is a separate one-page site (one language), so it keeps its own address.
   const hrefFor = (href: string) =>
-    href.startsWith("/") ? pathFor(language, href as SitePage) : onHome ? href : pathFor(language, "") + href;
+    href === "/links" ? href : href.startsWith("/") ? pathFor(language, href as SitePage) : onHome ? href : pathFor(language, "") + href;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -57,8 +59,8 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
           </a>
 
           {/* Desktop Navigation */}
-          <div className={`hidden min-[1700px]:flex items-center gap-6 ${dir === "rtl" ? "" : ""}`}>
-            {navLinks.map((link) => (
+          <div className={`hidden min-[1850px]:flex items-center gap-6 ${dir === "rtl" ? "" : ""}`}>
+            {navLinks.filter((l) => !l.mobileOnly).map((link) => (
               <a
                 key={link.key}
                 href={hrefFor(link.href)}
@@ -136,7 +138,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="min-[1700px]:hidden p-2.5 -m-1 rounded-lg hover:bg-secondary transition-colors" aria-label="Menu"
+            className="min-[1850px]:hidden p-2.5 -m-1 rounded-lg hover:bg-secondary transition-colors" aria-label="Menu"
           >
             {mobileMenuOpen ? (
               <X className="w-5 h-5" />
@@ -154,7 +156,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="min-[1700px]:hidden mt-2 p-5 sm:p-6 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl bg-card/95 backdrop-blur-xl border border-border/50 shadow-elevated"
+              className="min-[1850px]:hidden mt-2 p-5 sm:p-6 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl bg-card/95 backdrop-blur-xl border border-border/50 shadow-elevated"
             >
               <div className="flex flex-col gap-4">
                 {/* Language Selector Mobile */}

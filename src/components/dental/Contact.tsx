@@ -137,7 +137,7 @@ const Contact = ({ onBookingClick }: ContactProps) => {
                   {t("contact.instagram")}
                 </Button>
               </a>
-              <a href="https://linktr.ee/saleem.andraws" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+              <a href="/links" className="w-full sm:w-auto">
                 <Button variant="ghost" size="lg" className="w-full gap-2 px-3 sm:px-6 text-sm sm:text-base whitespace-normal h-auto min-h-12 py-2.5 leading-tight text-center">
                   <ExternalLink className="w-5 h-5" />
                   {t("contact.socialMedia")}

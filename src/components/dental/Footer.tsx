@@ -22,10 +22,12 @@ const Footer = () => {
     { key: "case", href: "/case" },
     { key: "kids", href: "/kids" },
     { key: "infographics", href: "/infographics" },
+    { key: "links", href: "/links" },
   ];
   const onHome = parsePath(window.location.pathname)?.page === "";
+  // "/links" is a separate one-page site (one language), so it keeps its own address.
   const hrefFor = (href: string) =>
-    href.startsWith("/") ? pathFor(language, href as SitePage) : onHome ? href : pathFor(language, "") + href;
+    href === "/links" ? href : href.startsWith("/") ? pathFor(language, href as SitePage) : onHome ? href : pathFor(language, "") + href;
 
   return (
     <footer className="bg-foreground text-background">
@@ -73,9 +75,9 @@ const Footer = () => {
                 <Star className="w-4 h-4" />
               </a>
               <a 
-                href="https://linktr.ee/saleem.andraws" 
-                target="_blank" 
-                rel="noopener noreferrer"
+                href="/links"
+                title={t("nav.links")}
+                aria-label={t("nav.links")}
                 className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-white/25 transition-colors"
               >
                 <ExternalLink className="w-4 h-4" />
