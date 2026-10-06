@@ -200,6 +200,53 @@ export function patientKey(title: string): string {
   return NOT_PATIENT.test(full) ? "#" + t : t;
 }
 
+/** Spelling-insensitive form used only to compare two names: Kurdish letters mapped, inner long vowels dropped. */
+function looseName(k: string): string[] {
+  const m = k.replace(/^د /, "").replace(/\b(لم تاتي|لم ياتي|تاجل|تاجيل)\b/g, " ")
+    .replace(/ژ/g, "ز").replace(/ڤ/g, "ف").replace(/[گک]/g, "ك").replace(/پ/g, "ب").replace(/ی/g, "ي").replace(/ڕ/g, "ر")
+    .replace(/عبد ال/g, "عبدال").replace(/\s+/g, " ").trim();
+  return m.split(" ").map((w) => w[0] + w.slice(1).replace(/[اي]/g, "").replace(/ه$/, ""));
+}
+function lev(a: string, b: string): number {
+  const d = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = d[0]; d[0] = i;
+    for (let j = 1; j <= b.length; j++) { const t = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = t; }
+  }
+  return d[b.length];
+}
+/** Same person written two ways? Used only for names that already share a phone number. */
+export function sameName(a: string, b: string): boolean {
+  const x = looseName(a), y = looseName(b);
+  if (!x.length || !y.length) return false;
+  if (x.join("") === y.join("")) return true;                           // "اياد جاسم" = "ايادجاسم"
+  if (x[0] !== y[0]) {                                                   // a one-letter typo in a long first name, rest identical
+    return x.length > 1 && x.length === y.length && x[0].length >= 4 && x[0].length === y[0].length && lev(x[0], y[0]) <= 1 && x.slice(1).join("") === y.slice(1).join("");
+  }
+  const [s, l] = x.length <= y.length ? [x, y] : [y, x];
+  if (s.length >= 2 && s.every((w, i) => w === l[i])) return true;      // "جوان نوفل" ⊂ "جوان نوفل تحسين"
+  const r1 = x.slice(1).join(""), r2 = y.slice(1).join("");
+  if (!r1 || !r2) return false;
+  if (r1 === r2) return true;                                            // "سوار سعد حسن" = "سوار سعدحسن"
+  const n = Math.min(x.length, y.length);
+  return lev(x.slice(1, n).join(""), y.slice(1, n).join("")) <= 1 && Math.min(r1.length, r2.length) >= 3;
+}
+/** groups: names sharing one phone, oldest first. Returns [from, to] pairs (to = oldest card of that person). */
+export function autoMergePairs(groups: string[][]): [string, string][] {
+  const parent = new Map<string, string>();
+  const find = (k: string): string => { while (parent.has(k) && parent.get(k) !== k) k = parent.get(k)!; return k; };
+  const order = new Map<string, number>(); groups.flat().forEach((k, i) => { if (!order.has(k)) order.set(k, i); });
+  for (const g of groups) for (let i = 0; i < g.length; i++) for (let j = i + 1; j < g.length; j++) {
+    if (!sameName(g[i], g[j])) continue;
+    const a = find(g[i]), b = find(g[j]); if (a === b) continue;
+    const [keep, drop] = (order.get(a)! <= order.get(b)!) ? [a, b] : [b, a];
+    parent.set(drop, keep); parent.set(keep, keep);
+  }
+  const out: [string, string][] = [];
+  for (const k of parent.keys()) { const r = find(k); if (r !== k) out.push([k, r]); }
+  return out;
+}
+
 /* ---------- fetch + archive ---------- */
 
 export async function loadCalendar(env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<RawEvent[]> {

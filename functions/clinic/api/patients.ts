@@ -4,9 +4,29 @@
 // POST /clinic/api/patients?action=rebuild → fills patient_key for rows that lack it (≤1500 per call; repeat until done=0)
 // POST /clinic/api/patients?action=merge   {from, to}  → visits of patient `from` show on card `to`
 // POST /clinic/api/patients?action=note    {no, notes, card_no}
-import { Env, json, patientKey } from "../../../lib/clinic";
+import { Env, autoMergePairs, json, patientKey } from "../../../lib/clinic";
 
-const GROUP = "coalesce(p.merged_into, a.patient_key)";
+// merged_into: NULL = own card, '' = owner un-merged it (never auto-merge again), text = shown on that card.
+const GROUP = "coalesce(nullif(p.merged_into, ''), a.patient_key)";
+
+/** Same phone + nearly the same name → one card (e.g. شيرين امين / شرين امين). Runs at most every 6 hours. */
+async function autoMerge(env: Env) {
+  const last = await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = 'last_automerge'").first<{ value: string }>();
+  if (last && Date.now() - Date.parse(last.value) < 6 * 3600 * 1000) return;
+  await env.DB.prepare("INSERT INTO clinic_settings (key, value, updated_at) VALUES ('last_automerge', ?, datetime('now')) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at")
+    .bind(new Date().toISOString()).run();
+  const { results } = await env.DB.prepare(
+    `SELECT a.phone, json_group_array(DISTINCT p.key) AS ks FROM appointments a JOIN patients p ON p.key = a.patient_key
+     WHERE a.removed = 0 AND a.phone <> '' AND (p.merged_into IS NULL OR p.merged_into <> '') GROUP BY a.phone HAVING count(DISTINCT p.key) > 1`,
+  ).all<{ phone: string; ks: string }>();
+  const { results: nos } = await env.DB.prepare("SELECT key, no, merged_into FROM patients").all<{ key: string; no: number; merged_into: string | null }>();
+  const info = new Map(nos.map((r) => [r.key, r]));
+  const groups = results.map((r) => (JSON.parse(r.ks) as string[]).sort((a, b) => (info.get(a)?.no || 0) - (info.get(b)?.no || 0)));
+  const stmts = autoMergePairs(groups)
+    .filter(([from]) => info.get(from)?.merged_into == null)
+    .map(([from, to]) => env.DB.prepare("UPDATE patients SET merged_into = ? WHERE key = ? AND merged_into IS NULL").bind(info.get(to)?.merged_into || to, from));
+  for (let i = 0; i < stmts.length; i += 100) await env.DB.batch(stmts.slice(i, i + 100));
+}
 
 async function assignNumbers(env: Env) {
   await env.DB.prepare(
@@ -22,6 +42,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const u = new URL(request.url);
   const pending = await env.DB.prepare("SELECT count(*) AS n FROM appointments WHERE patient_key IS NULL").first<{ n: number }>();
   await assignNumbers(env);
+  await autoMerge(env).catch(() => {});
   const no = parseInt(u.searchParams.get("no") || "");
   if (no) {
     const p = await env.DB.prepare("SELECT key, no, notes, card_no, merged_into FROM patients WHERE no = ?").bind(no).first<Record<string, string>>();
@@ -50,13 +71,13 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
        max(a.title) AS name, group_concat(DISTINCT nullif(a.phone, '')) AS phones
      FROM appointments a
      JOIN patients p ON p.key = a.patient_key
-     JOIN patients m ON m.key = coalesce(p.merged_into, p.key)
+     JOIN patients m ON m.key = coalesce(nullif(p.merged_into, ''), p.key)
      WHERE a.removed = 0
      GROUP BY m.key
      HAVING (?1 = '' OR m.key LIKE '%' || ?1 || '%' OR (?2 <> '' AND phones LIKE '%' || ?2 || '%') OR CAST(m.no AS TEXT) = ?3)
      ORDER BY last DESC, m.no DESC LIMIT 100 OFFSET ?4`,
   ).bind(nq, digits.length >= 4 ? digits : "", q, offset).all();
-  const total = await env.DB.prepare("SELECT count(*) AS n FROM patients WHERE merged_into IS NULL").first<{ n: number }>();
+  const total = await env.DB.prepare("SELECT count(*) AS n FROM patients WHERE merged_into IS NULL OR merged_into = ''").first<{ n: number }>();
   return json({ q, total: total?.n || 0, pending: pending?.n || 0, patients: results });
 };
 
@@ -82,7 +103,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return json({ ok: true });
   }
   if (action === "unmerge") {
-    await env.DB.prepare("UPDATE patients SET merged_into = NULL WHERE no = ?").bind(Number(body.no)).run();
+    await env.DB.prepare("UPDATE patients SET merged_into = '' WHERE no = ?").bind(Number(body.no)).run();
     return json({ ok: true });
   }
   if (action === "note") {
