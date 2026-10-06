@@ -267,7 +267,7 @@ $("impFile").onchange = async (e) => {
       const r = await (await fetch("/clinic/api/import", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ appts: appts.slice(i, i + 400) }) })).json();
       saved += r.saved || 0; had += r.alreadyHad || 0; msg.textContent = `جارٍ الحفظ… ${saved + had} من ${appts.length}`;
     }
-    msg.textContent = `تم حفظ ${saved} موعدًا جديدًا في الأرشيف ✔` + (had ? ` (و${had} موجودة أصلًا بتفاصيلها فلم تُغيَّر)` : "");
+    msg.textContent = `تم حفظ أو تحديث ${saved} موعدًا في الأرشيف ✔` + (had ? ` (و${had} موجودة أصلًا بتفاصيلها فلم تُغيَّر)` : "");
     loadMonths();
   } catch (err) { msg.className = "note warn"; msg.textContent = "تعذّر الاستيراد: " + err.message; }
   e.target.value = "";
