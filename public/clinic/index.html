@@ -55,6 +55,9 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .f dd.wk{white-space:pre-wrap;word-break:break-word}
 .wa2{display:inline-block;margin-inline-start:10px;font-size:13px;font-weight:600;color:var(--green);background:#E6F6EE;border-radius:8px;padding:3px 9px;text-decoration:none}
 .appt.v2{display:block}
+.sbox{display:flex;gap:8px;margin:4px 0 8px}.sbox input{flex:1;min-width:0;padding:11px;border:1px solid var(--line);border-radius:10px;font:inherit;color:var(--navy);background:#fff}
+#arch .btn{margin-bottom:6px}
+.noDim .appt.past{opacity:1;border-inline-start-color:var(--blue)}
 @media (max-width:480px){.tabs{flex-wrap:wrap}.tabs input{max-width:none;flex-basis:100%}}
 @media print{header,.tabs,.tools,.wa2{display:none}main{margin:0}.appt{box-shadow:none;border:1px solid #ccc;break-inside:avoid}}
 </style>
@@ -71,6 +74,8 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     <button data-r="tomorrow">غدًا</button>
     <button data-r="week">7 أيام</button>
     <button data-r="month">30 يومًا</button>
+    <button data-r="past">الشهر الماضي</button>
+    <button data-r="archive">🔎 الأرشيف</button>
     <input type="date" id="pick" aria-label="اختر يومًا">
   </nav>
   <div class="bar">
@@ -80,6 +85,11 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
       <a class="btn" id="csv" href="#">⬇ Excel</a>
       <button class="btn" onclick="print()">🖨 طباعة</button>
     </div>
+  </div>
+  <div id="arch" hidden>
+    <form id="sform" class="sbox"><input id="q" type="search" placeholder="ابحث باسم المريض أو رقم الهاتف أو نوع العمل" autocomplete="off"><button class="btn">بحث</button></form>
+    <p class="note" id="stats"></p>
+    <button class="btn" id="syncAll">⟳ حفظ كل مواعيد التقويم في الأرشيف الآن</button>
   </div>
   <p class="note" id="note"></p>
   <section id="list"><div class="spin"></div></section>
@@ -92,7 +102,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":
 const local = (iso) => new Date(Date.parse(iso) + 180 * 60000); // Duhok time
 const hm = (iso) => local(iso).toISOString().slice(11, 16);
 const ampm = (iso) => { const [h, m] = hm(iso).split(":").map(Number); return `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${h < 12 ? "ص" : "م"}`; };
-const dayLabel = (d) => { const x = new Date(d + "T00:00:00Z"); return `${WD[x.getUTCDay()]} ${x.getUTCDate()}/${x.getUTCMonth() + 1}`; };
+const dayLabel = (d) => { const x = new Date(d + "T00:00:00Z"); const y = d.slice(0, 4) !== today.slice(0, 4) ? "/" + d.slice(0, 4) : ""; return `${WD[x.getUTCDay()]} ${x.getUTCDate()}/${x.getUTCMonth() + 1}${y}`; };
 const addDays = (d, n) => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
 const intl = (p) => p.startsWith("+") ? p.slice(1) : p.startsWith("964") ? p : "964" + p.replace(/^0/, "");
 let today = new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10), current = "today";
@@ -102,6 +112,7 @@ function range(r) {
   if (r === "tomorrow") return [addDays(today, 1), 1, "غدًا"];
   if (r === "week") return [today, 7, "الأيام السبعة القادمة"];
   if (r === "month") return [today, 30, "الثلاثون يومًا القادمة"];
+  if (r === "past") return [addDays(today, -30), 30, "آخر 30 يومًا"];
   return [r, 1, dayLabel(r)];
 }
 
@@ -115,6 +126,7 @@ function render(data, label) {
   const appts = data.appts || [];
   $("title").textContent = label;
   $("count").textContent = appts.length + (appts.length === 1 ? " موعد" : " مواعيد");
+  if (data.source === "archive-search") { $("count").textContent = appts.length + " نتيجة"; }
   $("note").className = "note" + (data.source === "archive" ? " warn" : "");
   $("note").textContent = data.source === "archive"
     ? "تعذّر الوصول إلى Outlook الآن؛ تُعرض النسخة المحفوظة. (" + (data.error || "") + ")"
@@ -140,8 +152,34 @@ function render(data, label) {
   $("list").innerHTML = html;
 }
 
+const fmtStats = (st) => st && st.n ? `في الأرشيف ${st.n} موعدًا، من ${st.first} إلى ${st.last}` : "الأرشيف فارغ بعد";
+async function search() {
+  const q = $("q").value.trim();
+  $("title").textContent = q ? `نتائج: ${q}` : "الأرشيف"; $("note").textContent = "";
+  $("list").innerHTML = q.length < 2 ? "" : `<div class="spin"></div>`;
+  const res = await fetch(`/clinic/api/search?q=${encodeURIComponent(q)}`, { cache: "no-store" });
+  if (res.status === 401) { location.reload(); return; }
+  const d = await res.json();
+  $("stats").textContent = fmtStats(d.stats);
+  if (q.length < 2) { $("count").textContent = ""; $("list").innerHTML = `<div class="empty">اكتب اسمًا أو رقمًا للبحث في كل المواعيد المحفوظة</div>`; return; }
+  render({ appts: d.appts, source: "archive-search" }, `نتائج: ${q}`);
+  $("note").className = "note"; $("note").textContent = d.appts.length >= 300 ? "تظهر أحدث 300 نتيجة فقط" : "";
+}
+$("sform").onsubmit = (e) => { e.preventDefault(); search(); };
+$("syncAll").onclick = async () => {
+  const b = $("syncAll"); b.disabled = true; b.textContent = "جارٍ الحفظ…";
+  try {
+    const d = await (await fetch("/clinic/api/sync", { method: "POST" })).json();
+    $("stats").textContent = d.ok ? `تم: ${d.inCalendar} موعدًا في التقويم المنشور. ${fmtStats(d.archive)}` : "تعذّر: " + d.error;
+  } catch (e) { $("stats").textContent = "تعذّر الاتصال"; }
+  b.disabled = false; b.textContent = "⟳ حفظ كل مواعيد التقويم في الأرشيف الآن";
+};
+
 async function load(r = current) {
   current = r;
+  const isArch = r === "archive";
+  $("arch").hidden = !isArch; $("list").classList.toggle("noDim", isArch || r === "past");
+  if (isArch) { search(); return; }
   const [from, days, label] = range(r);
   $("list").innerHTML = `<div class="spin"></div>`;
   $("csv").href = `/clinic/api/export?from=${addDays(today, -365)}&to=${addDays(today, 60)}`;

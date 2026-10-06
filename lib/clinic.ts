@@ -197,7 +197,10 @@ export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExc
      VALUES (?,?,?,?,?,?,?,?,?, datetime('now'), 0)
      ON CONFLICT(uid) DO UPDATE SET day=excluded.day, start=excluded.start, end=excluded.end, title=excluded.title,
        phone=excluded.phone, treatment=excluded.treatment, description=excluded.description, all_day=excluded.all_day,
-       last_seen=datetime('now'), removed=0`
+       last_seen=datetime('now'), removed=0
+     WHERE appointments.removed = 1 OR appointments.day IS NOT excluded.day OR appointments.start IS NOT excluded.start
+       OR appointments.end IS NOT excluded.end OR appointments.title IS NOT excluded.title
+       OR appointments.description IS NOT excluded.description`
   ).bind(a.uid, a.day, a.start, a.end, a.title, a.phone, a.treatment, a.description, a.allDay ? 1 : 0));
   const seen = appts.map((a) => a.uid);
   stmts.push(env.DB.prepare(
@@ -205,6 +208,32 @@ export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExc
     `UPDATE appointments SET removed = 1 WHERE day >= ? AND day < ? AND removed = 0 AND uid NOT IN (SELECT value FROM json_each(?))`
   ).bind(fromDay > todayLocal() ? fromDay : todayLocal(), toDayExcl, JSON.stringify(seen)));
   for (let i = 0; i < stmts.length; i += 50) await env.DB.batch(stmts.slice(i, i + 50));
+}
+
+/** Archives everything in the published calendar (3 years back → 1 year ahead), at most every 6 hours unless forced. */
+export async function fullSync(env: Env, raw: RawEvent[], force = false): Promise<{ ran: boolean; count?: number }> {
+  if (!force) {
+    const last = await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = 'last_full_sync'").first<{ value: string }>();
+    if (last && Date.now() - Date.parse(last.value) < 6 * 3600 * 1000) return { ran: false };
+  }
+  await env.DB.prepare("INSERT INTO clinic_settings (key, value, updated_at) VALUES ('last_full_sync', ?, datetime('now')) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at")
+    .bind(new Date().toISOString()).run();
+  const from = addDays(todayLocal(), -3 * 366), to = addDays(todayLocal(), 366);
+  const appts = eventsBetween(raw, from, to);
+  await archive(env, appts, from, to);
+  return { ran: true, count: appts.length };
+}
+
+/** Archived visits in a range that are not in the live list (older ones Outlook no longer publishes). */
+export async function archivedBetween(env: Env, fromDay: string, toDayExcl: string, exclude: Set<string>): Promise<Appt[]> {
+  const { results } = await env.DB.prepare(
+    `SELECT uid, day, start, end, title, phone, treatment, description, all_day FROM appointments
+     WHERE day >= ? AND day < ? AND removed = 0 AND day < ? ORDER BY start`,
+  ).bind(fromDay, toDayExcl, todayLocal()).all<Record<string, unknown>>();
+  return results.filter((r) => !exclude.has(String(r.uid))).map((r) => ({
+    uid: String(r.uid), day: String(r.day), start: String(r.start), end: String(r.end), allDay: !!r.all_day,
+    title: String(r.title || ""), phone: String(r.phone || ""), treatment: String(r.treatment || ""), description: String(r.description || ""),
+  }));
 }
 
 export const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), {
