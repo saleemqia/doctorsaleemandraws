@@ -2,8 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /login
+Disallow: /p/
+Disallow: /clinic
 
 Sitemap: https://www.doctorsaleem.com/sitemap.xml
-
-User-agent: *
-Disallow: /p/

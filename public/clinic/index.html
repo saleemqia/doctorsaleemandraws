@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#13285C">
+<title>مواعيد العيادة</title>
+<link rel="icon" href="/favicon-32x32.png">
+<style>
+:root{--navy:#13285C;--blue:#1F6FD1;--sky:#DCEBFA;--gold:#C29A4A;--bg:#F4F7FC;--card:#fff;--muted:#5B6B8C;--line:#E2E9F4;--green:#1E9E5A;--red:#C2413A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--navy);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;font-size:16px}
+header{background:linear-gradient(135deg,#13285C,#1F6FD1);color:#fff;padding:18px 16px 54px;border-bottom:3px solid var(--gold)}
+header .row{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
+header img{width:44px;height:44px;border-radius:12px;background:#fff;padding:4px}
+header h1{font-size:19px;margin:0}
+header small{opacity:.85}
+header a.out{margin-inline-start:auto;color:#fff;opacity:.8;font-size:13px;text-decoration:none;border:1px solid #ffffff55;border-radius:8px;padding:6px 10px}
+main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
+.tabs{display:flex;gap:6px;background:var(--card);border-radius:14px;padding:6px;box-shadow:0 4px 18px #13285C14;overflow-x:auto}
+.tabs button{flex:1;min-width:max-content;border:0;background:none;padding:10px 12px;border-radius:10px;font:inherit;font-weight:600;color:var(--muted);cursor:pointer}
+.tabs button.on{background:var(--navy);color:#fff}
+.tabs input{border:1px solid var(--line);border-radius:10px;padding:8px;font:inherit;color:var(--navy)}
+.bar{display:flex;align-items:center;gap:10px;margin:16px 2px 10px;flex-wrap:wrap}
+.bar h2{font-size:17px;margin:0}
+.count{background:var(--sky);color:var(--navy);border-radius:999px;padding:3px 12px;font-weight:700;font-size:14px}
+.bar .tools{margin-inline-start:auto;display:flex;gap:8px}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--navy);border-radius:10px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.note{font-size:13px;color:var(--muted);margin:0 2px 10px}
+.note.warn{color:var(--red)}
+.day{margin:18px 2px 8px;font-weight:700;color:var(--blue)}
+.appt{background:var(--card);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 10px #13285C0d;display:grid;grid-template-columns:72px 1fr;gap:12px;border-inline-start:4px solid var(--blue)}
+.appt.past{opacity:.6;border-inline-start-color:#B8C4D9}
+.appt.now{border-inline-start-color:var(--gold);box-shadow:0 0 0 2px #C29A4A55}
+.time{font-weight:800;font-size:18px;direction:ltr;text-align:center}
+.time small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
+.name{font-weight:700;font-size:17px}
+.tr{color:var(--muted);margin:3px 0 8px;white-space:pre-wrap;word-break:break-word}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.acts a{font-size:14px;text-decoration:none;border-radius:9px;padding:7px 12px;font-weight:600}
+.call{background:#E8F0FC;color:var(--blue)}
+.wa{background:#E6F6EE;color:var(--green)}
+.phone{direction:ltr;unicode-bidi:isolate;color:var(--muted);font-size:13px;align-self:center}
+.empty{text-align:center;color:var(--muted);padding:40px 10px;background:var(--card);border-radius:14px}
+.spin{width:22px;height:22px;border:3px solid var(--sky);border-top-color:var(--blue);border-radius:50%;animation:s 1s linear infinite;margin:40px auto}
+@keyframes s{to{transform:rotate(360deg)}}
+@media print{header,.tabs,.tools,.acts{display:none}main{margin:0}.appt{box-shadow:none;border:1px solid #ccc;break-inside:avoid}}
+</style>
+</head>
+<body>
+<header><div class="row">
+  <img src="/links/logo.webp" alt="">
+  <div><h1>مواعيد العيادة</h1><small id="sub">من تقويم Outlook · خاص بك فقط</small></div>
+  <a class="out" href="/clinic/logout">خروج</a>
+</div></header>
+<main>
+  <nav class="tabs" id="tabs">
+    <button data-r="today" class="on">اليوم</button>
+    <button data-r="tomorrow">غدًا</button>
+    <button data-r="week">7 أيام</button>
+    <button data-r="month">30 يومًا</button>
+    <input type="date" id="pick" aria-label="اختر يومًا">
+  </nav>
+  <div class="bar">
+    <h2 id="title">اليوم</h2><span class="count" id="count">…</span>
+    <div class="tools">
+      <button class="btn" id="refresh" title="تحديث">↻ تحديث</button>
+      <a class="btn" id="csv" href="#">⬇ Excel</a>
+      <button class="btn" onclick="print()">🖨 طباعة</button>
+    </div>
+  </div>
+  <p class="note" id="note"></p>
+  <section id="list"><div class="spin"></div></section>
+</main>
+<script>
+const CLINIC = "عيادة الدكتور سليم أندراوس", CLINIC_PHONE = "0750 781 6500";
+const WD = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const local = (iso) => new Date(Date.parse(iso) + 180 * 60000); // Duhok time
+const hm = (iso) => local(iso).toISOString().slice(11, 16);
+const ampm = (iso) => { const [h, m] = hm(iso).split(":").map(Number); return `${((h + 11) % 12) + 1}:${String(m).padStart(2, "0")} ${h < 12 ? "ص" : "م"}`; };
+const dayLabel = (d) => { const x = new Date(d + "T00:00:00Z"); return `${WD[x.getUTCDay()]} ${x.getUTCDate()}/${x.getUTCMonth() + 1}`; };
+const addDays = (d, n) => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
+const intl = (p) => p.startsWith("+") ? p.slice(1) : p.startsWith("964") ? p : "964" + p.replace(/^0/, "");
+let today = new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10), current = "today";
+
+function range(r) {
+  if (r === "today") return [today, 1, "اليوم"];
+  if (r === "tomorrow") return [addDays(today, 1), 1, "غدًا"];
+  if (r === "week") return [today, 7, "الأيام السبعة القادمة"];
+  if (r === "month") return [today, 30, "الثلاثون يومًا القادمة"];
+  return [r, 1, dayLabel(r)];
+}
+
+function waText(a) {
+  const when = a.day === today ? "اليوم" : a.day === addDays(today, 1) ? "غدًا" : dayLabel(a.day);
+  const time = a.allDay ? "" : ` الساعة ${ampm(a.start)}`;
+  return `مرحبًا ${a.title}،\nنذكّركم بموعدكم في ${CLINIC} ${when}${time}.\nللتأجيل أو الاستفسار: ${CLINIC_PHONE}\nدهوك - كي ار او - بناية جرزات شيركو، الطابق الأول`;
+}
+
+function render(data, label) {
+  const appts = data.appts || [];
+  $("title").textContent = label;
+  $("count").textContent = appts.length + (appts.length === 1 ? " موعد" : " مواعيد");
+  $("note").className = "note" + (data.source === "archive" ? " warn" : "");
+  $("note").textContent = data.source === "archive"
+    ? "تعذّر الوصول إلى Outlook الآن؛ تُعرض النسخة المحفوظة. (" + (data.error || "") + ")"
+    : "آخر تحديث " + new Date().toLocaleTimeString("ar-IQ", { hour: "numeric", minute: "2-digit" }) + " · يُحفظ كل موعد في الأرشيف تلقائيًا";
+  if (!appts.length) { $("list").innerHTML = `<div class="empty">لا مواعيد في هذه الفترة 🌿</div>`; return; }
+  const now = Date.now(); let html = "", lastDay = "";
+  const multi = new Set(appts.map((a) => a.day)).size > 1 || label !== "اليوم";
+  for (const a of appts) {
+    if (multi && a.day !== lastDay) { const n = appts.filter((x) => x.day === a.day).length; html += `<div class="day">${dayLabel(a.day)} · ${n}</div>`; lastDay = a.day; }
+    const s = Date.parse(a.start), e = Date.parse(a.end);
+    const cls = !a.allDay && e < now ? "past" : !a.allDay && s <= now && now < e ? "now" : "";
+    const ph = a.phone ? `<a class="call" href="tel:${esc(a.phone)}">📞 اتصال</a><a class="wa" target="_blank" rel="noopener" href="https://wa.me/${intl(a.phone)}?text=${encodeURIComponent(waText(a))}">💬 تذكير واتساب</a><span class="phone">${esc(a.phone)}</span>` : "";
+    html += `<article class="appt ${cls}"><div class="time">${a.allDay ? "طوال اليوم" : ampm(a.start)}${a.allDay ? "" : `<small>${Math.round((e - s) / 60000)} د</small>`}</div>
+      <div><div class="name">${esc(a.title) || "بدون اسم"}</div>${a.treatment ? `<div class="tr">${esc(a.treatment)}</div>` : ""}<div class="acts">${ph}</div></div></article>`;
+  }
+  $("list").innerHTML = html;
+}
+
+async function load(r = current) {
+  current = r;
+  const [from, days, label] = range(r);
+  $("list").innerHTML = `<div class="spin"></div>`;
+  $("csv").href = `/clinic/api/export?from=${addDays(today, -365)}&to=${addDays(today, 60)}`;
+  try {
+    const res = await fetch(`/clinic/api/day?from=${from}&days=${days}`, { credentials: "same-origin", cache: "no-store" });
+    if (res.status === 401) { location.reload(); return; }
+    const data = await res.json(); if (data.today) today = data.today;
+    render(data, label);
+  } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر التحميل، تحقّق من الإنترنت ثم اضغط تحديث.</div>`; }
+}
+
+$("tabs").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x === b));
+  $("pick").value = ""; load(b.dataset.r);
+});
+$("pick").addEventListener("change", (e) => {
+  if (!e.target.value) return;
+  document.querySelectorAll(".tabs button").forEach((x) => x.classList.remove("on"));
+  load(e.target.value);
+});
+$("refresh").onclick = () => load();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
+setInterval(() => { if (!document.hidden) load(); }, 5 * 60000);
+load("today");
+</script>
+</body>
+</html>

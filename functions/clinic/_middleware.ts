@@ -1,0 +1,40 @@
+// Guards everything under /clinic: only browsers holding a valid clinic key cookie get in.
+// /clinic/login?k=KEY checks the key (only its SHA-256 hash is stored in D1), sets the cookie,
+// and redirects to /clinic/ so the key does not stay in the address bar or history.
+import { COOKIE, Env, cookieValue, keyValid } from "../../lib/clinic";
+
+const PRIVATE = { "X-Robots-Tag": "noindex, nofollow", "Cache-Control": "no-store", "Referrer-Policy": "no-referrer" };
+
+const denied = () => new Response(
+  `<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>صفحة خاصة</title>
+<body style="font-family:system-ui,sans-serif;background:#f4f7fc;color:#13285C;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center;padding:16px">
+<div><h1 style="font-size:22px">صفحة خاصة بالعيادة</h1><p>افتح رابط الدخول الخاص بك مرة واحدة على هذا الجهاز.</p>
+<p><a href="/" style="color:#1F6FD1">العودة إلى الموقع</a></p></div></body></html>`,
+  { status: 401, headers: { "Content-Type": "text/html; charset=utf-8", ...PRIVATE } },
+);
+
+export const onRequest: PagesFunction<Env> = async ({ request, env, next }) => {
+  const url = new URL(request.url);
+
+  if (url.pathname === "/clinic/logout") {
+    return new Response(null, { status: 302, headers: {
+      Location: "/", "Set-Cookie": `${COOKIE}=; Path=/clinic; Max-Age=0; HttpOnly; Secure; SameSite=Lax`, ...PRIVATE } });
+  }
+
+  if (url.pathname === "/clinic/login") {
+    const k = url.searchParams.get("k") || "";
+    if (!(await keyValid(env, k))) return denied();
+    return new Response(null, { status: 302, headers: {
+      Location: "/clinic/",
+      "Set-Cookie": `${COOKIE}=${encodeURIComponent(k)}; Path=/clinic; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax`,
+      ...PRIVATE } });
+  }
+
+  if (!(await keyValid(env, cookieValue(request, COOKIE)))) return denied();
+
+  const res = await next();
+  const out = new Response(res.body, res);
+  for (const [h, v] of Object.entries(PRIVATE)) out.headers.set(h, v);
+  return out;
+};
