@@ -265,8 +265,9 @@ export async function loadCalendar(env: Env, ctx: { waitUntil(p: Promise<unknown
   return parseIcs(await res.text());
 }
 
-/** Saves every appointment seen into the archive; marks archived ones in the range that disappeared from Outlook. */
-export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExcl: string) {
+/** Saves every appointment seen into the archive; marks archived ones in the range that disappeared from Outlook.
+ *  Every query here uses an index: D1's free plan counts every row a query reads (5 million a day). */
+export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExcl: string): Promise<number> {
   const stmts = appts.map((a) => env.DB.prepare(
     `INSERT INTO appointments (uid, day, start, end, title, phone, treatment, description, all_day, patient_key, last_seen, removed)
      VALUES (?,?,?,?,?,?,?,?,?,?, datetime('now'), 0)
@@ -282,14 +283,32 @@ export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExc
     // Only today and later: Outlook drops old events from the published feed, which is not a cancellation.
     `UPDATE appointments SET removed = 1 WHERE day >= ? AND day < ? AND removed = 0 AND uid NOT IN (SELECT value FROM json_each(?))`
   ).bind(fromDay > todayLocal() ? fromDay : todayLocal(), toDayExcl, JSON.stringify(seen)));
-  stmts.push(dedupeImported(env));
-  for (let i = 0; i < stmts.length; i += 50) await env.DB.batch(stmts.slice(i, i + 50));
+  let changes = 0;
+  for (let i = 0; i < stmts.length; i += 50) {
+    const res = await env.DB.batch(stmts.slice(i, i + 50));
+    for (const r of res) changes += r.meta?.changes || 0;
+  }
+  if (changes) {
+    // New names get a card number at once (reads one index row each), and the patient list is marked for a refresh.
+    const keys = [...new Set(appts.map((a) => patientKey(a.title)).filter((k) => k && !k.startsWith("#")))];
+    const ins = keys.map((k) => env.DB.prepare(
+      "INSERT OR IGNORE INTO patients (key, no) SELECT ?1, (SELECT coalesce(max(no), 10000) + 1 FROM patients) WHERE NOT EXISTS (SELECT 1 FROM patients WHERE key = ?1)",
+    ).bind(k));
+    for (let i = 0; i < ins.length; i += 50) await env.DB.batch(ins.slice(i, i + 50));
+    await setSetting(env, "stats_dirty", "1");
+  }
+  return changes;
 }
 
-/** Rows imported from a CSV file ("imp|…") are dropped when the same visit (same start + name) exists from Outlook. */
+export const setSetting = (env: Env, key: string, value: string) => env.DB.prepare(
+  "INSERT INTO clinic_settings (key, value, updated_at) VALUES (?, ?, datetime('now')) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at",
+).bind(key, value).run();
+
+/** Rows imported from a CSV file ("imp|…") are dropped when the same visit (same start + name) exists from Outlook.
+ *  Run only after an import (it scans the table). */
 export const dedupeImported = (env: Env) => env.DB.prepare(
   `DELETE FROM appointments WHERE uid LIKE 'imp|%' AND EXISTS (SELECT 1 FROM appointments b
-     WHERE b.uid NOT LIKE 'imp|%' AND b.start = appointments.start AND b.title = appointments.title)`);
+     WHERE b.start = appointments.start AND b.uid NOT LIKE 'imp|%' AND b.title = appointments.title)`);
 
 /** Archives everything in the published calendar (from 2020 → 1 year ahead), at most every 6 hours unless forced. */
 export async function fullSync(env: Env, raw: RawEvent[], force = false): Promise<{ ran: boolean; count?: number }> {

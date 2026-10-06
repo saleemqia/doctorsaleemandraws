@@ -1,6 +1,6 @@
 // POST /clinic/api/import  {appts:[{uid?,start,end,allDay,title,description}]}  (max 500 per call; auth by middleware)
 // Adds visits from a file exported from Outlook (parsed in the browser) to the archive. Never marks anything removed.
-import { Appt, Env, archive, json, localDay, splitDescription } from "../../../lib/clinic";
+import { Appt, Env, archive, dedupeImported, json, localDay, splitDescription } from "../../../lib/clinic";
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   let body: { appts?: Record<string, unknown>[] };
@@ -23,6 +23,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   ).bind(JSON.stringify([...new Set(appts.map((a) => a.start))])).all<{ start: string; title: string }>();
   const known = new Set(have.map((r) => r.start + "|" + String(r.title).trim()));
   const fresh = appts.filter((a) => a.description || !known.has(a.start + "|" + a.title));
-  if (fresh.length) await archive(env, fresh, "2100-01-01", "2100-01-01"); // empty range: nothing gets marked removed
+  if (fresh.length) {
+    await archive(env, fresh, "2100-01-01", "2100-01-01"); // empty range: nothing gets marked removed
+    if (fresh.some((a) => !a.uid.startsWith("imp|"))) await dedupeImported(env).run();
+  }
   return json({ ok: true, saved: fresh.length, alreadyHad: appts.length - fresh.length, skipped: list.length - appts.length });
 };

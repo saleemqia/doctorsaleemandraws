@@ -338,8 +338,18 @@ async function patients() {
   const q = $("pq").value.trim();
   $("title").textContent = q ? `مرضى: ${q}` : "المرضى"; $("note").textContent = "";
   $("list").innerHTML = `<div class="spin"></div>`;
-  let d = await (await fetch(`/clinic/api/patients?q=${encodeURIComponent(q)}`, { cache: "no-store" })).json();
-  if (d.pending > 0) { await rebuildIfNeeded(d.pending); d = await (await fetch(`/clinic/api/patients?q=${encodeURIComponent(q)}`, { cache: "no-store" })).json(); }
+  const get = async () => {
+    const res = await fetch(`/clinic/api/patients?q=${encodeURIComponent(q)}`, { cache: "no-store" });
+    const txt = await res.text(); let j; try { j = JSON.parse(txt); } catch { j = { error: `HTTP ${res.status}: ${txt.slice(0, 160)}` }; }
+    if (!res.ok || j.error) throw new Error(j.error || "HTTP " + res.status);
+    return j;
+  };
+  let d;
+  try {
+    d = await get();
+    if (d.pending > 0) { await rebuildIfNeeded(d.pending); d = await get(); }
+  } catch (err) { $("list").innerHTML = `<div class="empty">تعذّر تحميل المرضى:<br><small dir="ltr">${esc(err.message)}</small></div>`; return; }
+  if (!window._am) { window._am = 1; fetch("/clinic/api/patients?action=automerge", { method: "POST" }).catch(() => {}); }
   $("pstats").textContent = `${d.total} مريضًا (بطاقة لكل مريض، مرتبة حسب آخر زيارة)` + (d.patients.length >= 100 ? " · تظهر أول 100، ابحث للوصول للباقي" : "");
   $("count").textContent = q ? d.patients.length + " نتيجة" : "";
   if (!d.patients.length) { $("list").innerHTML = `<div class="empty">لا نتائج</div>`; return; }
@@ -350,7 +360,12 @@ $("pform").onsubmit = (e) => { e.preventDefault(); patients(); };
 $("list").addEventListener("click", (e) => { const r = e.target.closest(".pl"); if (r) openCard(r.dataset.no); });
 async function openCard(no) {
   $("list").innerHTML = `<div class="spin"></div>`;
-  const d = await (await fetch(`/clinic/api/patients?no=${no}`, { cache: "no-store" })).json();
+  let d;
+  try {
+    const res = await fetch(`/clinic/api/patients?no=${no}`, { cache: "no-store" });
+    const txt = await res.text(); try { d = JSON.parse(txt); } catch { d = { error: `HTTP ${res.status}: ${txt.slice(0, 160)}` }; }
+    if (!res.ok || d.error) throw new Error(d.error || "HTTP " + res.status);
+  } catch (err) { $("list").innerHTML = `<div class="empty">تعذّر فتح البطاقة:<br><small dir="ltr">${esc(err.message)}</small></div>`; return; }
   const p = d.patient, v = d.visits;
   $("title").textContent = "بطاقة مريض"; $("count").textContent = v.length + " زيارة";
   const phones = p.phones.map((x) => `<a href="tel:${esc(x)}" dir="ltr">${esc(x)}</a>`).join(" · ") || "لا يوجد رقم";
