@@ -125,6 +125,11 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   <div id="pats" hidden>
     <form id="pform" class="sbox"><input id="pq" type="search" placeholder="اسم المريض أو رقم الهاتف أو رقم البطاقة" autocomplete="off"><button class="btn">بحث</button></form>
     <p class="note" id="pstats"></p>
+    <details class="imp"><summary>💵 استيراد ملف الحسابات (Excel)</summary>
+      <p>اختر ملف الحسابات الشهري (مثل DentalFinicial2026.xlsx). كل صفحة شهر تُربط بالمرضى بالاسم وبيوم الزيارة. إعادة رفع الملف تُحدّث الأشهر ولا تكرّرها.</p>
+      <input type="file" id="finFile" accept=".xlsx,.xls">
+      <p class="note" id="finMsg"></p>
+    </details>
   </div>
   <div id="arch" hidden>
     <form id="sform" class="sbox"><input id="q" type="search" placeholder="ابحث باسم المريض أو رقم الهاتف أو نوع العمل" autocomplete="off"><button class="btn">بحث</button></form>
@@ -326,6 +331,81 @@ $("syncAll").onclick = async () => {
 };
 
 /* ---- patient cards ---- */
+/* ---- accounts workbook (Excel) → payments ---- */
+const MONTH_EN = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+const EXPENSE = /(اجور|أجور|ايجار|إيجار|رواتب|راتب|بيع|كهرباء|مولد|مصاريف|ايرادات|مدخولات|دفوعات|اعلانات|شراء|صيانه|صيانة|انترنت|نظافه|اشتراك|total|المجموع|مجموع|حسابات)/i;
+function money(v) {
+  if (v === null || v === undefined || v === "") return [null, null];
+  if (typeof v === "number") return [v, null];
+  const s = toEn(v).replace(/,/g, "");
+  const u = s.match(/(\d+(?:\.\d+)?)\s*\$|\$\s*(\d+(?:\.\d+)?)/); if (u) return [null, +(u[1] || u[2])];
+  const n = s.match(/\d+(?:\.\d+)?/); return n ? [+n[0], null] : [null, null];
+}
+const looksDate = (v) => v instanceof Date || (typeof v === "number" && v > 20000 && v < 80000) || /^\s*\d{1,2}\s*[|\\/.-]\s*\d{1,2}\s*[|\\/.-]\s*\d{2,4}\s*$/.test(toEn(v ?? ""));
+function cellDay(v, year, month) {
+  let d, m;
+  if (typeof v === "number" && v > 20000 && v < 80000) {          // Excel date serial number (time-zone safe)
+    const t = new Date(Math.round((v - 25569) * 86400000)); d = t.getUTCDate(); m = t.getUTCMonth() + 1;
+  } else if (v instanceof Date) { d = v.getDate(); m = v.getMonth() + 1; }
+  else { const p = toEn(v ?? "").match(/\d+/g); if (!p || p.length < 2) return null; d = +p[0]; m = +p[1]; }
+  if (m !== month && d === month) [d, m] = [m, d];   // Excel read day/month as month/day
+  const t = new Date(Date.UTC(year, month - 1, d));
+  return d >= 1 && d <= 31 && t.getUTCMonth() === month - 1 ? t.toISOString().slice(0, 10) : null;
+}
+async function loadXlsx() {
+  if (window.XLSX) return window.XLSX;
+  await new Promise((ok, bad) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"; s.onload = ok; s.onerror = bad; document.head.appendChild(s); });
+  return window.XLSX;
+}
+function sheetRows(XLSX, ws, title, fileYear) {
+  const grid = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: null });
+  const month = MONTH_EN[String(title).trim().toLowerCase().slice(0, 3)]; if (!month) return null;
+  const yearM = (String(title) + " " + String(grid[0]?.[0] ?? "")).match(/20\d\d/); const year = yearM ? +yearM[0] : fileYear;
+  const hi = grid.findIndex((r, i) => i < 8 && r && r.some((c) => /patient|اسم/i.test(String(c ?? ""))) && r.some((c) => /date|تاريخ/i.test(String(c ?? ""))));
+  if (hi < 0 || !year) return null;
+  const h = grid[hi].map((c) => String(c ?? "").toLowerCase());
+  const col = (re, not) => h.findIndex((c) => re.test(c) && !(not && not.test(c)));
+  const cName = col(/name|اسم/), cDate = col(/date|تاريخ/), cWork = col(/work|treatment|علاج|عمل/), cNotes = col(/note|ملاحظ/), cPhone = col(/phone|هاتف/), cLab = col(/lab/);
+  const cPaid = col(/paid|done|مدفوع|واصل/, /usd|\$/), cPaidU = col(/(paid|done)[\s\S]*(usd|\$)/), cDue = col(/due|left|متبقي|باقي/, /usd|\$/), cDueU = col(/(due|left)[\s\S]*(usd|\$)/);
+  const out = [];
+  for (let i = hi + 1; i < grid.length; i++) {
+    const r = grid[i] || []; const name = String(r[cName] ?? "").trim();
+    if (/^total/i.test(name)) break;
+    if (!name || EXPENSE.test(name)) continue;
+    let work = r[cWork], dt = r[cDate];
+    if (looksDate(work) && !looksDate(dt)) [work, dt] = [dt, work];   // some sheets have the two columns swapped
+    const day = cellDay(dt, year, month); if (!day) continue;
+    let [pi, pu] = money(r[cPaid]), [di, du] = money(r[cDue]);
+    if (cPaidU >= 0 && r[cPaidU] != null && r[cPaidU] !== "") { const [a, b] = money(r[cPaidU]); pu = (pu || 0) + (b ?? a ?? 0); }
+    if (cDueU >= 0 && r[cDueU] != null && r[cDueU] !== "") { const [a, b] = money(r[cDueU]); du = (du || 0) + (b ?? a ?? 0); }
+    const phone = cPhone >= 0 ? toEn(r[cPhone] ?? "").replace(/\D/g, "") : "";
+    out.push({ src: `${year}-${String(month).padStart(2, "0")}#${i + 1}`, name, day, paid_iqd: pi, paid_usd: pu, due_iqd: di, due_usd: du,
+      work: String(work ?? "").trim(), notes: [cLab >= 0 ? r[cLab] : null, cNotes >= 0 ? r[cNotes] : null].filter(Boolean).join(" ").trim(), phone: phone.length >= 10 ? phone : "" });
+  }
+  return { sheet: `${year}-${String(month).padStart(2, "0")}`, rows: out };
+}
+$("finFile").onchange = async (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  const msg = $("finMsg"); msg.className = "note"; msg.textContent = "جارٍ قراءة الملف…";
+  try {
+    const XLSX = await loadXlsx();
+    const wb = XLSX.read(await file.arrayBuffer());
+    const fy = (file.name.match(/20\d\d/) || [])[0];
+    let tot = { saved: 0, exact: 0, near: 0, fresh: 0, months: 0 };
+    for (const name of wb.SheetNames) {
+      const part = sheetRows(XLSX, wb.Sheets[name], name, fy ? +fy : 0);
+      if (!part || !part.rows.length) continue;
+      msg.textContent = `جارٍ حفظ ${name}…`;
+      const res = await fetch("/clinic/api/payments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(part) });
+      const r = await res.json(); if (!r.ok) throw new Error(r.error || "HTTP " + res.status);
+      tot.saved += r.saved; tot.exact += r.exact; tot.near += r.near; tot.fresh += r.fresh; tot.months++;
+    }
+    msg.textContent = `تم ✔ ${tot.months} شهرًا، ${tot.saved} سجلًا: ${tot.exact} طابق الاسم، ${tot.near} طابق بيوم الزيارة، ${tot.fresh} مريضًا جديدًا (بطاقة جديدة).`;
+    patients();
+  } catch (err) { msg.className = "note warn"; msg.textContent = "تعذّر الاستيراد: " + (err?.message || "لم يتم تحميل قارئ ملفات Excel، تحقق من الإنترنت ثم أعد المحاولة"); }
+  e.target.value = "";
+};
+
 async function rebuildIfNeeded(pending) {
   let left = pending;
   while (left > 0) {
@@ -366,12 +446,28 @@ async function openCard(no) {
     const txt = await res.text(); try { d = JSON.parse(txt); } catch { d = { error: `HTTP ${res.status}: ${txt.slice(0, 160)}` }; }
     if (!res.ok || d.error) throw new Error(d.error || "HTTP " + res.status);
   } catch (err) { $("list").innerHTML = `<div class="empty">تعذّر فتح البطاقة:<br><small dir="ltr">${esc(err.message)}</small></div>`; return; }
-  const p = d.patient, v = d.visits;
+  const p = d.patient, v = d.visits, pay = d.payments || [];
   $("title").textContent = "بطاقة مريض"; $("count").textContent = v.length + " زيارة";
   const phones = p.phones.map((x) => `<a href="tel:${esc(x)}" dir="ltr">${esc(x)}</a>`).join(" · ") || "لا يوجد رقم";
-  const rows = v.map((x, i) => `<tr><td class="m">${i + 1}</td><td class="d">${x.day}<br><small style="color:var(--muted)">${x.allDay ? "" : ampm(x.start)}</small></td>
-    <td>${esc(x.treatment) || `<span style="color:var(--muted)">—</span>`}${x.title.trim() !== p.name ? `<br><small style="color:var(--muted)">${esc(x.title)}</small>` : ""}</td>
-    <td class="m">—</td><td class="m">—</td></tr>`).join("");
+  const fmt = (n) => (n == null ? "" : Number(n).toLocaleString("en"));
+  const amt = (iqd, usd) => [iqd ? fmt(iqd) + " د.ع" : "", usd ? fmt(usd) + " $" : ""].filter(Boolean).join("<br>") || (iqd === 0 || usd === 0 ? "0" : "—");
+  const byDay = {}; pay.forEach((x, i) => { (byDay[x.day] = byDay[x.day] || []).push(i); });
+  const used = new Set(), lines = [];
+  for (const x of v) {
+    const ids = (byDay[x.day] || []).filter((i) => !used.has(i)); ids.forEach((i) => used.add(i));
+    const ps = ids.map((i) => pay[i]);
+    const sum = (f) => ps.reduce((t, y) => t + (y[f] || 0), 0) || (ps.some((y) => y[f] === 0) ? 0 : null);
+    const xw = ps.map((y) => y.work).filter((w) => w && w !== x.treatment).join(" · ");
+    lines.push({ day: x.day, time: x.allDay ? "" : ampm(x.start), work: (esc(x.treatment) || "") + (xw ? `${x.treatment ? "<br>" : ""}<small style="color:var(--blue)">💵 ${esc(xw)}</small>` : "") || `<span style="color:var(--muted)">—</span>`,
+      sub: x.title.trim() !== p.name ? esc(x.title) : "", paid: ps.length ? amt(sum("paid_iqd"), sum("paid_usd")) : "—", due: ps.length ? amt(sum("due_iqd"), sum("due_usd")) : "—" });
+  }
+  pay.forEach((y, i) => { if (!used.has(i)) lines.push({ day: y.day, time: "💵", work: esc(y.work) || "دفعة", sub: y.notes ? esc(y.notes) : "", paid: amt(y.paid_iqd, y.paid_usd), due: amt(y.due_iqd, y.due_usd) }); });
+  lines.sort((a, b) => a.day.localeCompare(b.day));
+  const rows = lines.map((x, i) => `<tr><td class="m">${i + 1}</td><td class="d">${x.day}<br><small style="color:var(--muted)">${x.time}</small></td>
+    <td>${x.work}${x.sub ? `<br><small style="color:var(--muted)">${x.sub}</small>` : ""}</td><td class="m">${x.paid}</td><td class="m">${x.due}</td></tr>`).join("");
+  const paidIqd = pay.reduce((t, y) => t + (y.paid_iqd || 0), 0), paidUsd = pay.reduce((t, y) => t + (y.paid_usd || 0), 0);
+  const lastDue = [...pay].reverse().find((y) => y.due_iqd != null || y.due_usd != null);
+  const summary = pay.length ? `<p class="note" style="font-size:14px;color:var(--navy)"><b>مجموع المدفوع:</b> ${amt(paidIqd, paidUsd).replace("<br>", " + ")} · <b>المتبقي حسب آخر سجل (${lastDue ? lastDue.day : "—"}):</b> ${lastDue ? amt(lastDue.due_iqd, lastDue.due_usd).replace("<br>", " + ") : "—"}</p>` : `<p class="note">لا توجد سجلات مالية لهذا المريض في ملفات الحسابات.</p>`;
   $("list").innerHTML = `<div class="pcard"><div class="phead">
       <div class="no">DSA-P-${p.no}${p.card_no ? " · بطاقة ورقية " + esc(p.card_no) : ""}</div><h3>${esc(p.name)}</h3>
       <div class="meta"><span>📞 ${phones}</span><span>أول زيارة ${v[0]?.day || ""}</span><span>آخر زيارة ${v[v.length - 1]?.day || ""}</span><span>${v.length} زيارة</span></div></div>
@@ -380,7 +476,7 @@ async function openCard(no) {
       <div class="pf noprint"><button class="btn" id="saveP">💾 حفظ</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn" onclick="print()">🖨 طباعة البطاقة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>
       ${p.merged.length ? `<p class="note">مدموجة معها: ${p.merged.map((m) => `#${m.no} <a href="#" data-un="${m.no}">فكّ</a>`).join(" · ")}</p>` : ""}
       <table class="vt"><thead><tr><th>#</th><th>التاريخ</th><th>نوع العمل</th><th>المدفوع</th><th>المتبقي</th></tr></thead><tbody>${rows}</tbody></table>
-      <p class="note">المدفوعات تُضاف من ملف Excel لاحقًا.</p>
+      ${summary}
     </div></div>`;
   $("saveP").onclick = async () => {
     await fetch("/clinic/api/patients?action=note", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ no: p.no, notes: $("pnotes").value, card_no: $("cardNo").value }) });

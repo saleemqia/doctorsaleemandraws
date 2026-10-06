@@ -8,26 +8,10 @@
 // D1's free plan counts every row a query reads (5 million a day), so the list reads a summary kept on the
 // patients table (visits, first/last day, name, phones). It is rebuilt at most every 2 hours, only when visits changed.
 // merged_into: NULL = own card, '' = owner un-merged it (never auto-merged again), text = shown on that card.
-import { Env, autoMergePairs, json, patientKey, setSetting } from "../../../lib/clinic";
+import { Env, autoMergePairs, ensureSchema, json, patientKey, setSetting } from "../../../lib/clinic";
 
 const setting = async (env: Env, key: string) =>
   (await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = ?").bind(key).first<{ value: string }>())?.value;
-
-async function ensureSchema(env: Env) {
-  if ((await setting(env, "schema_v")) === "2") return;
-  for (const sql of [
-    "ALTER TABLE patients ADD COLUMN visits INTEGER DEFAULT 0",
-    "ALTER TABLE patients ADD COLUMN first_day TEXT",
-    "ALTER TABLE patients ADD COLUMN last_day TEXT",
-    "ALTER TABLE patients ADD COLUMN name TEXT",
-    "ALTER TABLE patients ADD COLUMN phones TEXT",
-    "CREATE INDEX IF NOT EXISTS patients_last ON patients(last_day)",
-    "CREATE INDEX IF NOT EXISTS patients_merged ON patients(merged_into)",
-    "CREATE INDEX IF NOT EXISTS appointments_start ON appointments(start)",
-  ]) { try { await env.DB.prepare(sql).run(); } catch { /* already there */ } }
-  await setSetting(env, "schema_v", "2");
-  await setSetting(env, "stats_dirty", "1");
-}
 
 const STATS = (where: string) => `
   UPDATE patients SET visits = s.v, first_day = s.f, last_day = s.l, name = s.n, phones = s.ph FROM (
@@ -104,11 +88,15 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
         `SELECT day, start, end, title, phone, treatment, description, all_day AS allDay FROM appointments
          WHERE removed = 0 AND patient_key IN (SELECT value FROM json_each(?)) ORDER BY start`,
       ).bind(JSON.stringify(members.map((m) => m.key))).all<Record<string, string>>();
+      const { results: payments } = await env.DB.prepare(
+        `SELECT day, name, paid_iqd, paid_usd, due_iqd, due_usd, work, notes FROM payments
+         WHERE patient_key IN (SELECT value FROM json_each(?)) ORDER BY day, id`,
+      ).bind(JSON.stringify(members.map((m) => m.key))).all<Record<string, string>>();
       const count: Record<string, number> = {};
       for (const v of visits) count[v.title.trim()] = (count[v.title.trim()] || 0) + 1;
       const name = Object.entries(count).sort((a, b) => b[1] - a[1])[0]?.[0] || main;
       const phones = [...new Set(visits.map((v) => v.phone).filter(Boolean))];
-      return json({ patient: { ...card, name, phones, merged: members.filter((m) => m.key !== main) }, visits });
+      return json({ patient: { ...card, name, phones, merged: members.filter((m) => m.key !== main) }, visits, payments });
     }
 
     if (!pending?.n) await refreshStats(env);
@@ -118,12 +106,12 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     const nq = q ? patientKey(q).replace(/^#/, "") : "";
     const { results } = await env.DB.prepare(
       `SELECT no, key, visits, first_day AS first, last_day AS last, coalesce(name, key) AS name, phones FROM patients
-       WHERE (merged_into IS NULL OR merged_into = '') AND visits > 0
+       WHERE (merged_into IS NULL OR merged_into = '') AND (visits > 0 OR EXISTS (SELECT 1 FROM payments y WHERE y.patient_key = patients.key))
          AND (?1 = '' OR key LIKE '%' || ?1 || '%' OR (?2 <> '' AND phones LIKE '%' || ?2 || '%') OR CAST(no AS TEXT) = ?3
               OR EXISTS (SELECT 1 FROM patients c WHERE c.merged_into = patients.key AND (c.key LIKE '%' || ?1 || '%' OR CAST(c.no AS TEXT) = ?3)))
-       ORDER BY last_day DESC, no DESC LIMIT 100 OFFSET ?4`,
+       ORDER BY coalesce(last_day, '0') DESC, no DESC LIMIT 100 OFFSET ?4`,
     ).bind(nq, digits.length >= 4 ? digits : "", q, offset).all();
-    const total = await env.DB.prepare("SELECT count(*) AS n FROM patients WHERE (merged_into IS NULL OR merged_into = '') AND visits > 0").first<{ n: number }>();
+    const total = await env.DB.prepare("SELECT count(*) AS n FROM patients WHERE (merged_into IS NULL OR merged_into = '') AND (visits > 0 OR EXISTS (SELECT 1 FROM payments y WHERE y.patient_key = patients.key))").first<{ n: number }>();
     return json({ q, total: total?.n || 0, pending: pending?.n || 0, patients: results });
   } catch (e) { return fail(e); }
 };

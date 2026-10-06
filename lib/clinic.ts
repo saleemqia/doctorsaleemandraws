@@ -300,6 +300,28 @@ export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExc
   return changes;
 }
 
+/** One-time schema upgrades, remembered in clinic_settings 'schema_v'. */
+export async function ensureSchema(env: Env) {
+  const v = (await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = 'schema_v'").first<{ value: string }>())?.value;
+  if (v === "3") return;
+  for (const sql of [
+    "ALTER TABLE patients ADD COLUMN visits INTEGER DEFAULT 0",
+    "ALTER TABLE patients ADD COLUMN first_day TEXT",
+    "ALTER TABLE patients ADD COLUMN last_day TEXT",
+    "ALTER TABLE patients ADD COLUMN name TEXT",
+    "ALTER TABLE patients ADD COLUMN phones TEXT",
+    "CREATE INDEX IF NOT EXISTS patients_last ON patients(last_day)",
+    "CREATE INDEX IF NOT EXISTS patients_merged ON patients(merged_into)",
+    "CREATE INDEX IF NOT EXISTS appointments_start ON appointments(start)",
+    `CREATE TABLE IF NOT EXISTS payments (id INTEGER PRIMARY KEY, src TEXT UNIQUE, sheet TEXT, patient_key TEXT, name TEXT, day TEXT,
+       paid_iqd REAL, paid_usd REAL, due_iqd REAL, due_usd REAL, work TEXT, notes TEXT, phone TEXT, matched TEXT)`,
+    "CREATE INDEX IF NOT EXISTS payments_key ON payments(patient_key)",
+    "CREATE INDEX IF NOT EXISTS payments_sheet ON payments(sheet)",
+  ]) { try { await env.DB.prepare(sql).run(); } catch { /* already there */ } }
+  await setSetting(env, "schema_v", "3");
+  await setSetting(env, "stats_dirty", "1");
+}
+
 export const setSetting = (env: Env, key: string, value: string) => env.DB.prepare(
   "INSERT INTO clinic_settings (key, value, updated_at) VALUES (?, ?, datetime('now')) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at",
 ).bind(key, value).run();
