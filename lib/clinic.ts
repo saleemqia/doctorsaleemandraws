@@ -172,6 +172,34 @@ export function eventsBetween(raw: RawEvent[], fromDay: string, toDayExcl: strin
   return out.sort((a, b) => a.start.localeCompare(b.start));
 }
 
+/* ---------- patients ---------- */
+
+// Words that describe the work, not the person — dropped from the end of a calendar title.
+const WORK_WORDS = new Set(("حشو حشوه حشوات عصب قلع تنظيف تلميع مراجعه مراجع متابعه تقويم زركون جسر جسور اشعه سكانر scanner scan " +
+  "تاجيل لم ياتي يات ما اتي تثبيت دائمي دايمي مؤقت موقت طبعه تركيب تبييض زرعه زراعه تاج تيجان فينير " +
+  "علاج اطفال لب كشف استشاره جلسه اولي ثانيه ثالثه اخيره قياس").split(" "));
+// Calendar entries that are not patient visits.
+const NOT_PATIENT = /(دفع|حساب|مختبر|استلام|امتحان|اجتماع|عطله|محاضره|دوره|شركه|كورس|مؤتمر)/;
+
+export const normName = (s: string) => s.normalize("NFKC").replace(/[ً-ْٰـ]/g, "")
+  .replace(/[أإآٱ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه").replace(/ؤ/g, "و").replace(/ئ/g, "ي")
+  .replace(/\s+/g, " ").trim().toLowerCase();
+
+/** Groups visits of the same person: "غزل على" = "غزل علي", "وجدان مجيد /حشو عصب ج3" = "وجدان مجيد". "#…" = not a patient. */
+export function patientKey(title: string): string {
+  let t = normName(title.replace(/[٠-٩]/g, (c) => String("٠١٢٣٤٥٦٧٨٩".indexOf(c))));
+  const full = t;
+  t = t.split(/[\/\\(\[]/)[0];
+  t = t.replace(/\+?\d[\d\s-]{5,}/g, " ").replace(/[+*،,.:؛]/g, " ").replace(/\s+/g, " ").trim();
+  const words = t.split(" ").filter(Boolean);
+  while (words.length > 1) {
+    const w = words[words.length - 1];
+    if (WORK_WORDS.has(w) || /^ج?\d+$/.test(w) || /^ج$/.test(w) || /^\d/.test(w)) words.pop(); else break;
+  }
+  t = words.join(" ") || full;
+  return NOT_PATIENT.test(full) ? "#" + t : t;
+}
+
 /* ---------- fetch + archive ---------- */
 
 export async function loadCalendar(env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<RawEvent[]> {
@@ -193,15 +221,15 @@ export async function loadCalendar(env: Env, ctx: { waitUntil(p: Promise<unknown
 /** Saves every appointment seen into the archive; marks archived ones in the range that disappeared from Outlook. */
 export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExcl: string) {
   const stmts = appts.map((a) => env.DB.prepare(
-    `INSERT INTO appointments (uid, day, start, end, title, phone, treatment, description, all_day, last_seen, removed)
-     VALUES (?,?,?,?,?,?,?,?,?, datetime('now'), 0)
+    `INSERT INTO appointments (uid, day, start, end, title, phone, treatment, description, all_day, patient_key, last_seen, removed)
+     VALUES (?,?,?,?,?,?,?,?,?,?, datetime('now'), 0)
      ON CONFLICT(uid) DO UPDATE SET day=excluded.day, start=excluded.start, end=excluded.end, title=excluded.title,
        phone=excluded.phone, treatment=excluded.treatment, description=excluded.description, all_day=excluded.all_day,
-       last_seen=datetime('now'), removed=0
+       patient_key=excluded.patient_key, last_seen=datetime('now'), removed=0
      WHERE appointments.removed = 1 OR appointments.day IS NOT excluded.day OR appointments.start IS NOT excluded.start
        OR appointments.end IS NOT excluded.end OR appointments.title IS NOT excluded.title
-       OR appointments.description IS NOT excluded.description`
-  ).bind(a.uid, a.day, a.start, a.end, a.title, a.phone, a.treatment, a.description, a.allDay ? 1 : 0));
+       OR appointments.description IS NOT excluded.description OR appointments.patient_key IS NOT excluded.patient_key`
+  ).bind(a.uid, a.day, a.start, a.end, a.title, a.phone, a.treatment, a.description, a.allDay ? 1 : 0, patientKey(a.title)));
   const seen = appts.map((a) => a.uid);
   stmts.push(env.DB.prepare(
     // Only today and later: Outlook drops old events from the published feed, which is not a cancellation.

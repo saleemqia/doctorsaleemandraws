@@ -72,6 +72,24 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .r .p{grid-column:1/-1;font-size:13px;color:var(--muted)}.r .p a{color:var(--navy);direction:ltr;unicode-bidi:isolate;text-decoration:none;font-weight:600}
 .dh{background:var(--sky);color:var(--navy);font-weight:700;font-size:13px;padding:6px 12px}
 .dnav{display:flex;gap:6px;width:100%}.dnav .btn{flex:1;justify-content:center}.dnav[hidden]{display:none}
+.pl{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}
+.pl:hover{background:#F7FAFE}.pl:last-child{border-bottom:0}
+.pno{font-weight:800;color:var(--gold);font-size:13px;direction:ltr}
+.pl b{font-size:16px}.pl .v{font-size:12px;color:var(--muted);text-align:left}
+.pl .s{grid-column:2/-1;font-size:12px;color:var(--muted)}
+.pcard{background:#fff;border-radius:16px;box-shadow:0 4px 18px #13285C14;overflow:hidden}
+.phead{background:linear-gradient(135deg,#13285C,#1F6FD1);color:#fff;padding:16px;border-bottom:3px solid var(--gold)}
+.phead .no{font-size:13px;opacity:.85;direction:ltr;text-align:right}.phead h3{margin:4px 0 6px;font-size:22px}
+.phead .meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;opacity:.95}
+.phead a{color:#fff}
+.pbody{padding:12px 14px}
+.pf{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}.pf input,.pf textarea{border:1px solid var(--line);border-radius:10px;padding:9px;font:inherit;color:var(--navy);flex:1;min-width:120px}
+.vt{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+.vt th{background:var(--sky);color:var(--navy);font-size:12px;padding:7px 6px;text-align:right;position:sticky;top:0}
+.vt td{border-bottom:1px solid var(--line);padding:7px 6px;vertical-align:top}
+.vt td.d{white-space:nowrap;font-weight:600}.vt td.m{color:var(--muted);text-align:center}
+.vt tr:nth-child(even) td{background:#FAFCFF}
+@media print{.pcard{box-shadow:none}.pf,.noprint{display:none!important}.vt th{position:static}}
 @media (max-width:480px){.tabs{flex-wrap:wrap}.tabs input{max-width:none;flex-basis:100%}}
 @media print{header,.tabs,.tools,.wa2{display:none}main{margin:0}.appt{box-shadow:none;border:1px solid #ccc;break-inside:avoid}}
 </style>
@@ -92,6 +110,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     <button data-r="lastweek">الأسبوع الماضي</button>
     <button data-r="past">الشهر الماضي</button>
     <button data-r="archive">🔎 الأرشيف</button>
+    <button data-r="patients">👤 المرضى</button>
     <input type="date" id="pick" aria-label="اختر يومًا">
   </nav>
   <div class="bar">
@@ -102,6 +121,10 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
       <a class="btn" id="csv" href="#">⬇ Excel</a>
       <button class="btn" onclick="print()">🖨 طباعة</button>
     </div>
+  </div>
+  <div id="pats" hidden>
+    <form id="pform" class="sbox"><input id="pq" type="search" placeholder="اسم المريض أو رقم الهاتف أو رقم البطاقة" autocomplete="off"><button class="btn">بحث</button></form>
+    <p class="note" id="pstats"></p>
   </div>
   <div id="arch" hidden>
     <form id="sform" class="sbox"><input id="q" type="search" placeholder="ابحث باسم المريض أو رقم الهاتف أو نوع العمل" autocomplete="off"><button class="btn">بحث</button></form>
@@ -302,8 +325,69 @@ $("syncAll").onclick = async () => {
   b.disabled = false; b.textContent = "⟳ حفظ مواعيد الرابط المنشور الآن";
 };
 
+/* ---- patient cards ---- */
+async function rebuildIfNeeded(pending) {
+  let left = pending;
+  while (left > 0) {
+    $("pstats").textContent = `جارٍ تجهيز بطاقات المرضى… بقي ${left} موعدًا`;
+    const r = await (await fetch("/clinic/api/patients?action=rebuild", { method: "POST" })).json();
+    if (!r.ok || r.done === 0) break; left = r.left;
+  }
+}
+async function patients() {
+  const q = $("pq").value.trim();
+  $("title").textContent = q ? `مرضى: ${q}` : "المرضى"; $("note").textContent = "";
+  $("list").innerHTML = `<div class="spin"></div>`;
+  let d = await (await fetch(`/clinic/api/patients?q=${encodeURIComponent(q)}`, { cache: "no-store" })).json();
+  if (d.pending > 0) { await rebuildIfNeeded(d.pending); d = await (await fetch(`/clinic/api/patients?q=${encodeURIComponent(q)}`, { cache: "no-store" })).json(); }
+  $("pstats").textContent = `${d.total} مريضًا (بطاقة لكل مريض، مرتبة حسب آخر زيارة)` + (d.patients.length >= 100 ? " · تظهر أول 100، ابحث للوصول للباقي" : "");
+  $("count").textContent = q ? d.patients.length + " نتيجة" : "";
+  if (!d.patients.length) { $("list").innerHTML = `<div class="empty">لا نتائج</div>`; return; }
+  $("list").innerHTML = `<div class="rows">` + d.patients.map((p) => `<div class="pl" data-no="${p.no}"><span class="pno">#${p.no}</span><b>${esc(p.name)}</b><span class="v">${p.visits} زيارة</span>
+    <span class="s">آخر زيارة ${p.last}${p.phones ? " · " + esc(p.phones.split(",")[0]) : ""}</span></div>`).join("") + `</div>`;
+}
+$("pform").onsubmit = (e) => { e.preventDefault(); patients(); };
+$("list").addEventListener("click", (e) => { const r = e.target.closest(".pl"); if (r) openCard(r.dataset.no); });
+async function openCard(no) {
+  $("list").innerHTML = `<div class="spin"></div>`;
+  const d = await (await fetch(`/clinic/api/patients?no=${no}`, { cache: "no-store" })).json();
+  const p = d.patient, v = d.visits;
+  $("title").textContent = "بطاقة مريض"; $("count").textContent = v.length + " زيارة";
+  const phones = p.phones.map((x) => `<a href="tel:${esc(x)}" dir="ltr">${esc(x)}</a>`).join(" · ") || "لا يوجد رقم";
+  const rows = v.map((x, i) => `<tr><td class="m">${i + 1}</td><td class="d">${x.day}<br><small style="color:var(--muted)">${x.allDay ? "" : ampm(x.start)}</small></td>
+    <td>${esc(x.treatment) || `<span style="color:var(--muted)">—</span>`}${x.title.trim() !== p.name ? `<br><small style="color:var(--muted)">${esc(x.title)}</small>` : ""}</td>
+    <td class="m">—</td><td class="m">—</td></tr>`).join("");
+  $("list").innerHTML = `<div class="pcard"><div class="phead">
+      <div class="no">DSA-P-${p.no}${p.card_no ? " · بطاقة ورقية " + esc(p.card_no) : ""}</div><h3>${esc(p.name)}</h3>
+      <div class="meta"><span>📞 ${phones}</span><span>أول زيارة ${v[0]?.day || ""}</span><span>آخر زيارة ${v[v.length - 1]?.day || ""}</span><span>${v.length} زيارة</span></div></div>
+    <div class="pbody">
+      <div class="pf"><input id="cardNo" placeholder="رقم البطاقة الورقية (إن وجد)" value="${esc(p.card_no || "")}"><textarea id="pnotes" rows="2" placeholder="ملاحظات / الحالة الطبية">${esc(p.notes || "")}</textarea></div>
+      <div class="pf noprint"><button class="btn" id="saveP">💾 حفظ</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn" onclick="print()">🖨 طباعة البطاقة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>
+      ${p.merged.length ? `<p class="note">مدموجة معها: ${p.merged.map((m) => `#${m.no} <a href="#" data-un="${m.no}">فكّ</a>`).join(" · ")}</p>` : ""}
+      <table class="vt"><thead><tr><th>#</th><th>التاريخ</th><th>نوع العمل</th><th>المدفوع</th><th>المتبقي</th></tr></thead><tbody>${rows}</tbody></table>
+      <p class="note">المدفوعات تُضاف من ملف Excel لاحقًا.</p>
+    </div></div>`;
+  $("saveP").onclick = async () => {
+    await fetch("/clinic/api/patients?action=note", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ no: p.no, notes: $("pnotes").value, card_no: $("cardNo").value }) });
+    $("saveP").textContent = "✔ حُفظ";
+  };
+  $("backP").onclick = () => patients();
+  $("mergeP").onclick = async () => {
+    const other = prompt("اكتب رقم البطاقة الأخرى لنفس المريض (مثل 10234) لتُضم زياراتها إلى هذه البطاقة:");
+    if (!other) return;
+    const r = await (await fetch("/clinic/api/patients?action=merge", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ from: other.replace(/\D/g, ""), to: p.no }) })).json();
+    if (r.ok) openCard(p.no); else alert("رقم غير صحيح");
+  };
+  document.querySelectorAll("[data-un]").forEach((a) => a.onclick = async (e) => {
+    e.preventDefault(); await fetch("/clinic/api/patients?action=unmerge", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ no: a.dataset.un }) }); openCard(p.no);
+  });
+}
+
 async function load(r = current) {
   current = r;
+  const isPats = r === "patients";
+  $("pats").hidden = !isPats;
+  if (isPats) { $("arch").hidden = true; $("dnav").hidden = true; patients(); return; }
   const isArch = r === "archive";
   $("arch").hidden = !isArch; $("list").classList.toggle("noDim", isArch || r === "past");
   if (isArch) { $("dnav").hidden = true; search(); return; }
@@ -340,8 +424,8 @@ function stepDay(n) {
 }
 $("prevDay").onclick = () => stepDay(-1);
 $("nextDay").onclick = () => stepDay(1);
-document.addEventListener("visibilitychange", () => { if (!document.hidden && current !== "archive") load(); });
-setInterval(() => { if (!document.hidden && current !== "archive") load(); }, 5 * 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && current !== "archive" && current !== "patients") load(); });
+setInterval(() => { if (!document.hidden && current !== "archive" && current !== "patients") load(); }, 5 * 60000);
 load("today");
 </script>
 </body>
