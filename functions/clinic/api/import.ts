@@ -17,6 +17,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     appts.push({ uid: String(r.uid || `imp|${s}|${title}`).slice(0, 300), day: localDay(new Date(start)), start: s,
       end: new Date(end).toISOString(), allDay: !!r.allDay, title, phone, treatment, description });
   }
-  await archive(env, appts, "2100-01-01", "2100-01-01"); // empty range: nothing gets marked removed
-  return json({ ok: true, saved: appts.length, skipped: list.length - appts.length });
+  // An export saved with "Limited details" has names only: never let it overwrite a visit we already hold.
+  const { results: have } = await env.DB.prepare(
+    "SELECT start, title FROM appointments WHERE start IN (SELECT value FROM json_each(?))",
+  ).bind(JSON.stringify([...new Set(appts.map((a) => a.start))])).all<{ start: string; title: string }>();
+  const known = new Set(have.map((r) => r.start + "|" + String(r.title).trim()));
+  const fresh = appts.filter((a) => a.description || !known.has(a.start + "|" + a.title));
+  if (fresh.length) await archive(env, fresh, "2100-01-01", "2100-01-01"); // empty range: nothing gets marked removed
+  return json({ ok: true, saved: fresh.length, alreadyHad: appts.length - fresh.length, skipped: list.length - appts.length });
 };

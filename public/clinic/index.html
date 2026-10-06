@@ -262,12 +262,12 @@ $("impFile").onchange = async (e) => {
       appts = m.eventsBetween(m.parseIcs(text), "2015-01-01", addDays(today, 400)).map((a) => ({ uid: a.uid, start: a.start, end: a.end, allDay: a.allDay, title: a.title, description: a.description }));
     } else appts = csvAppts(text);
     if (!appts.length) { msg.className = "note warn"; msg.textContent = "لم أجد مواعيد في هذا الملف. تأكد أنه ملف تقويم من Outlook."; return; }
-    let saved = 0;
+    let saved = 0, had = 0;
     for (let i = 0; i < appts.length; i += 400) {
       const r = await (await fetch("/clinic/api/import", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ appts: appts.slice(i, i + 400) }) })).json();
-      saved += r.saved || 0; msg.textContent = `جارٍ الحفظ… ${saved} من ${appts.length}`;
+      saved += r.saved || 0; had += r.alreadyHad || 0; msg.textContent = `جارٍ الحفظ… ${saved + had} من ${appts.length}`;
     }
-    msg.textContent = `تم حفظ ${saved} موعدًا في الأرشيف ✔`;
+    msg.textContent = `تم حفظ ${saved} موعدًا جديدًا في الأرشيف ✔` + (had ? ` (و${had} موجودة أصلًا بتفاصيلها فلم تُغيَّر)` : "");
     loadMonths();
   } catch (err) { msg.className = "note warn"; msg.textContent = "تعذّر الاستيراد: " + err.message; }
   e.target.value = "";
