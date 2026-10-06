@@ -46,8 +46,17 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .empty{text-align:center;color:var(--muted);padding:40px 10px;background:var(--card);border-radius:14px}
 .spin{width:22px;height:22px;border:3px solid var(--sky);border-top-color:var(--blue);border-radius:50%;animation:s 1s linear infinite;margin:40px auto}
 @keyframes s{to{transform:rotate(360deg)}}
+.f{display:grid;grid-template-columns:62px 1fr;gap:2px 8px;align-items:baseline}
+.f dt{color:var(--muted);font-size:13px}
+.f dd{margin:0;font-size:16px}
+.f dd.nm{font-weight:800;font-size:18px}
+.f dd.tm{font-weight:700;color:var(--blue)}
+.f dd.ph a{direction:ltr;unicode-bidi:isolate;color:var(--navy);font-weight:700;text-decoration:none;letter-spacing:.3px}
+.f dd.wk{white-space:pre-wrap;word-break:break-word}
+.wa2{display:inline-block;margin-inline-start:10px;font-size:13px;font-weight:600;color:var(--green);background:#E6F6EE;border-radius:8px;padding:3px 9px;text-decoration:none}
+.appt.v2{display:block}
 @media (max-width:480px){.tabs{flex-wrap:wrap}.tabs input{max-width:none;flex-basis:100%}}
-@media print{header,.tabs,.tools,.acts{display:none}main{margin:0}.appt{box-shadow:none;border:1px solid #ccc;break-inside:avoid}}
+@media print{header,.tabs,.tools,.wa2{display:none}main{margin:0}.appt{box-shadow:none;border:1px solid #ccc;break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -117,9 +126,16 @@ function render(data, label) {
     if (multi && a.day !== lastDay) { const n = appts.filter((x) => x.day === a.day).length; html += `<div class="day">${dayLabel(a.day)} · ${n}</div>`; lastDay = a.day; }
     const s = Date.parse(a.start), e = Date.parse(a.end);
     const cls = !a.allDay && e < now ? "past" : !a.allDay && s <= now && now < e ? "now" : "";
-    const ph = a.phone ? `<a class="call" href="tel:${esc(a.phone)}">📞 اتصال</a><a class="wa" target="_blank" rel="noopener" href="https://wa.me/${intl(a.phone)}?text=${encodeURIComponent(waText(a))}">💬 تذكير واتساب</a><span class="phone">${esc(a.phone)}</span>` : "";
-    html += `<article class="appt ${cls}"><div class="time">${a.allDay ? "طوال اليوم" : ampm(a.start)}${a.allDay ? "" : `<small>${Math.round((e - s) / 60000)} د</small>`}</div>
-      <div><div class="name">${esc(a.title) || "بدون اسم"}</div>${a.treatment ? `<div class="tr">${esc(a.treatment)}</div>` : ""}<div class="acts">${ph}</div></div></article>`;
+    const time = a.allDay ? "طوال اليوم" : `${ampm(a.start)} – ${ampm(a.end)}`;
+    const ph = a.phone
+      ? `<a href="tel:${esc(a.phone)}">${esc(a.phone)}</a><a class="wa2" target="_blank" rel="noopener" href="https://wa.me/${intl(a.phone)}?text=${encodeURIComponent(waText(a))}">واتساب</a>`
+      : `<span style="color:var(--muted)">غير مكتوب</span>`;
+    html += `<article class="appt v2 ${cls}"><dl class="f">
+      <dt>المريض</dt><dd class="nm">${esc(a.title) || "بدون اسم"}</dd>
+      <dt>الموعد</dt><dd class="tm">${time}</dd>
+      <dt>الهاتف</dt><dd class="ph">${ph}</dd>
+      ${a.treatment ? `<dt>العمل</dt><dd class="wk">${esc(a.treatment)}</dd>` : ""}
+    </dl></article>`;
   }
   $("list").innerHTML = html;
 }
