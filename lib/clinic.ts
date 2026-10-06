@@ -201,8 +201,9 @@ export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExc
   ).bind(a.uid, a.day, a.start, a.end, a.title, a.phone, a.treatment, a.description, a.allDay ? 1 : 0));
   const seen = appts.map((a) => a.uid);
   stmts.push(env.DB.prepare(
+    // Only today and later: Outlook drops old events from the published feed, which is not a cancellation.
     `UPDATE appointments SET removed = 1 WHERE day >= ? AND day < ? AND removed = 0 AND uid NOT IN (SELECT value FROM json_each(?))`
-  ).bind(fromDay, toDayExcl, JSON.stringify(seen)));
+  ).bind(fromDay > todayLocal() ? fromDay : todayLocal(), toDayExcl, JSON.stringify(seen)));
   for (let i = 0; i < stmts.length; i += 50) await env.DB.batch(stmts.slice(i, i + 50));
 }
 

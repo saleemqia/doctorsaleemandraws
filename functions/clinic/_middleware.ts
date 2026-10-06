@@ -40,7 +40,9 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, next }) => {
       ...PRIVATE } });
   }
 
-  if (!(await keyValid(env, cookieValue(request, COOKIE)))) return denied();
+  // Browsers use the cookie; the clinic's Google Drive export script sends the key in a header.
+  const key = cookieValue(request, COOKIE) || request.headers.get("X-Clinic-Key") || "";
+  if (!(await keyValid(env, key))) return denied();
 
   const res = await next();
   const out = new Response(res.body, res);
