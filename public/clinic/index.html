@@ -58,6 +58,19 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .sbox{display:flex;gap:8px;margin:4px 0 8px}.sbox input{flex:1;min-width:0;padding:11px;border:1px solid var(--line);border-radius:10px;font:inherit;color:var(--navy);background:#fff}
 #arch .btn{margin-bottom:6px}
 .noDim .appt.past{opacity:1;border-inline-start-color:var(--blue)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chips button{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:999px;padding:7px 13px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.chips button small{color:var(--muted);font-weight:500;margin-inline-start:4px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}.chips button.on small{color:#cfe0f7}
+.chips.months button{border-radius:10px;font-size:13px}
+.imp{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:6px 0 10px}
+.imp summary{cursor:pointer;font-weight:700}.imp p{font-size:14px;color:var(--muted)}
+.rows{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px #13285C0d}
+.r{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:9px 12px;border-bottom:1px solid var(--line)}
+.r:last-child{border-bottom:0}
+.r b{font-size:16px}.r .t{color:var(--blue);font-weight:700;font-size:13px;direction:ltr;text-align:left}
+.r .p{grid-column:1/-1;font-size:13px;color:var(--muted)}.r .p a{color:var(--navy);direction:ltr;unicode-bidi:isolate;text-decoration:none;font-weight:600}
+.dh{background:var(--sky);color:var(--navy);font-weight:700;font-size:13px;padding:6px 12px}
 @media (max-width:480px){.tabs{flex-wrap:wrap}.tabs input{max-width:none;flex-basis:100%}}
 @media print{header,.tabs,.tools,.wa2{display:none}main{margin:0}.appt{box-shadow:none;border:1px solid #ccc;break-inside:avoid}}
 </style>
@@ -88,8 +101,15 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   </div>
   <div id="arch" hidden>
     <form id="sform" class="sbox"><input id="q" type="search" placeholder="ابحث باسم المريض أو رقم الهاتف أو نوع العمل" autocomplete="off"><button class="btn">بحث</button></form>
+    <div class="chips" id="years"></div>
+    <div class="chips months" id="months"></div>
     <p class="note" id="stats"></p>
-    <button class="btn" id="syncAll">⟳ حفظ كل مواعيد التقويم في الأرشيف الآن</button>
+    <details class="imp"><summary>📥 استيراد المواعيد القديمة (2020 وما بعد) من ملف Outlook</summary>
+      <p>رابط التقويم المنشور لا يحمل إلا الأشهر الأخيرة. للمواعيد الأقدم صدّر التقويم من برنامج Outlook على الحاسوب ثم اختر الملف هنا (ICS أو CSV). المواعيد المكررة لا تُضاف مرتين.</p>
+      <input type="file" id="impFile" accept=".ics,.csv,text/calendar,text/csv">
+      <p class="note" id="impMsg"></p>
+      <button class="btn" id="syncAll" type="button">⟳ حفظ مواعيد الرابط المنشور الآن</button>
+    </details>
   </div>
   <p class="note" id="note"></p>
   <section id="list"><div class="spin"></div></section>
@@ -153,6 +173,106 @@ function render(data, label) {
 }
 
 const fmtStats = (st) => st && st.n ? `في الأرشيف ${st.n} موعدًا، من ${st.first} إلى ${st.last}` : "الأرشيف فارغ بعد";
+const MONTHS = ["كانون الثاني","شباط","آذار","نيسان","أيار","حزيران","تموز","آب","أيلول","تشرين الأول","تشرين الثاني","كانون الأول"];
+function renderRows(appts, label, countWord = "موعد") {
+  $("title").textContent = label; $("count").textContent = appts.length + " " + countWord;
+  if (!appts.length) { $("list").innerHTML = `<div class="empty">لا مواعيد</div>`; return; }
+  let html = "", last = "";
+  for (const a of appts) {
+    if (a.day !== last) { html += `<div class="dh">${dayLabel(a.day)}</div>`; last = a.day; }
+    const ph = a.phone ? ` · <a href="tel:${esc(a.phone)}">${esc(a.phone)}</a>` : "";
+    html += `<div class="r"><b>${esc(a.title) || "بدون اسم"}</b><span class="t">${a.allDay ? "طوال اليوم" : ampm(a.start)}</span>${a.treatment || ph ? `<div class="p">${esc(a.treatment)}${ph}</div>` : ""}</div>`;
+  }
+  $("list").innerHTML = `<div class="rows">${html}</div>`;
+}
+let monthsData = [], curYear = "";
+async function loadMonths() {
+  const d = await (await fetch("/clinic/api/months", { cache: "no-store" })).json();
+  monthsData = d.months || [];
+  const years = {}; monthsData.forEach((m) => { const y = m.ym.slice(0, 4); years[y] = (years[y] || 0) + m.n; });
+  const ys = Object.keys(years).sort().reverse();
+  if (!curYear || !years[curYear]) curYear = ys[0] || "";
+  $("years").innerHTML = ys.map((y) => `<button data-y="${y}" class="${y === curYear ? "on" : ""}">${y}&nbsp;<small>· ${years[y]}</small></button>`).join("");
+  const total = monthsData.reduce((t, m) => t + m.n, 0);
+  $("stats").textContent = total ? `في الأرشيف ${total} موعدًا من ${monthsData[monthsData.length - 1].ym} إلى ${monthsData[0].ym}` : "الأرشيف فارغ بعد";
+  showYear(curYear);
+}
+function showYear(y) {
+  curYear = y;
+  document.querySelectorAll("#years button").forEach((b) => b.classList.toggle("on", b.dataset.y === y));
+  const ms = monthsData.filter((m) => m.ym.startsWith(y)).sort((a, b) => a.ym.localeCompare(b.ym));
+  $("months").innerHTML = ms.map((m) => `<button data-ym="${m.ym}">${MONTHS[+m.ym.slice(5) - 1]}&nbsp;<small>· ${m.n}</small></button>`).join("");
+}
+async function showMonth(ym) {
+  document.querySelectorAll("#months button").forEach((b) => b.classList.toggle("on", b.dataset.ym === ym));
+  $("list").innerHTML = `<div class="spin"></div>`; $("note").textContent = "";
+  const d = await (await fetch(`/clinic/api/months?ym=${ym}`, { cache: "no-store" })).json();
+  renderRows(d.appts, `${MONTHS[+ym.slice(5) - 1]} ${ym.slice(0, 4)}`);
+}
+$("years").onclick = (e) => { const b = e.target.closest("button"); if (b) { showYear(b.dataset.y); $("list").innerHTML = `<div class="empty">اختر شهرًا</div>`; $("title").textContent = curYear; $("count").textContent = ""; } };
+$("months").onclick = (e) => { const b = e.target.closest("button"); if (b) showMonth(b.dataset.ym); };
+
+/* ---- import a file exported from Outlook (.ics or .csv) ---- */
+const toEn = (s) => String(s || "").replace(/[٠-٩]/g, (c) => "٠١٢٣٤٥٦٧٨٩".indexOf(c));
+function parseCsv(t) {
+  t = t.replace(/^\uFEFF/, "");
+  const first = t.slice(0, t.indexOf("\n")); const sep = (first.split(";").length > first.split(",").length) ? ";" : ",";
+  const rows = []; let row = [], f = "", q = false;
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i];
+    if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true; else if (c === sep) { row.push(f); f = ""; }
+    else if (c === "\n") { row.push(f); rows.push(row); row = []; f = ""; } else if (c !== "\r") f += c;
+  }
+  if (f || row.length) { row.push(f); rows.push(row); }
+  return rows;
+}
+function csvAppts(text) {
+  const rows = parseCsv(text); const h = rows.shift().map((x) => x.trim().toLowerCase());
+  const find = (re, def) => { const i = h.findIndex((x) => re.test(x)); return i >= 0 ? i : def; };
+  const iS = find(/^(subject|الموضوع)$/, 0), iSD = find(/start date|تاريخ البد/, 1), iST = find(/start time|وقت البد/, 2),
+    iED = find(/end date|تاريخ الانتهاء/, 3), iET = find(/end time|وقت الانتهاء/, 4), iA = find(/all day|طوال اليوم/, 5), iD = find(/description|الوصف|النص/, 15);
+  const english = /subject/.test(h.join(" "));
+  const parts = (d) => toEn(d).trim().split(/[\/.\-]/).map(Number);
+  let order = english ? "mdy" : "dmy";
+  for (const r of rows) { const p = parts(r[iSD] || ""); if (p[0] > 12 && p[0] < 32) { order = "dmy"; break; } if (p[1] > 12) { order = "mdy"; break; } }
+  const toIso = (d, t) => {
+    const p = parts(d); if (p.length < 3 || p.some(isNaN)) return null;
+    let [y, m, dd] = p[0] > 31 ? [p[0], p[1], p[2]] : order === "dmy" ? [p[2], p[1], p[0]] : [p[2], p[0], p[1]];
+    if (y < 100) y += 2000;
+    const tm = toEn(t).match(/(\d{1,2}):(\d{2})/); let H = tm ? +tm[1] : 0; const M = tm ? +tm[2] : 0;
+    if (/pm|م|p\.m/i.test(t) && H < 12) H += 12; if (/am|ص|a\.m/i.test(t) && H === 12) H = 0;
+    return new Date(Date.UTC(y, m - 1, dd, H, M) - 180 * 60000).toISOString();
+  };
+  const out = [];
+  for (const r of rows) {
+    if (!r || r.length < 3 || !(r[iS] || "").trim()) continue;
+    const start = toIso(r[iSD], r[iST]); if (!start) continue;
+    out.push({ start, end: toIso(r[iED] || r[iSD], r[iET] || r[iST]) || start, allDay: /true|نعم|صحيح/i.test(r[iA] || ""), title: r[iS], description: r[iD] || "" });
+  }
+  return out;
+}
+$("impFile").onchange = async (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  const msg = $("impMsg"); msg.className = "note"; msg.textContent = "جارٍ قراءة الملف…";
+  try {
+    const text = await file.text(); let appts;
+    if (/BEGIN:VCALENDAR/.test(text.slice(0, 2000))) {
+      const m = await import("/clinic/ics.mjs");
+      appts = m.eventsBetween(m.parseIcs(text), "2015-01-01", addDays(today, 400)).map((a) => ({ uid: a.uid, start: a.start, end: a.end, allDay: a.allDay, title: a.title, description: a.description }));
+    } else appts = csvAppts(text);
+    if (!appts.length) { msg.className = "note warn"; msg.textContent = "لم أجد مواعيد في هذا الملف. تأكد أنه ملف تقويم من Outlook."; return; }
+    let saved = 0;
+    for (let i = 0; i < appts.length; i += 400) {
+      const r = await (await fetch("/clinic/api/import", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ appts: appts.slice(i, i + 400) }) })).json();
+      saved += r.saved || 0; msg.textContent = `جارٍ الحفظ… ${saved} من ${appts.length}`;
+    }
+    msg.textContent = `تم حفظ ${saved} موعدًا في الأرشيف ✔`;
+    loadMonths();
+  } catch (err) { msg.className = "note warn"; msg.textContent = "تعذّر الاستيراد: " + err.message; }
+  e.target.value = "";
+};
+
 async function search() {
   const q = $("q").value.trim();
   $("title").textContent = q ? `نتائج: ${q}` : "الأرشيف"; $("note").textContent = "";
@@ -160,9 +280,8 @@ async function search() {
   const res = await fetch(`/clinic/api/search?q=${encodeURIComponent(q)}`, { cache: "no-store" });
   if (res.status === 401) { location.reload(); return; }
   const d = await res.json();
-  $("stats").textContent = fmtStats(d.stats);
-  if (q.length < 2) { $("count").textContent = ""; $("list").innerHTML = `<div class="empty">اكتب اسمًا أو رقمًا للبحث في كل المواعيد المحفوظة</div>`; return; }
-  render({ appts: d.appts, source: "archive-search" }, `نتائج: ${q}`);
+  if (q.length < 2) { $("count").textContent = ""; $("title").textContent = "الأرشيف"; $("list").innerHTML = `<div class="empty">اختر سنة ثم شهرًا، أو اكتب اسمًا أو رقمًا للبحث في كل السنوات</div>`; loadMonths(); return; }
+  renderRows(d.appts, `نتائج: ${q}`, "نتيجة");
   $("note").className = "note"; $("note").textContent = d.appts.length >= 300 ? "تظهر أحدث 300 نتيجة فقط" : "";
 }
 $("sform").onsubmit = (e) => { e.preventDefault(); search(); };
@@ -170,9 +289,10 @@ $("syncAll").onclick = async () => {
   const b = $("syncAll"); b.disabled = true; b.textContent = "جارٍ الحفظ…";
   try {
     const d = await (await fetch("/clinic/api/sync", { method: "POST" })).json();
-    $("stats").textContent = d.ok ? `تم: ${d.inCalendar} موعدًا في التقويم المنشور. ${fmtStats(d.archive)}` : "تعذّر: " + d.error;
+    $("impMsg").textContent = d.ok ? `تم: ${d.inCalendar} موعدًا في الرابط المنشور. ${fmtStats(d.archive)}` : "تعذّر: " + d.error;
+    if (d.ok) loadMonths();
   } catch (e) { $("stats").textContent = "تعذّر الاتصال"; }
-  b.disabled = false; b.textContent = "⟳ حفظ كل مواعيد التقويم في الأرشيف الآن";
+  b.disabled = false; b.textContent = "⟳ حفظ مواعيد الرابط المنشور الآن";
 };
 
 async function load(r = current) {
@@ -202,8 +322,8 @@ $("pick").addEventListener("change", (e) => {
   load(e.target.value);
 });
 $("refresh").onclick = () => load();
-document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
-setInterval(() => { if (!document.hidden) load(); }, 5 * 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && current !== "archive") load(); });
+setInterval(() => { if (!document.hidden && current !== "archive") load(); }, 5 * 60000);
 load("today");
 </script>
 </body>

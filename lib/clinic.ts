@@ -207,10 +207,16 @@ export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExc
     // Only today and later: Outlook drops old events from the published feed, which is not a cancellation.
     `UPDATE appointments SET removed = 1 WHERE day >= ? AND day < ? AND removed = 0 AND uid NOT IN (SELECT value FROM json_each(?))`
   ).bind(fromDay > todayLocal() ? fromDay : todayLocal(), toDayExcl, JSON.stringify(seen)));
+  stmts.push(dedupeImported(env));
   for (let i = 0; i < stmts.length; i += 50) await env.DB.batch(stmts.slice(i, i + 50));
 }
 
-/** Archives everything in the published calendar (3 years back → 1 year ahead), at most every 6 hours unless forced. */
+/** Rows imported from a CSV file ("imp|…") are dropped when the same visit (same start + name) exists from Outlook. */
+export const dedupeImported = (env: Env) => env.DB.prepare(
+  `DELETE FROM appointments WHERE uid LIKE 'imp|%' AND EXISTS (SELECT 1 FROM appointments b
+     WHERE b.uid NOT LIKE 'imp|%' AND b.start = appointments.start AND b.title = appointments.title)`);
+
+/** Archives everything in the published calendar (from 2020 → 1 year ahead), at most every 6 hours unless forced. */
 export async function fullSync(env: Env, raw: RawEvent[], force = false): Promise<{ ran: boolean; count?: number }> {
   if (!force) {
     const last = await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = 'last_full_sync'").first<{ value: string }>();
@@ -218,7 +224,7 @@ export async function fullSync(env: Env, raw: RawEvent[], force = false): Promis
   }
   await env.DB.prepare("INSERT INTO clinic_settings (key, value, updated_at) VALUES ('last_full_sync', ?, datetime('now')) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at")
     .bind(new Date().toISOString()).run();
-  const from = addDays(todayLocal(), -3 * 366), to = addDays(todayLocal(), 366);
+  const from = "2020-01-01", to = addDays(todayLocal(), 366);
   const appts = eventsBetween(raw, from, to);
   await archive(env, appts, from, to);
   return { ran: true, count: appts.length };
