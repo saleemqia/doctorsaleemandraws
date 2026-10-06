@@ -71,6 +71,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .r b{font-size:16px}.r .t{color:var(--blue);font-weight:700;font-size:13px;direction:ltr;text-align:left}
 .r .p{grid-column:1/-1;font-size:13px;color:var(--muted)}.r .p a{color:var(--navy);direction:ltr;unicode-bidi:isolate;text-decoration:none;font-weight:600}
 .dh{background:var(--sky);color:var(--navy);font-weight:700;font-size:13px;padding:6px 12px}
+.dnav{display:flex;gap:6px;width:100%}.dnav .btn{flex:1;justify-content:center}.dnav[hidden]{display:none}
 @media (max-width:480px){.tabs{flex-wrap:wrap}.tabs input{max-width:none;flex-basis:100%}}
 @media print{header,.tabs,.tools,.wa2{display:none}main{margin:0}.appt{box-shadow:none;border:1px solid #ccc;break-inside:avoid}}
 </style>
@@ -83,15 +84,18 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 </div></header>
 <main>
   <nav class="tabs" id="tabs">
+    <button data-r="yesterday">أمس</button>
     <button data-r="today" class="on">اليوم</button>
     <button data-r="tomorrow">غدًا</button>
     <button data-r="week">7 أيام</button>
     <button data-r="month">30 يومًا</button>
+    <button data-r="lastweek">الأسبوع الماضي</button>
     <button data-r="past">الشهر الماضي</button>
     <button data-r="archive">🔎 الأرشيف</button>
     <input type="date" id="pick" aria-label="اختر يومًا">
   </nav>
   <div class="bar">
+    <span class="dnav" id="dnav"><button class="btn" id="prevDay" title="اليوم السابق">→ السابق</button><button class="btn" id="nextDay" title="اليوم التالي">التالي ←</button></span>
     <h2 id="title">اليوم</h2><span class="count" id="count">…</span>
     <div class="tools">
       <button class="btn" id="refresh" title="تحديث">↻ تحديث</button>
@@ -125,10 +129,13 @@ const ampm = (iso) => { const [h, m] = hm(iso).split(":").map(Number); return `$
 const dayLabel = (d) => { const x = new Date(d + "T00:00:00Z"); const y = d.slice(0, 4) !== today.slice(0, 4) ? "/" + d.slice(0, 4) : ""; return `${WD[x.getUTCDay()]} ${x.getUTCDate()}/${x.getUTCMonth() + 1}${y}`; };
 const addDays = (d, n) => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
 const intl = (p) => p.startsWith("+") ? p.slice(1) : p.startsWith("964") ? p : "964" + p.replace(/^0/, "");
+let curFrom = "";
 let today = new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10), current = "today";
 
 function range(r) {
   if (r === "today") return [today, 1, "اليوم"];
+  if (r === "yesterday") return [addDays(today, -1), 1, "أمس · " + dayLabel(addDays(today, -1))];
+  if (r === "lastweek") return [addDays(today, -7), 7, "الأيام السبعة الماضية"];
   if (r === "tomorrow") return [addDays(today, 1), 1, "غدًا"];
   if (r === "week") return [today, 7, "الأيام السبعة القادمة"];
   if (r === "month") return [today, 30, "الثلاثون يومًا القادمة"];
@@ -299,8 +306,10 @@ async function load(r = current) {
   current = r;
   const isArch = r === "archive";
   $("arch").hidden = !isArch; $("list").classList.toggle("noDim", isArch || r === "past");
-  if (isArch) { search(); return; }
+  if (isArch) { $("dnav").hidden = true; search(); return; }
   const [from, days, label] = range(r);
+  curFrom = from; $("dnav").hidden = days !== 1;
+  $("list").classList.toggle("noDim", from < today);
   $("list").innerHTML = `<div class="spin"></div>`;
   $("csv").href = `/clinic/api/export?from=${addDays(today, -365)}&to=${addDays(today, 60)}`;
   try {
@@ -322,6 +331,15 @@ $("pick").addEventListener("change", (e) => {
   load(e.target.value);
 });
 $("refresh").onclick = () => load();
+function stepDay(n) {
+  const d = addDays(curFrom || today, n);
+  const tab = d === today ? "today" : d === addDays(today, -1) ? "yesterday" : d === addDays(today, 1) ? "tomorrow" : "";
+  document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x.dataset.r === tab));
+  $("pick").value = tab ? "" : d;
+  load(tab || d);
+}
+$("prevDay").onclick = () => stepDay(-1);
+$("nextDay").onclick = () => stepDay(1);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && current !== "archive") load(); });
 setInterval(() => { if (!document.hidden && current !== "archive") load(); }, 5 * 60000);
 load("today");
