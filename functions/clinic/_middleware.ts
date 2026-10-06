@@ -42,7 +42,14 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, next }) => {
 
   // Browsers use the cookie; the clinic's Google Drive export script sends the key in a header.
   const key = cookieValue(request, COOKIE) || request.headers.get("X-Clinic-Key") || "";
-  if (!(await keyValid(env, key))) return denied();
+  let ok = false;
+  try { ok = await keyValid(env, key); } catch (e) {
+    // Database unavailable (e.g. the free plan's daily read limit): say so plainly instead of a raw 500 page.
+    const msg = /limit/i.test(String(e)) ? "قاعدة البيانات وصلت حدّها اليومي المجاني، وتعود تلقائيًا الساعة 3:00 فجرًا بتوقيت بغداد."
+      : "قاعدة البيانات غير متاحة مؤقتًا، أعد المحاولة بعد قليل.";
+    return new Response(JSON.stringify({ ok: false, error: msg }), { status: 503, headers: { "Content-Type": "application/json; charset=utf-8", ...PRIVATE } });
+  }
+  if (!ok) return denied();
 
   const res = await next();
   const out = new Response(res.body, res);
