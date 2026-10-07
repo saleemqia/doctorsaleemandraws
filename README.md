@@ -7,5 +7,11 @@ Static site for Dr. Sally Rizqo (child & adolescent mental health, online). Clou
 - `assets/site.js` shared header, footer, language switch (ar / ku / en), WhatsApp number setting
 - `assets/topic.js` topic page template, `assets/site.css` styles, `assets/logo-mark.png` logo mask
 
-## Before launch
-Set `WHATSAPP_NUMBER` in `assets/site.js`, fill every bracketed placeholder, get Kurdish reviewed, then remove `robots.txt` Disallow, the `noindex` meta tags and the `X-Robots-Tag` header in `_headers`.
+## Status
+Public since 2026-10-07 (indexable, sitemap at /sitemap.xml).
+
+## Still to fill in
+- `WHATSAPP_NUMBER` in `assets/site.js`: until set, booking buttons lead to an "opening soon" note and the floating button is hidden.
+- Specialty and registration number (hidden until confirmed); her title currently reads "physician in child & adolescent mental health".
+- Kurdish review; long topic content shows Arabic with a note in the Kurdish view.
+- Bump the `?v=` number on asset links in every page after changing CSS/JS.

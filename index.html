@@ -3,15 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex, nofollow">
 <title>د. سالي رزقو | Dr. Sally Rizqo</title>
-<meta name="description" content="Online consultations, guides and calm activities for children's and teenagers' emotional wellbeing, in Arabic, Kurdish and English.">
 <link rel="canonical" href="https://drsallycare.com/">
+<meta name="description" content="Dr. Sally Rizqo — online consultations, guides and calm activities for children's and teenagers' emotional wellbeing, in Arabic, Kurdish and English.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dr. Sally Rizqo">
+<meta property="og:title" content="Dr. Sally Rizqo | د. سالي رزقو">
+<meta property="og:description" content="Dr. Sally Rizqo — online consultations, guides and calm activities for children's and teenagers' emotional wellbeing, in Arabic, Kurdish and English.">
+<meta property="og:url" content="https://drsallycare.com/">
+<meta property="og:image" content="https://drsallycare.com/icon-512.png">
 <meta name="theme-color" content="#2F6F6A">
 <link rel="icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito+Sans:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="/assets/site.css?v=4">
+<link rel="stylesheet" href="/assets/site.css?v=6">
 </head>
 <body>
 <main class="wrap">
@@ -77,7 +82,7 @@
   <section id="about">
     <span class="eyebrow" data-i18n="aboutEyebrow"></span>
     <div class="about">
-      <div class="portrait" data-i18n="photoPh"></div>
+      <div class="portrait" aria-hidden="true"><span style="display:block;width:70%;aspect-ratio:1;background:var(--teal);-webkit-mask:url(/assets/logo-mark.png?v=2) center/contain no-repeat;mask:url(/assets/logo-mark.png?v=2) center/contain no-repeat"></span></div>
       <div>
         <h2 data-i18n="brand"></h2>
         <p data-i18n="aboutP"></p>
@@ -88,8 +93,6 @@
         </div>
         <div class="facts">
           <div class="fact"><b data-i18n="fQual"></b><span data-i18n="fQualV"></span></div>
-          <div class="fact"><b data-i18n="fSpec"></b><span class="ph" data-i18n="toConfirm"></span></div>
-          <div class="fact"><b data-i18n="fReg"></b><span class="ph" data-i18n="toConfirm"></span></div>
           <div class="fact"><b data-i18n="fLangs"></b><span data-i18n="fLangsV"></span></div>
           <div class="fact"><b data-i18n="fFocus"></b><span data-i18n="fFocusV"></span></div>
           <div class="fact"><b data-i18n="fCommunity"></b><span data-i18n="fCommunityV"></span></div>
@@ -106,7 +109,7 @@
       <div class="card can"><h3 data-i18n="canTitle"></h3><ul data-i18n="canList"></ul></div>
       <div class="card cant"><h3 data-i18n="cantTitle"></h3><ul data-i18n="cantList"></ul></div>
       <div class="card"><h3 data-i18n="practTitle"></h3><ul data-i18n="practList"></ul></div>
-      <div class="card"><h3 data-i18n="feesTitle"></h3><p class="ph" data-i18n="feesP"></p></div>
+      <div class="card"><h3 data-i18n="feesTitle"></h3><p data-i18n="feesP"></p></div>
     </div>
   </section>
 
@@ -115,7 +118,7 @@
     <p class="lead" data-i18n="bookLead"></p>
     <div class="btns"><a class="btn primary wa-link" href="#book"><span data-i18n="btnBook"></span></a></div>
     <p class="hint" data-i18n="bookHint"></p>
-    <p class="hint ph wa-missing" data-i18n="waMissing"></p>
+    <p class="hint wa-missing" style="font-weight:700;color:var(--teal);font-size:16px" data-i18n="waMissing"></p>
   </section>
 
 </main>
@@ -125,7 +128,7 @@ window.PAGE = { id:"home", t:{
 ar:{
  heroEyebrow:"استشارات أونلاين بالعربية والكوردية والإنجليزية",
  heroTitle:"دعم متخصص لصحة طفلك النفسية، أينما كنتم",
- heroLead:"طبيبة نفسية للأطفال والمراهقين من دهوك، تابعت أكثر من 1000 حالة من التوحد وفرط الحركة وتشتت الانتباه وصعوبات التعلم ومرحلة المراهقة. نستمع لمخاوفكم، ونضع معًا خطوات واضحة للبيت والمدرسة.",
+ heroLead:"طبيبة في مجال الصحة النفسية للأطفال والمراهقين ومديرة مركز نفسية الطفل في دهوك، تابعت أكثر من 1000 حالة من التوحد وفرط الحركة وتشتت الانتباه وصعوبات التعلم ومرحلة المراهقة. نستمع لمخاوفكم، ونضع معًا خطوات واضحة للبيت والمدرسة.",
  btnPlay:"ألعاب وأنشطة للأطفال",
  focusTitle:"اختاروا الموضوع", focusLead:"لكل موضوع صفحة خاصة فيها أقسام للعائلات والمعلمين والباحثين.",
  fAutism:"التوحد", fAutismP:"علامات مبكرة، تقييم، رأي ثانٍ، وخطة عملية لدعم تواصل الطفل ومهاراته.",
@@ -150,18 +153,18 @@ ar:{
  canTitle:"ما نقدّمه أونلاين",
  canList:"<li>استشارة أولى لفهم المخاوف</li><li>جلسات إرشاد للأهل</li><li>رأي ثانٍ في تشخيص سابق</li><li>متابعة دورية</li><li>توجيه للمدرسة والمعلمين</li>",
  cantTitle:"ما لا يتم أونلاين",
- cantList:"<li>الحالات الطارئة</li><li>بعض الحالات قد تحتاج تقييمًا حضوريًا</li><li>وصف الأدوية خارج العراق <span class='ph'>[بانتظار تأكيد الطبيبة]</span></li>",
+ cantList:"<li>الحالات الطارئة</li><li>بعض الحالات قد تحتاج تقييمًا حضوريًا، وسنوضح ذلك لكم بصراحة</li>",
  practTitle:"معلومات عملية",
- practList:"<li>المنصة: <span class='ph'>[واتساب فيديو / Google Meet]</span></li><li>المواعيد بتوقيت العراق (UTC+3)</li><li>الأهل يحجزون للأطفال. <span class='ph'>[سياسة تواصل المراهقين مباشرة]</span></li><li>الدول المشمولة: <span class='ph'>[بانتظار التأكيد]</span></li>",
- feesTitle:"الرسوم وطرق الدفع", feesP:"[الرسوم وطرق الدفع داخل العراق وخارجه — بانتظار التأكيد]",
+ practList:"<li>مكالمة فيديو خاصة عبر منصة نتفق عليها معكم</li><li>المواعيد بتوقيت العراق (UTC+3)، مع مراعاة فرق التوقيت للعائلات في الخارج</li><li>الأهل يحجزون للأطفال والمراهقين</li>",
+ feesTitle:"الرسوم وطرق الدفع", feesP:"نوضّح لكم الرسوم وطرق الدفع المتاحة داخل العراق وخارجه عند الحجز.",
  bookTitle:"احجزوا استشارتكم", bookLead:"أرسلوا رسالة قصيرة على واتساب، وسنرد عليكم لتحديد الموعد.",
  bookHint:"من فضلكم لا ترسلوا تقارير طبية أو تفاصيل حساسة في الرسالة الأولى. سنرشدكم لاحقًا إلى طريقة آمنة لمشاركتها.",
- waMissing:"[رقم واتساب لم يُضف بعد]"
+ waMissing:"سيتاح الحجز عبر واتساب قريبًا."
 },
 ku:{
  heroEyebrow:"شێوەرێن ئۆنلاین ب کوردی، عەرەبی و ئینگلیزی",
  heroTitle:"پشتەڤانیا پسپۆڕ بۆ ساخلەمیا دەروونیا زارۆکێ تە، ل هەر جهەکێ هوین لێ بن",
- heroLead:"دکتۆرەکا دەروونی یا زارۆکان و هەرزەکاران ژ دهۆکێ، کو زێدەتر ژ 1000 حالەتێن ئۆتیزم، زێدە-جوولە و کێمیا سەرنجێ، زەحمەتیێن فێربوونێ و هەرزەکاریێ دویڤچوون بۆ کرینە. گوهێ خۆ ددەینە نیگەرانیێن هەوە، و پێکڤە پێنگاڤێن ئاشکرا بۆ مال و قوتابخانێ دادنێین.",
+ heroLead:"پزیشکەکا بوارێ ساخلەمیا دەروونی یا زارۆکان و هەرزەکاران و ڕێڤەبەرا سەنتەرێ دەروونیا زارۆکان ل دهۆکێ، کو زێدەتر ژ 1000 حالەتێن ئۆتیزم، زێدە-جوولە و کێمیا سەرنجێ، زەحمەتیێن فێربوونێ و هەرزەکاریێ دویڤچوون بۆ کرینە. گوهێ خۆ ددەینە نیگەرانیێن هەوە، و پێکڤە پێنگاڤێن ئاشکرا بۆ مال و قوتابخانێ دادنێین.",
  btnPlay:"یاری و چالاکی بۆ زارۆکان",
  focusTitle:"بابەتەکی هەلبژێرن", focusLead:"بۆ هەر بابەتەکی پەڕەکا تایبەت هەیە، دگەل بەشێن خێزانان، مامۆستایان و ڤەکۆلەران.",
  fAutism:"ئۆتیزم", fAutismP:"نیشانێن زوو، هەلسەنگاندن، بیروڕایا دووێ، و پلانەکا کرداری بۆ پشتەڤانیا زارۆکی.",
@@ -186,18 +189,18 @@ ku:{
  canTitle:"یا ئەم ئۆنلاین پێشکێش دکەین",
  canList:"<li>شێوەرا ئێکێ</li><li>دانیشتنێن ڕێنمایی بۆ دایک و بابان</li><li>بیروڕایا دووێ</li><li>دویڤچوون</li><li>ڕێنمایی بۆ قوتابخانێ</li>",
  cantTitle:"یا ئۆنلاین ناهێتە کرن",
- cantList:"<li>ڕەوشێن لەزگین</li><li>هندەک ڕەوش پێدڤی ب هەلسەنگاندنا ئامادەبوونێ نە</li><li>نڤیسینا دەرمانان ل دەرڤەی عێراقێ <span class='ph'>[چاڤەڕێی پشتڕاستکرنێ]</span></li>",
+ cantList:"<li>ڕەوشێن لەزگین</li><li>هندەک ڕەوش پێدڤی ب هەلسەنگاندنا ئامادەبوونێ نە</li>",
  practTitle:"زانیاریێن کرداری",
- practList:"<li>پلاتفۆرم: <span class='ph'>[واتسئاپ ڤیدیۆ / Google Meet]</span></li><li>دەمژمێرا عێراقێ (UTC+3)</li><li>دایک و باب بۆ زارۆکان ژڤانی دگرن.</li><li>وەڵات: <span class='ph'>[چاڤەڕێی پشتڕاستکرنێ]</span></li>",
- feesTitle:"کرێ و پارەدان", feesP:"[کرێ و ڕێکێن پارەدانێ — چاڤەڕێی پشتڕاستکرنێ]",
+ practList:"<li>پەیوەندیا ڤیدیۆیی یا تایبەت ب پلاتفۆرمەکا ئەم دگەل هەوە ل سەر ڕێک دکەڤین</li><li>دەمژمێرا عێراقێ (UTC+3)</li><li>دایک و باب بۆ زارۆک و هەرزەکاران ژڤانی دگرن</li>",
+ feesTitle:"کرێ و پارەدان", feesP:"دەمێ ژڤان گرتنێ، کرێ و ڕێکێن پارەدانێ ل ناڤ و دەرڤەی عێراقێ بۆ هەوە ڕوون دکەین.",
  bookTitle:"ژڤانێ خۆ بگرن", bookLead:"نامەیەکا کورت ب واتسئاپێ بفرێکەن، و دێ بەرسڤا هەوە دەین.",
  bookHint:"تکایە ڕاپۆرتێن پزیشکی یان هوورکاریێن هەستیار د نامەیا ئێکێ دا نەفرێکەن.",
- waMissing:"[ژمارا واتسئاپێ هێشتا نەهاتیە زێدەکرن]"
+ waMissing:"گرتنا ژڤانی ب واتسئاپێ دێ زوو بەردەست بیت."
 },
 en:{
  heroEyebrow:"Online consultations in Arabic, Kurdish and English",
  heroTitle:"Expert support for your child's emotional wellbeing, wherever you are",
- heroLead:"A child and adolescent psychiatrist from Duhok who has followed more than 1,000 children and teens with autism, ADHD, learning difficulties and adolescent challenges. We listen to your concerns and agree clear next steps for home and school, together.",
+ heroLead:"A physician in child and adolescent mental health and director of the Child Psychology Centre in Duhok, who has followed more than 1,000 children and teens with autism, ADHD, learning difficulties and adolescent challenges. We listen to your concerns and agree clear next steps for home and school, together.",
  btnPlay:"Games & activities for children",
  focusTitle:"Choose a topic", focusLead:"Each topic has its own page, with sections for families, teachers and researchers.",
  fAutism:"Autism", fAutismP:"Early signs, assessment, second opinions, and a practical plan to support communication and skills.",
@@ -222,15 +225,15 @@ en:{
  canTitle:"What we offer online",
  canList:"<li>Initial consultation to understand your concerns</li><li>Parent guidance sessions</li><li>Second opinion on an earlier diagnosis</li><li>Regular follow-up</li><li>Guidance for schools and teachers</li>",
  cantTitle:"What isn't done online",
- cantList:"<li>Emergencies</li><li>Some cases may need an in-person assessment</li><li>Prescribing outside Iraq <span class='ph'>[to be confirmed by the doctor]</span></li>",
+ cantList:"<li>Emergencies</li><li>Some cases may need an in-person assessment, and we'll tell you honestly</li>",
  practTitle:"Practical details",
- practList:"<li>Platform: <span class='ph'>[WhatsApp video / Google Meet]</span></li><li>Times shown in Iraq time (UTC+3)</li><li>Parents book for children. <span class='ph'>[Policy on teenagers contacting directly]</span></li><li>Countries served: <span class='ph'>[to be confirmed]</span></li>",
- feesTitle:"Fees and payment", feesP:"[Fees and payment methods inside and outside Iraq — to be confirmed]",
+ practList:"<li>A private video call on a platform we agree with you</li><li>Times in Iraq time (UTC+3), arranged around time differences for families abroad</li><li>Parents book for children and teenagers</li>",
+ feesTitle:"Fees and payment", feesP:"We'll explain fees and payment options inside and outside Iraq when you book.",
  bookTitle:"Book your consultation", bookLead:"Send a short WhatsApp message and we'll reply to arrange a time.",
  bookHint:"Please don't send medical reports or sensitive details in your first message. We'll guide you on how to share them securely.",
- waMissing:"[WhatsApp number not added yet]"
+ waMissing:"Booking via WhatsApp opens soon."
 }}};
 </script>
-<script src="/assets/site.js?v=4"></script>
+<script src="/assets/site.js?v=6"></script>
 </body>
 </html>

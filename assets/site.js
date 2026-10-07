@@ -13,7 +13,7 @@ ar:{
  btnBook:"احجز عبر واتساب", fab:"واتساب",
  confid:"جميع الاستشارات والمعلومات سرّية تمامًا.",
  disclaimer:"هذا الموقع للمعلومات العامة، ولا يغني عن التقييم الفردي أو الرعاية الطارئة.",
- emergency:"الاستشارات أونلاين ليست للحالات الطارئة. إذا كان الطفل في خطر مباشر، اتصلوا بخدمات الطوارئ أو توجهوا إلى أقرب مستشفى. في إقليم كوردستان: [رقم الطوارئ المعتمد].",
+ emergency:"الاستشارات أونلاين ليست للحالات الطارئة. إذا كان الطفل في خطر مباشر، اتصلوا بخدمات الطوارئ أو توجهوا إلى أقرب مستشفى.",
  base:"دهوك، إقليم كوردستان العراق",
  waMsg:"مرحبًا دكتورة سالي، أود حجز استشارة أونلاين.",
  kuFallback:"",
@@ -34,7 +34,7 @@ ku:{
  btnBook:"ب واتسئاپێ ژڤان بگرە", fab:"واتسئاپ",
  confid:"هەمی شێوەر و زانیاری ب تەمامی نهێنی دمینن.",
  disclaimer:"ئەڤ ماڵپەڕە بۆ زانیاریێن گشتییە، و جهێ هەلسەنگاندنا تاکەکەسی یان چارەسەریا لەزگین ناگریت.",
- emergency:"شێوەرێن ئۆنلاین بۆ ڕەوشێن لەزگین نینن. ئەگەر زارۆک د مەترسیەکا ڕاستەوخۆ دا بیت، پەیوەندیێ ب خزمەتگوزاریێن لەزگین بکەن یان بچنە نێزیکترین نەخوشخانێ. ل هەرێما کوردستانێ: [ژمارا لەزگین].",
+ emergency:"شێوەرێن ئۆنلاین بۆ ڕەوشێن لەزگین نینن. ئەگەر زارۆک د مەترسیەکا ڕاستەوخۆ دا بیت، پەیوەندیێ ب خزمەتگوزاریێن لەزگین بکەن یان بچنە نێزیکترین نەخوشخانێ.",
  base:"دهۆک، هەرێما کوردستانا عێراقێ",
  waMsg:"سلاڤ دکتۆرە سالی، دخوازم ژڤانەکێ شێوەرا ئۆنلاین بگرم.",
  kuFallback:"وەرگێڕانا کوردی یا ڤێ بەشێ د بەرهەڤکرنێ دایە. نوکە دەقێ عەرەبی دئێتە نیشاندان.",
@@ -55,7 +55,7 @@ en:{
  btnBook:"Book via WhatsApp", fab:"WhatsApp",
  confid:"Every consultation and all information are completely confidential.",
  disclaimer:"This website offers general information and does not replace an individual assessment or emergency care.",
- emergency:"Online consultations are not for emergencies. If a child is in immediate danger, contact your local emergency services or go to the nearest hospital. In the Kurdistan Region of Iraq: [verified emergency number].",
+ emergency:"Online consultations are not for emergencies. If a child is in immediate danger, contact your local emergency services or go to the nearest hospital.",
  base:"Duhok, Kurdistan Region of Iraq",
  waMsg:"Hello Dr. Sally, I'd like to book an online consultation.",
  kuFallback:"",
@@ -93,7 +93,6 @@ window.tx = tx;
 function buildChrome(){
   const head = document.createElement("div");
   head.innerHTML = `
-  <div class="test-bar" data-i18n="testbar"></div>
   <header class="site"><div class="wrap">
     <div class="head-row">
       <a class="brand" href="/">${MARK}<span><span class="brand-name" data-i18n="brand"></span><br><span class="brand-sub" data-i18n="brandSub"></span></span></a>
@@ -132,6 +131,8 @@ function setLang(lang){
   document.querySelectorAll(".wa-link").forEach(a => {
     if (has){ a.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(tx("waMsg"))}`; a.target = "_blank"; a.rel = "noopener"; }
     else { a.href = "/#book"; a.removeAttribute("target"); }
+    // no number yet: hide the floating button and the button inside the booking box; links elsewhere lead to the "opening soon" note
+    a.hidden = !has && (a.classList.contains("fab") || !!a.closest("#book"));
   });
   document.querySelectorAll(".wa-missing").forEach(el => el.hidden = has);
   const title = tx("pageTitle"); if (title) document.title = title;
