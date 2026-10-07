@@ -303,7 +303,7 @@ export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExc
 /** One-time schema upgrades, remembered in clinic_settings 'schema_v'. */
 export async function ensureSchema(env: Env) {
   const v = (await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = 'schema_v'").first<{ value: string }>())?.value;
-  if (v === "4") return;
+  if (v === "5") return;
   for (const sql of [
     "ALTER TABLE patients ADD COLUMN visits INTEGER DEFAULT 0",
     "ALTER TABLE patients ADD COLUMN first_day TEXT",
@@ -327,8 +327,12 @@ export async function ensureSchema(env: Env) {
     "CREATE INDEX IF NOT EXISTS card_rows_key ON card_rows(patient_key)",
     // Pairs the owner marked "not the same person": never suggested or auto-merged again.
     "CREATE TABLE IF NOT EXISTS merge_no (a TEXT, b TEXT, PRIMARY KEY (a, b))",
+    // v5: X-rays and case photos attached to a card (kept by the card's number, so they survive merges; image stored as base64).
+    `CREATE TABLE IF NOT EXISTS card_files (id INTEGER PRIMARY KEY, no INTEGER, kind TEXT, title TEXT, mime TEXT, data TEXT,
+       size INTEGER, taken TEXT, created_at TEXT DEFAULT (datetime('now')))`,
+    "CREATE INDEX IF NOT EXISTS card_files_no ON card_files(no)",
   ]) { try { await env.DB.prepare(sql).run(); } catch { /* already there */ } }
-  await setSetting(env, "schema_v", "4");
+  await setSetting(env, "schema_v", "5");
   await setSetting(env, "stats_dirty", "1");
 }
 

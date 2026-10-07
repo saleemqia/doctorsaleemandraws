@@ -121,6 +121,20 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   .vt{width:100%;border-collapse:collapse;font-size:12px}.vt th,.vt td{border:1px solid #999;padding:4px 6px}.vt tr{break-inside:avoid}
   .sumbox div{background:#fff;border:1px solid #999}
 }
+
+@page{size:A4;margin:12mm}
+.phead{position:relative;padding-inline-end:104px}.qr{position:absolute;inset-inline-end:12px;top:12px;width:78px;height:78px;background:#fff;padding:4px;border-radius:8px;line-height:0}.qr svg{width:100%;height:100%}
+.files{margin:16px 0 4px}.files h4{margin:0 0 8px;color:var(--navy)}.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.fgrid figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;break-inside:avoid}.fgrid img{width:100%;height:130px;object-fit:cover;display:block;cursor:zoom-in;background:#111}
+.fgrid figcaption{padding:6px 8px;font-size:12px;color:var(--muted)}.fgrid figcaption b{display:block;color:var(--navy);font-size:13px}.fgrid figcaption button{border:0;background:none;cursor:pointer;font-size:14px}
+.fup{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}.fup select,.fup input[type=text],.fup input:not([type]){padding:9px;border:1px solid var(--line);border-radius:8px;font:inherit}.fup input:not([type]){flex:1;min-width:160px}
+#idlg{border:0;padding:8px;max-width:96vw;background:#000;border-radius:12px}#idlg img{max-width:94vw;max-height:84vh;display:block;margin:auto}#idlg::backdrop{background:#000c}#idlg button{margin-top:6px}
+@media print{
+  .phead{padding-inline-end:104px}.qr{border:1px solid #999}
+  .fgrid{grid-template-columns:1fr 1fr}.fgrid img{height:auto;max-height:8cm;object-fit:contain;background:#fff}.fgrid figure{border:1px solid #999}
+  .files.nofiles,body.noimgs .files{display:none!important}.files h4{border-bottom:1px solid #999;padding-bottom:3px}
+}
+.pickbar[hidden],#toast[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -176,6 +190,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   <p class="note" id="note"></p>
   <div id="toast" hidden></div>
   <dialog id="mdlg"></dialog>
+  <dialog id="idlg"><img id="idImg" alt=""><br><button class="btn" id="idClose" type="button">إغلاق</button></dialog>
   <section id="list"><div class="spin"></div></section>
   <div class="pickbar" id="pickBar" hidden><span id="pickN"></span><button class="btn pri" id="pickGo" disabled>🔗 دمج</button><button class="btn" id="pickClear" type="button">مسح</button></div>
 </main>
@@ -472,6 +487,7 @@ const plRow = (p) => `<div class="pl${picked.has(p.no) ? " sel" : ""}" data-no="
     <span class="s">آخر زيارة ${p.last || "—"}${p.phones ? " · " + esc(String(p.phones).split(",")[0]) : ""}</span></div>`;
 let lastList = [];
 async function patients() {
+  $("pats").hidden = false;
   const q = $("pq").value.trim();
   $("title").textContent = q ? `مرضى: ${q}` : "المرضى"; $("note").textContent = "";
   $("list").innerHTML = `<div class="spin"></div>`;
@@ -655,7 +671,7 @@ let cardData = null;
 addEventListener("beforeprint", () => document.body.classList.toggle("printcard", current === "card"));
 addEventListener("afterprint", () => document.body.classList.remove("printcard"));
 async function openCard(no) {
-  current = "card"; $("list").onclick = null;
+  current = "card"; $("list").onclick = null; $("pats").hidden = true;
   $("list").innerHTML = `<div class="spin"></div>`;
   let d;
   try {
@@ -665,6 +681,57 @@ async function openCard(no) {
   } catch (err) { $("list").innerHTML = `<div class="empty">تعذّر فتح البطاقة:<br><small dir="ltr">${esc(err.message)}</small></div>`; return; }
   d.rows = d.rows || []; cardData = d; renderCard(false);
 }
+/* ---- QR code (library loaded on demand) and X-ray / photo attachments ---- */
+let qrLib = null;
+const loadQR = () => qrLib || (qrLib = new Promise((ok, bad) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"; s.onload = () => ok(window.qrcode); s.onerror = () => { qrLib = null; bad(); }; document.head.appendChild(s); }));
+async function drawQR(el, text) {
+  try { const q = (await loadQR())(0, "M"); q.addData(text); q.make(); el.innerHTML = q.createSvgTag({ cellSize: 3, margin: 0, scalable: true }); }
+  catch { el.hidden = true; }
+}
+async function shrink(file, max = 1600) {
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, max / Math.max(bmp.width, bmp.height)), c = document.createElement("canvas");
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  let q = 0.85, url = c.toDataURL("image/jpeg", q);
+  while (url.length > 1_700_000 && q > 0.4) { q -= 0.15; url = c.toDataURL("image/jpeg", q); }
+  return url;
+}
+async function loadFiles(p) {
+  const box = $("files"); if (!box) return;
+  const nos = [p.no, ...p.merged.map((m) => m.no)];
+  let list = [];
+  try { list = (await (await fetch(`/clinic/api/files?nos=${nos.join(",")}`, { cache: "no-store" })).json()).files || []; } catch { /* offline */ }
+  box.classList.toggle("nofiles", !list.length);
+  $("fgrid").innerHTML = list.map((f) => `<figure data-id="${f.id}"><img loading="lazy" src="/clinic/api/files?id=${f.id}" alt="${esc(f.title)}">
+    <figcaption><b>${esc(f.title || (f.kind === "xray" ? "أشعة" : "صورة حالة"))}</b>${f.kind === "xray" ? "🩻 أشعة" : "📷 صورة"} · ${esc(f.taken || String(f.created_at).slice(0, 10))}
+    <span class="noprint"><button data-ren="${f.id}" title="تغيير الاسم">✏️</button><button data-del="${f.id}" title="حذف">🗑</button></span></figcaption></figure>`).join("");
+  $("fgrid").onclick = async (e) => {
+    const img = e.target.closest("img"), ren = e.target.closest("[data-ren]"), del = e.target.closest("[data-del]");
+    if (img) { $("idImg").src = img.src; $("idlg").showModal(); return; }
+    if (ren) { const cur = list.find((f) => f.id == ren.dataset.ren); const t = prompt("اسم الأشعة / الصورة:", cur?.title || ""); if (t == null) return;
+      await fetch("/clinic/api/files?action=rename", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: +ren.dataset.ren, title: t }) }); loadFiles(p); }
+    if (del && confirm("حذف هذه الصورة نهائيًا؟")) {
+      await fetch("/clinic/api/files?action=delete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: +del.dataset.del }) }); loadFiles(p); }
+  };
+  $("idClose").onclick = () => $("idlg").close();
+  $("fFile").onchange = async (e) => {
+    const files = [...e.target.files]; e.target.value = ""; if (!files.length) return;
+    const kind = $("fKind").value, title = $("fTitle").value.trim(), taken = $("fDate").value || null, msg = $("fMsg");
+    try {
+      for (let i = 0; i < files.length; i++) {
+        msg.textContent = `جارٍ رفع ${i + 1} من ${files.length}…`;
+        const data = await shrink(files[i]);
+        const r = await (await fetch("/clinic/api/files", { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ no: p.no, kind, title: files.length > 1 && title ? `${title} (${i + 1})` : title, taken, data }) })).json();
+        if (!r.ok) throw new Error(r.error || "فشل الرفع");
+      }
+      msg.textContent = "✔ تمت الإضافة"; $("fTitle").value = ""; loadFiles(p);
+    } catch (err) { msg.textContent = "تعذّر الرفع: " + (err.message || err); }
+  };
+}
+addEventListener("beforeprint", () => document.body.classList.toggle("noimgs", $("fPrint") ? !$("fPrint").checked : false));
+
 function renderCard(editing) {
   const d = cardData, p = d.patient, lines = cardLines(d);
   $("title").textContent = editing ? "✏️ تعديل البطاقة" : "بطاقة مريض"; $("count").textContent = lines.filter((l) => l.visit).length + " زيارة";
@@ -693,20 +760,32 @@ function renderCard(editing) {
         <label class="wide">ملاحظات / الحالة الطبية<textarea id="eNotes" rows="2">${esc(p.notes || "")}</textarea></label></div>
         <p class="note">الاسم الأصلي من التقويم: ${esc(p.auto_name)}${p.auto_phones.length ? " · الهواتف من التقويم: " + esc(p.auto_phones.join("، ")) : ""}. اترك الحقل فارغًا للرجوع إليه.</p>`
     : (p.notes || p.card_no ? `<p class="note" style="color:var(--navy)">${p.notes ? "📝 " + esc(p.notes) : ""}</p>` : "");
-  $("list").innerHTML = `<div class="pcard"><div class="printhead"><b>عيادة د. سليم أندراوس لطب الأسنان — دهوك</b><span>تقرير مريض · طُبع ${new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10)}</span></div><div class="phead">
+  $("list").innerHTML = `<div class="pcard"><div class="printhead"><b>عيادة د. سليم أندراوس لطب الأسنان — دهوك</b><span>تقرير مريض · طُبع <bdi dir="ltr">${new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10)}</bdi></span></div><div class="phead"><div class="qr" id="qr" title="امسح للوصول إلى البطاقة"></div>
       <div class="no">DSA-P-${p.no}${p.card_no ? " · بطاقة ورقية " + esc(p.card_no) : ""}</div><h3>${esc(p.name)}</h3>
       <div class="meta"><span>📞 ${phones}</span><span>أول زيارة ${vdays[0] || ""}</span><span>آخر زيارة ${vdays[vdays.length - 1] || ""}</span>${p.edited_at ? `<span>✏️ آخر تعديل ${p.edited_at.slice(0, 10)}</span>` : ""}</div></div>
     <div class="pbody">
-      ${editing ? "" : `<div class="pf noprint"><button class="btn pri" id="editP">✏️ تعديل</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn" onclick="print()">🖨 طباعة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>`}
+      ${editing ? "" : `<div class="pf noprint"><button class="btn pri" id="editP">✏️ تعديل</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn" id="pdfP">📄 حفظ PDF / طباعة</button><button class="btn" id="shareP">📤 مشاركة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>`}
       ${editing ? "" : summary}
       ${head}
       ${!editing && p.merged.length ? `<p class="note">مدموجة معها: ${p.merged.map((m) => `#${m.no} <a href="#" data-un="${m.no}">فكّ</a>`).join(" · ")}</p>` : ""}
       <div class="tw"><table class="vt${editing ? " ed" : ""}"><thead><tr><th>#</th><th>التاريخ</th><th>نوع العمل</th><th>المدفوع</th><th>المتبقي</th>${editing ? "<th></th>" : ""}</tr></thead><tbody id="vbody">${rows}</tbody></table></div>
+      ${editing ? "" : `<div class="files nofiles" id="files"><h4>🩻 الأشعة وصور الحالة</h4><div class="fgrid" id="fgrid"></div>
+        <div class="fup noprint"><select id="fKind"><option value="xray">أشعة</option><option value="photo">صورة حالة</option></select>
+          <input id="fTitle" placeholder="اسم الأشعة أو وصف الصورة (مثال: بانوراما، سن 36)"><input type="date" id="fDate">
+          <label class="btn pri">＋ إضافة صور<input type="file" id="fFile" accept="image/*" multiple hidden></label></div>
+        <label class="noprint" style="font-size:13px"><input type="checkbox" id="fPrint" checked> تضمين الصور في الطباعة</label><small id="fMsg" class="note"></small></div>`}
       ${editing ? `<p><button type="button" class="btn" id="addRow">＋ إضافة زيارة / دفعة</button></p>
         <div class="savebar"><button class="btn pri" id="saveE">💾 حفظ التغييرات</button><button class="btn" id="cancelE">إلغاء</button><span id="eMsg" class="note"></span></div>` : ""}
     </div></div>`;
   if (!editing) {
     $("editP").onclick = () => renderCard(true);
+    drawQR($("qr"), `${location.origin}/clinic/#card=${p.no}`);
+    loadFiles(p);
+    $("pdfP").onclick = () => { const t = document.title; document.title = `${p.name} - ${new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10)}`; print(); setTimeout(() => { document.title = t; }, 1500); };
+    $("shareP").onclick = async () => {
+      const text = `${p.name}\nعيادة د. سليم أندراوس لطب الأسنان - دهوك\nعدد الزيارات: ${nVisits}\nأول زيارة: ${vdays[0] || "—"} · آخر زيارة: ${vdays[vdays.length - 1] || "—"}` + (mp.length ? `\nمجموع المدفوع: ${paidAll}\nالمتبقي: ${dueAll}` : "");
+      try { if (navigator.share) await navigator.share({ title: p.name, text }); else window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank"); } catch { /* cancelled */ }
+    };
     $("backP").onclick = () => patients();
     $("mergeP").onclick = () => mergeFromCard(p);
     document.querySelectorAll("[data-un]").forEach((a) => a.onclick = async (e) => {
@@ -832,7 +911,11 @@ $("prevDay").onclick = () => stepDay(-1);
 $("nextDay").onclick = () => stepDay(1);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !["archive","patients","card","dups"].includes(current)) load(); });
 setInterval(() => { if (!document.hidden && !["archive","patients","card","dups"].includes(current)) load(); }, 5 * 60000);
-load("today");
+const deep = location.hash.match(/card=(\d+)/);
+if (deep) {
+  document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x.dataset.r === "patients"));
+  current = "patients"; $("pats").hidden = false; $("dnav").hidden = true; openCard(+deep[1]);
+} else load("today");
 </script>
 </body>
 </html>
