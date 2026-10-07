@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- TEST BUILD: keep out of search engines until the doctor approves the content -->
+<meta name="robots" content="noindex, nofollow">
+<title>Dr. Sally Care | الدكتورة سالي</title>
+<meta name="description" content="Online consultations and guidance for children's and teenagers' emotional wellbeing, in Arabic, Kurdish and English.">
+<link rel="canonical" href="https://drsallycare.com/">
+<meta name="theme-color" content="#2F6F6A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+/* Layout: one calm column. Sticky header (brand, language switch, 5 tabs) → hero with confidentiality line →
+   three focus cards → how it works → about → online consultation → learn (3 layered guides) → book → footer with emergency notice.
+   A floating WhatsApp button stays on every screen. */
+:root{
+  --bg:#FBF8F3; --surface:#FFFFFF; --ink:#1F2E2C; --muted:#5D6B68; --line:#E7E1D6;
+  --teal:#2F6F6A; --teal-soft:#E4F0EE; --coral:#D9775B; --coral-soft:#FBEAE4;
+  --sun:#E9B949; --sun-soft:#FBF2DC; --lav:#7B6FB0; --lav-soft:#EEEBF7;
+  --warn:#9E2B25; --warn-soft:#FBE9E7;
+  --shadow:0 1px 2px rgba(31,46,44,.05),0 8px 24px rgba(31,46,44,.06);
+  --f-ar:'Vazirmatn',Tahoma,sans-serif;
+  --f-en-body:'Nunito Sans','Segoe UI',sans-serif;
+  --f-en-head:'Fraunces',Georgia,serif;
+  --radius:18px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111816; --surface:#18221F; --ink:#E9EFEC; --muted:#A3B3AE; --line:#2A3833;
+  --teal:#7CC3BB; --teal-soft:#1D332F; --coral:#F0A189; --coral-soft:#3A2520;
+  --sun:#F0CB6E; --sun-soft:#352D17; --lav:#B4A9E6; --lav-soft:#27233A;
+  --warn:#F2A39C; --warn-soft:#3A1C1A; --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111816; --surface:#18221F; --ink:#E9EFEC; --muted:#A3B3AE; --line:#2A3833;
+  --teal:#7CC3BB; --teal-soft:#1D332F; --coral:#F0A189; --coral-soft:#3A2520;
+  --sun:#F0CB6E; --sun-soft:#352D17; --lav:#B4A9E6; --lav-soft:#27233A;
+  --warn:#F2A39C; --warn-soft:#3A1C1A; --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:120px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-ar);font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased}
+html[lang="en"] body{font-family:var(--f-en-body);line-height:1.6}
+h1,h2,h3{line-height:1.3;margin:0 0 .5em;font-weight:800}
+html[lang="en"] h1,html[lang="en"] h2{font-family:var(--f-en-head);font-weight:700}
+a{color:var(--teal)}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:16px}
+.test-bar{background:var(--sun-soft);color:var(--ink);font-size:13px;text-align:center;padding:6px 16px;border-bottom:1px solid var(--line)}
+
+/* header */
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.head-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand-mark{width:38px;height:38px;flex:none}
+.brand-name{font-weight:800;font-size:18px;line-height:1.1}
+.brand-sub{font-size:12px;color:var(--muted);line-height:1.2}
+.langs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+.langs button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;padding:5px 11px;border-radius:999px;cursor:pointer;min-height:32px}
+.langs button[aria-pressed="true"]{background:var(--teal);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .langs button[aria-pressed="true"]{color:#0E1A17}}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);white-space:nowrap}
+nav.tabs a:hover,nav.tabs a.active{border-color:var(--teal);color:var(--teal)}
+
+/* sections */
+section{padding-block:44px}
+.eyebrow{display:inline-block;font-size:13px;font-weight:700;color:var(--teal);background:var(--teal-soft);padding:3px 12px;border-radius:999px;margin-bottom:12px}
+.lead{color:var(--muted);font-size:17px;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+
+/* hero */
+.hero{padding-block:48px 36px;display:grid;gap:28px;grid-template-columns:1.2fr .8fr;align-items:center}
+.hero h1{font-size:clamp(28px,5vw,44px)}
+.hero-art{width:100%;max-width:340px;justify-self:center}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;font-size:15px;padding:12px 20px;border-radius:999px;border:1.5px solid var(--teal);color:var(--teal);background:transparent;min-height:46px;cursor:pointer;font-family:inherit}
+.btn.primary{background:var(--teal);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0E1A17}}
+.btn svg{width:20px;height:20px;flex:none}
+.confid{display:flex;gap:10px;align-items:center;margin-top:20px;background:var(--teal-soft);border-radius:14px;padding:10px 14px;font-weight:600;font-size:15px;max-width:520px}
+.confid svg{width:22px;height:22px;flex:none;color:var(--teal)}
+.small-note{font-size:13px;color:var(--muted);margin-top:14px}
+
+/* focus cards */
+.focus{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.focus .card{display:flex;flex-direction:column;gap:6px;border-top:5px solid var(--c)}
+.focus .ic{width:48px;height:48px;border-radius:14px;background:var(--cs);display:grid;place-items:center;margin-bottom:6px}
+.focus .ic svg{width:28px;height:28px;color:var(--c)}
+.focus h3{font-size:20px;margin:0}
+.focus p{margin:0;color:var(--muted);font-size:15px;flex:1}
+.focus a{font-weight:700;text-decoration:none;color:var(--c);margin-top:8px}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px;counter-reset:s}
+.steps .card{position:relative;padding-top:26px}
+.steps .num{width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;font-weight:800;display:grid;place-items:center;margin-bottom:8px}
+.steps h3{font-size:17px;margin:0 0 4px}
+.steps p{margin:0;color:var(--muted);font-size:15px}
+
+/* about */
+.about{display:grid;grid-template-columns:220px 1fr;gap:26px;align-items:start}
+.portrait{aspect-ratio:4/5;border-radius:var(--radius);background:linear-gradient(160deg,var(--teal-soft),var(--coral-soft));display:grid;place-items:center;color:var(--muted);font-size:13px;text-align:center;padding:16px;border:1px dashed var(--line)}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.fact b{display:block;font-size:13px;color:var(--muted);font-weight:600}
+.ph{color:var(--coral);font-weight:600}
+
+/* consultation */
+.consult{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+.consult ul{margin:0;padding-inline-start:20px}
+.consult li{margin-bottom:6px}
+.can{border-inline-start:5px solid var(--teal)}
+.cant{border-inline-start:5px solid var(--coral)}
+.consult h3{font-size:18px}
+
+/* learn */
+.learn-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.learn-tabs button{font:inherit;font-weight:700;font-size:15px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 18px;border-radius:999px;cursor:pointer;min-height:44px}
+.learn-tabs button[aria-selected="true"]{border-color:var(--c);background:var(--cs);color:var(--ink)}
+.guide{margin-top:18px}
+.guide[hidden]{display:none}
+.guide .card{border-top:5px solid var(--c)}
+.guide h3{font-size:22px}
+.guide h4{font-size:17px;margin:20px 0 6px}
+.guide ul,.guide ol{padding-inline-start:22px;margin:6px 0}
+.guide li{margin-bottom:5px}
+.layer{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.layer summary{cursor:pointer;font-weight:700;padding:12px 16px;list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:44px}
+.layer summary::-webkit-details-marker{display:none}
+.layer summary::after{content:"+";font-size:20px;color:var(--muted)}
+.layer[open] summary::after{content:"−"}
+.layer .in{padding:0 16px 14px}
+.story{background:var(--sun-soft);border-radius:12px;padding:12px 14px;font-size:14px;margin:14px 0;color:var(--ink)}
+.compare{width:100%;border-collapse:collapse;margin:8px 0;font-size:15px}
+.compare th,.compare td{border:1px solid var(--line);padding:8px 10px;text-align:start;vertical-align:top}
+.compare th{background:var(--teal-soft)}
+.alert{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 14px;font-weight:600;margin:12px 0}
+.lang-note{background:var(--lav-soft);border-radius:12px;padding:10px 14px;font-size:14px;margin-bottom:10px}
+
+/* book */
+.book{text-align:center;background:linear-gradient(160deg,var(--teal-soft),var(--bg));border-radius:28px;padding:40px 20px;margin-block:20px}
+.book .lead{margin-inline:auto}
+.book .btns{justify-content:center}
+.hint{font-size:14px;color:var(--muted);max-width:52ch;margin:16px auto 0}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding-block:28px 100px;font-size:14px;color:var(--muted)}
+.emerg{background:var(--warn-soft);color:var(--warn);border-radius:14px;padding:14px 16px;font-weight:600;margin-bottom:18px}
+.foot-grid{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between}
+
+/* floating whatsapp */
+.fab{position:fixed;inset-inline-end:16px;bottom:16px;z-index:30;display:flex;align-items:center;gap:8px;background:#25D366;color:#073B1E;font-weight:800;text-decoration:none;padding:12px 18px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.18);min-height:52px}
+.fab svg{width:24px;height:24px}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr}
+  .hero-art{max-width:150px;grid-row:1}
+  .hero{padding-top:24px;gap:12px}
+  .focus,.steps,.consult{grid-template-columns:1fr}
+  .about{grid-template-columns:1fr}
+  .portrait{max-width:220px}
+  .brand-sub{display:none}
+}
+@media (max-width:420px){.facts{grid-template-columns:1fr}.fab span{display:none}.fab{padding:14px}}
+</style>
+</head>
+<body>
+
+<div class="test-bar" data-i18n="testbar"></div>
+
+<header>
+  <div class="wrap">
+    <div class="head-row">
+      <a class="brand" href="#home">
+        <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+          <circle cx="24" cy="24" r="23" fill="var(--teal-soft)"/>
+          <path d="M24 37c-7-4.6-12-9-12-15a6.5 6.5 0 0 1 12-3.4A6.5 6.5 0 0 1 36 22c0 6-5 10.4-12 15z" fill="var(--coral)"/>
+          <circle cx="24" cy="15" r="4.2" fill="var(--teal)"/>
+        </svg>
+        <span>
+          <span class="brand-name" data-i18n="brand"></span><br>
+          <span class="brand-sub" data-i18n="brandSub"></span>
+        </span>
+      </a>
+      <div class="langs" role="group" aria-label="Language">
+        <button data-lang="ar" lang="ar">العربية</button>
+        <button data-lang="ku" lang="ku">کوردی</button>
+        <button data-lang="en" lang="en">English</button>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#home" data-i18n="navHome"></a>
+      <a href="#about" data-i18n="navAbout"></a>
+      <a href="#consult" data-i18n="navConsult"></a>
+      <a href="#learn" data-i18n="navLearn"></a>
+      <a href="#book" data-i18n="navBook"></a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HOME -->
+  <section id="home" class="hero">
+    <div>
+      <span class="eyebrow" data-i18n="heroEyebrow"></span>
+      <h1 data-i18n="heroTitle"></h1>
+      <p class="lead" data-i18n="heroLead"></p>
+      <div class="confid">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <span data-i18n="confid"></span>
+      </div>
+      <div class="btns">
+        <a class="btn primary wa-link" href="#book">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.6 2.1 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>
+          <span data-i18n="btnBook"></span>
+        </a>
+        <a class="btn" href="#learn" data-i18n="btnLearn"></a>
+      </div>
+      <p class="small-note" data-i18n="disclaimer"></p>
+    </div>
+    <svg class="hero-art" viewBox="0 0 320 300" aria-hidden="true">
+      <circle cx="160" cy="150" r="140" fill="var(--teal-soft)"/>
+      <circle cx="250" cy="70" r="26" fill="var(--sun)" opacity=".85"/>
+      <path d="M40 250c40-40 80-50 120-40s80 10 120-30v70H40z" fill="var(--teal)" opacity=".18"/>
+      <!-- adult -->
+      <circle cx="128" cy="96" r="24" fill="var(--coral)"/>
+      <path d="M92 230c0-50 14-90 36-100 22 10 36 50 36 100z" fill="var(--teal)"/>
+      <!-- child -->
+      <circle cx="200" cy="140" r="17" fill="var(--sun)"/>
+      <path d="M176 230c0-36 10-62 24-68 14 6 24 32 24 68z" fill="var(--lav)"/>
+      <!-- hands joined -->
+      <path d="M160 178c10 0 18-4 24-10" stroke="var(--ink)" stroke-width="5" stroke-linecap="round" fill="none" opacity=".75"/>
+      <!-- heart -->
+      <path d="M166 66c-5-3-9-6-9-10a4.5 4.5 0 0 1 9-2 4.5 4.5 0 0 1 9 2c0 4-4 7-9 10z" fill="var(--coral)"/>
+    </svg>
+  </section>
+
+  <section style="padding-top:0">
+    <h2 data-i18n="focusTitle"></h2>
+    <div class="focus">
+      <div class="card" style="--c:var(--teal);--cs:var(--teal-soft)">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 4h4v4a2 2 0 1 1 0 4v4H8v-2a2 2 0 1 0-4 0v2"/><path d="M12 8h2a2 2 0 1 1 4 0h2v4"/><path d="M12 16h8v-4"/></svg></div>
+        <h3 data-i18n="fAutism"></h3><p data-i18n="fAutismP"></p>
+        <a href="#learn" data-guide="autism" data-i18n="readGuide"></a>
+      </div>
+      <div class="card" style="--c:var(--coral);--cs:var(--coral-soft)">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+        <h3 data-i18n="fAdhd"></h3><p data-i18n="fAdhdP"></p>
+        <a href="#learn" data-guide="adhd" data-i18n="readGuide"></a>
+      </div>
+      <div class="card" style="--c:var(--lav);--cs:var(--lav-soft)">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9 11h.01M12 11h.01M15 11h.01"/></svg></div>
+        <h3 data-i18n="fTeen"></h3><p data-i18n="fTeenP"></p>
+        <a href="#learn" data-guide="teen" data-i18n="readGuide"></a>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <h2 data-i18n="howTitle"></h2>
+    <div class="steps">
+      <div class="card"><div class="num">1</div><h3 data-i18n="how1"></h3><p data-i18n="how1p"></p></div>
+      <div class="card"><div class="num">2</div><h3 data-i18n="how2"></h3><p data-i18n="how2p"></p></div>
+      <div class="card"><div class="num">3</div><h3 data-i18n="how3"></h3><p data-i18n="how3p"></p></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <span class="eyebrow" data-i18n="navAbout"></span>
+    <div class="about">
+      <div class="portrait" data-i18n="photoPh"></div>
+      <div>
+        <h2 data-i18n="aboutTitle"></h2>
+        <p data-i18n="aboutP"></p>
+        <div class="facts">
+          <div class="fact"><b data-i18n="fQual"></b><span class="ph" data-i18n="toConfirm"></span></div>
+          <div class="fact"><b data-i18n="fReg"></b><span class="ph" data-i18n="toConfirm"></span></div>
+          <div class="fact"><b data-i18n="fLangs"></b><span data-i18n="fLangsV"></span></div>
+          <div class="fact"><b data-i18n="fAges"></b><span class="ph" data-i18n="toConfirm"></span></div>
+          <div class="fact"><b data-i18n="fFocus"></b><span data-i18n="fFocusV"></span></div>
+          <div class="fact"><b data-i18n="fBase"></b><span data-i18n="fBaseV"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONSULTATION -->
+  <section id="consult">
+    <span class="eyebrow" data-i18n="navConsult"></span>
+    <h2 data-i18n="consultTitle"></h2>
+    <p class="lead" data-i18n="consultLead"></p>
+    <div class="consult">
+      <div class="card can"><h3 data-i18n="canTitle"></h3><ul data-i18n="canList"></ul></div>
+      <div class="card cant"><h3 data-i18n="cantTitle"></h3><ul data-i18n="cantList"></ul></div>
+    </div>
+    <div class="consult">
+      <div class="card"><h3 data-i18n="practTitle"></h3><ul data-i18n="practList"></ul></div>
+      <div class="card"><h3 data-i18n="feesTitle"></h3><p class="ph" data-i18n="feesP"></p></div>
+    </div>
+  </section>
+
+  <!-- LEARN -->
+  <section id="learn">
+    <span class="eyebrow" data-i18n="navLearn"></span>
+    <h2 data-i18n="learnTitle"></h2>
+    <p class="lead" data-i18n="learnLead"></p>
+    <div class="learn-tabs" role="tablist">
+      <button role="tab" data-tab="autism" style="--c:var(--teal);--cs:var(--teal-soft)" data-i18n="fAutism"></button>
+      <button role="tab" data-tab="adhd" style="--c:var(--coral);--cs:var(--coral-soft)" data-i18n="fAdhd"></button>
+      <button role="tab" data-tab="teen" style="--c:var(--lav);--cs:var(--lav-soft)" data-i18n="fTeen"></button>
+    </div>
+    <div class="guide" id="g-autism" style="--c:var(--teal)"><div class="card" data-guide-body="autism"></div></div>
+    <div class="guide" id="g-adhd" style="--c:var(--coral)" hidden><div class="card" data-guide-body="adhd"></div></div>
+    <div class="guide" id="g-teen" style="--c:var(--lav)" hidden><div class="card" data-guide-body="teen"></div></div>
+  </section>
+
+  <!-- BOOK -->
+  <section id="book" class="book">
+    <h2 data-i18n="bookTitle"></h2>
+    <p class="lead" data-i18n="bookLead"></p>
+    <div class="btns">
+      <a class="btn primary wa-link" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.6 2.1 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>
+        <span data-i18n="btnBook"></span>
+      </a>
+    </div>
+    <p class="hint" data-i18n="bookHint"></p>
+    <p class="hint ph" id="wa-missing" data-i18n="waMissing"></p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="emerg" data-i18n="emergency"></div>
+    <div class="foot-grid">
+      <div><b data-i18n="brand"></b><br><span data-i18n="fBaseV"></span></div>
+      <div data-i18n="confid"></div>
+      <div data-i18n="disclaimer"></div>
+    </div>
+  </div>
+</footer>
+
+<a class="fab wa-link" href="#book" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.6 2.1 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.2.1.7-.1 1.4z"/></svg>
+  <span data-i18n="fab"></span>
+</a>
+
+<script>
+/* ===== Settings to fill in before launch ===== */
+const WHATSAPP_NUMBER = ""; // international format, digits only, e.g. "9647XXXXXXXXX". Empty = button scrolls to the booking section.
+
+/* ===== Text ===== */
+const T = {
+ar:{
+ testbar:"نسخة تجريبية للمراجعة — المحتوى بانتظار اعتماد الطبيبة، وغير منشور للعامة.",
+ brand:"الدكتورة سالي", brandSub:"الصحة النفسية للأطفال والمراهقين · أونلاين",
+ navHome:"الرئيسية", navAbout:"عن الدكتورة", navConsult:"الاستشارة أونلاين", navLearn:"تعلّم", navBook:"احجز",
+ heroEyebrow:"استشارات أونلاين بالعربية والكوردية والإنجليزية",
+ heroTitle:"دعم متخصص لصحة طفلك النفسية، أينما كنتم",
+ heroLead:"طبيبة نفسية للأطفال والمراهقين من دهوك، بخبرة في التوحد وفرط الحركة وتشتت الانتباه ومرحلة المراهقة. نستمع لمخاوفكم، ونضع معًا خطوات واضحة للبيت والمدرسة.",
+ confid:"جميع الاستشارات والمعلومات سرّية تمامًا.",
+ btnBook:"احجز عبر واتساب", btnLearn:"اقرأ الأدلة المجانية",
+ disclaimer:"هذا الموقع للمعلومات العامة، ولا يغني عن التقييم الفردي أو الرعاية الطارئة.",
+ focusTitle:"بماذا نساعدكم؟",
+ fAutism:"التوحد", fAutismP:"علامات مبكرة، تقييم، ورأي ثانٍ، وخطة عملية لدعم تواصل الطفل ومهاراته.",
+ fAdhd:"فرط الحركة وتشتت الانتباه", fAdhdP:"فهم الحالة دون لوم، وتنظيم البيت، والتنسيق مع المدرسة، ومناقشة خيارات العلاج.",
+ fTeen:"المراهقة", fTeenP:"القلق والمزاج والانسحاب وصعوبة التواصل، وكيف تفتحون باب الحديث مع أبنائكم.",
+ readGuide:"اقرأ الدليل ←",
+ howTitle:"كيف تتم الاستشارة؟",
+ how1:"راسلونا على واتساب", how1p:"رسالة قصيرة تكفي، دون تفاصيل طبية.",
+ how2:"اختاروا الموعد", how2p:"نؤكد معكم الوقت المناسب بتوقيت العراق.",
+ how3:"استشارة فيديو", how3p:"جلسة خاصة، ثم خطة واضحة للخطوات التالية.",
+ aboutTitle:"الدكتورة سالي",
+ aboutP:"طبيبة متخصصة في الصحة النفسية للأطفال والمراهقين. [نبذة قصيرة بصوت الدكتورة: لماذا تعمل في هذا المجال، وكيف تعمل مع العائلات.]",
+ photoPh:"صورة الدكتورة (بعد موافقتها)",
+ fQual:"المؤهلات", fReg:"رقم التسجيل المهني", fLangs:"لغات الاستشارة", fLangsV:"العربية، الكوردية (البادينية)، الإنجليزية",
+ fAges:"الفئة العمرية", fFocus:"مجالات التركيز", fFocusV:"التوحد، فرط الحركة وتشتت الانتباه، المراهقة",
+ fBase:"المقر", fBaseV:"دهوك، إقليم كوردستان العراق",
+ toConfirm:"بانتظار التأكيد",
+ consultTitle:"الاستشارة أونلاين",
+ consultLead:"لعائلات في دهوك وإقليم كوردستان، وللعائلات الناطقة بالكوردية والعربية في الخارج.",
+ canTitle:"ما نقدّمه أونلاين",
+ canList:"<li>استشارة أولى لفهم المخاوف</li><li>جلسات إرشاد للأهل</li><li>رأي ثانٍ في تشخيص سابق</li><li>متابعة دورية</li><li>توجيه للمدرسة والمعلمين</li>",
+ cantTitle:"ما لا يتم أونلاين",
+ cantList:"<li>الحالات الطارئة</li><li>بعض الحالات قد تحتاج تقييمًا حضوريًا</li><li>وصف الأدوية خارج العراق <span class='ph'>[بانتظار تأكيد الطبيبة]</span></li>",
+ practTitle:"معلومات عملية",
+ practList:"<li>المنصة: <span class='ph'>[واتساب فيديو / Google Meet]</span></li><li>المواعيد بتوقيت العراق (UTC+3)</li><li>الأهل يحجزون للأطفال. <span class='ph'>[سياسة تواصل المراهقين مباشرة]</span></li><li>الدول المشمولة: <span class='ph'>[بانتظار التأكيد]</span></li>",
+ feesTitle:"الرسوم وطرق الدفع",
+ feesP:"[الرسوم وطرق الدفع داخل العراق وخارجه — بانتظار التأكيد]",
+ learnTitle:"أدلة مجانية للأهل والمعلمين والمختصين",
+ learnLead:"كل دليل مكتوب للأهل أولًا، مع قسم خاص للمعلمين وآخر للمختصين.",
+ bookTitle:"احجزوا استشارتكم",
+ bookLead:"أرسلوا رسالة قصيرة على واتساب، وسنرد عليكم لتحديد الموعد.",
+ bookHint:"من فضلكم لا ترسلوا تقارير طبية أو تفاصيل حساسة في الرسالة الأولى. سنرشدكم لاحقًا إلى طريقة آمنة لمشاركتها.",
+ waMissing:"[رقم واتساب لم يُضف بعد]",
+ waMsg:"مرحبًا دكتورة سالي، أود حجز استشارة أونلاين.",
+ fab:"واتساب",
+ emergency:"الاستشارات أونلاين ليست للحالات الطارئة. إذا كان الطفل في خطر مباشر، اتصلوا بخدمات الطوارئ أو توجهوا إلى أقرب مستشفى. في إقليم كوردستان: [رقم الطوارئ المعتمد].",
+ parents:"للأهل", teachers:"للمعلمين", specialists:"للمختصين", whenBook:"متى تحجزون استشارة؟",
+ langNote:""
+},
+ku:{
+ testbar:"وەشانا تاقیکرنێ بۆ پێداچوونێ — ناڤەڕۆک هێشتا ژ لایێ دکتۆرێ ڤە نەهاتیە پەسەندکرن. (کوردیا ڤێ پەڕێ ڕەشنڤیسە و پێدڤی ب پێداچوونێیە)",
+ brand:"دکتۆرە سالی", brandSub:"ساخلەمیا دەروونی یا زارۆکان و هەرزەکاران · ئۆنلاین",
+ navHome:"سەرەکی", navAbout:"دەربارەی دکتۆرێ", navConsult:"شێوەرا ئۆنلاین", navLearn:"فێربوون", navBook:"ژڤان بگرە",
+ heroEyebrow:"شێوەرێن ئۆنلاین ب کوردی، عەرەبی و ئینگلیزی",
+ heroTitle:"پشتەڤانیا پسپۆڕ بۆ ساخلەمیا دەروونیا زارۆکێ تە، ل هەر جهەکێ هوین لێ بن",
+ heroLead:"دکتۆرەکا دەروونی یا زارۆکان و هەرزەکاران ژ دهۆکێ، ب شارەزایی د ئۆتیزم، زێدە-جوولە و کێمیا سەرنجێ و قۆناغا هەرزەکاریێ دا. گوهێ خۆ ددەینە نیگەرانیێن هەوە، و پێکڤە پێنگاڤێن ئاشکرا بۆ مال و قوتابخانێ دادنێین.",
+ confid:"هەمی شێوەر و زانیاری ب تەمامی نهێنی دمینن.",
+ btnBook:"ب واتسئاپێ ژڤان بگرە", btnLearn:"ڕێبەرێن بێ بەرامبەر بخوینە",
+ disclaimer:"ئەڤ ماڵپەڕە بۆ زانیاریێن گشتییە، و جهێ هەلسەنگاندنا تاکەکەسی یان چارەسەریا لەزگین ناگریت.",
+ focusTitle:"ئەم چەوا هاریکاریا هەوە دکەین؟",
+ fAutism:"ئۆتیزم", fAutismP:"نیشانێن زوو، هەلسەنگاندن، بیروڕایا دووێ، و پلانەکا کرداری بۆ پشتەڤانیا پەیوەندی و شیانێن زارۆکی.",
+ fAdhd:"زێدە-جوولە و کێمیا سەرنجێ", fAdhdP:"تێگەهشتنا ڕەوشێ بێ گازندە، ڕێکخستنا مالێ، هەماهەنگی دگەل قوتابخانێ، و گەنگەشەکرنا ڕێکێن چارەسەریێ.",
+ fTeen:"هەرزەکاری", fTeenP:"نیگەرانی، گوهۆڕینا مەزاجی، دویرکەفتن و زەحمەتیا پەیوەندیێ، و چەوا دەرگەهێ ئاخفتنێ دگەل زارۆکێن خۆ ڤەکەن.",
+ readGuide:"ڕێبەرێ بخوینە ←",
+ howTitle:"شێوەر چەوا دئێتە کرن؟",
+ how1:"ب واتسئاپێ نامەیەکێ بفرێکە", how1p:"نامەیەکا کورت بەسە، بێ هوورکاریێن پزیشکی.",
+ how2:"دەمێ هەلبژێرە", how2p:"دەمێ گونجای ب دەمژمێرا عێراقێ دگەل هەوە پشتڕاست دکەین.",
+ how3:"شێوەرا ڤیدیۆیی", how3p:"دانیشتنەکا تایبەت، پاشی پلانەکا ئاشکرا بۆ پێنگاڤێن دویڤدا.",
+ aboutTitle:"دکتۆرە سالی",
+ aboutP:"دکتۆرەکا پسپۆڕ د ساخلەمیا دەروونی یا زارۆکان و هەرزەکاران دا. [کورتیەک ب دەنگێ دکتۆرێ.]",
+ photoPh:"وێنێ دکتۆرێ (پشتی ڕەزامەندیا وێ)",
+ fQual:"بڕوانامە", fReg:"ژمارا تۆمارا پیشەیی", fLangs:"زمانێن شێوەرێ", fLangsV:"کوردی (بادینی)، عەرەبی، ئینگلیزی",
+ fAges:"تەمەن", fFocus:"بوارێن سەرەکی", fFocusV:"ئۆتیزم، زێدە-جوولە و کێمیا سەرنجێ، هەرزەکاری",
+ fBase:"جه", fBaseV:"دهۆک، هەرێما کوردستانا عێراقێ",
+ toConfirm:"چاڤەڕێی پشتڕاستکرنێ",
+ consultTitle:"شێوەرا ئۆنلاین",
+ consultLead:"بۆ خێزانێن ل دهۆک و هەرێما کوردستانێ، و خێزانێن کورد و عەرەب ل دەرڤەی وەڵاتی.",
+ canTitle:"یا ئەم ئۆنلاین پێشکێش دکەین",
+ canList:"<li>شێوەرا ئێکێ بۆ تێگەهشتنا نیگەرانیان</li><li>دانیشتنێن ڕێنمایی بۆ دایک و بابان</li><li>بیروڕایا دووێ ل سەر دەستنیشانکرنەکا بەری نوکە</li><li>بەردەوامی و دویڤچوون</li><li>ڕێنمایی بۆ قوتابخانە و مامۆستایان</li>",
+ cantTitle:"یا ئۆنلاین ناهێتە کرن",
+ cantList:"<li>ڕەوشێن لەزگین</li><li>هندەک ڕەوش پێدڤی ب هەلسەنگاندنا ئامادەبوونێ نە</li><li>نڤیسینا دەرمانان ل دەرڤەی عێراقێ <span class='ph'>[چاڤەڕێی پشتڕاستکرنێ]</span></li>",
+ practTitle:"زانیاریێن کرداری",
+ practList:"<li>پلاتفۆرم: <span class='ph'>[واتسئاپ ڤیدیۆ / Google Meet]</span></li><li>ژڤان ب دەمژمێرا عێراقێ (UTC+3)</li><li>دایک و باب بۆ زارۆکان ژڤانی دگرن. <span class='ph'>[سیاسەتا پەیوەندیا ڕاستەوخۆیا هەرزەکاران]</span></li><li>وەڵات: <span class='ph'>[چاڤەڕێی پشتڕاستکرنێ]</span></li>",
+ feesTitle:"کرێ و ڕێکێن پارەدانێ",
+ feesP:"[کرێ و ڕێکێن پارەدانێ — چاڤەڕێی پشتڕاستکرنێ]",
+ learnTitle:"ڕێبەرێن بێ بەرامبەر بۆ دایک و بابان، مامۆستایان و پسپۆڕان",
+ learnLead:"هەر ڕێبەرەک بەری هەمییان بۆ دایک و بابانە، دگەل بەشەکێ تایبەت بۆ مامۆستایان و ئێکێ دی بۆ پسپۆڕان.",
+ bookTitle:"ژڤانێ خۆ بگرن",
+ bookLead:"نامەیەکا کورت ب واتسئاپێ بفرێکەن، و دێ بەرسڤا هەوە دەین بۆ دیارکرنا ژڤانی.",
+ bookHint:"تکایە ڕاپۆرتێن پزیشکی یان هوورکاریێن هەستیار د نامەیا ئێکێ دا نەفرێکەن.",
+ waMissing:"[ژمارا واتسئاپێ هێشتا نەهاتیە زێدەکرن]",
+ waMsg:"سلاڤ دکتۆرە سالی، دخوازم ژڤانەکێ شێوەرا ئۆنلاین بگرم.",
+ fab:"واتسئاپ",
+ emergency:"شێوەرێن ئۆنلاین بۆ ڕەوشێن لەزگین نینن. ئەگەر زارۆک د مەترسیەکا ڕاستەوخۆ دا بیت، پەیوەندیێ ب خزمەتگوزاریێن لەزگین بکەن یان بچنە نێزیکترین نەخوشخانێ. ل هەرێما کوردستانێ: [ژمارا لەزگین].",
+ parents:"بۆ دایک و بابان", teachers:"بۆ مامۆستایان", specialists:"بۆ پسپۆڕان", whenBook:"کەنگی ژڤانی بگرن؟",
+ langNote:"وەرگێڕانا کوردی یا ڤان ڕێبەران د بەرهەڤکرنێ دایە. نوکە دەقێ عەرەبی دئێتە نیشاندان."
+},
+en:{
+ testbar:"Test version for review — content awaits the doctor's approval and is not public.",
+ brand:"Dr. Sally", brandSub:"Child & adolescent mental health · Online",
+ navHome:"Home", navAbout:"About", navConsult:"Online consultation", navLearn:"Learn", navBook:"Book",
+ heroEyebrow:"Online consultations in Arabic, Kurdish and English",
+ heroTitle:"Expert support for your child's emotional wellbeing, wherever you are",
+ heroLead:"A child and adolescent psychiatrist from Duhok, experienced in autism, ADHD and adolescence. We listen to your concerns and agree clear next steps for home and school, together.",
+ confid:"Every consultation and all information are completely confidential.",
+ btnBook:"Book via WhatsApp", btnLearn:"Read the free guides",
+ disclaimer:"This website offers general information and does not replace an individual assessment or emergency care.",
+ focusTitle:"How we can help",
+ fAutism:"Autism", fAutismP:"Early signs, assessment, second opinions, and a practical plan to support your child's communication and skills.",
+ fAdhd:"ADHD", fAdhdP:"Understanding ADHD without blame, structure at home, working with school, and discussing treatment options.",
+ fTeen:"Adolescence", fTeenP:"Anxiety, mood, withdrawal and communication struggles, and how to open the conversation with your teenager.",
+ readGuide:"Read the guide →",
+ howTitle:"How it works",
+ how1:"Message on WhatsApp", how1p:"A short message is enough, no medical details needed.",
+ how2:"Choose a time", how2p:"We confirm a suitable time in Iraq time.",
+ how3:"Video consultation", how3p:"A private session, followed by a clear plan for next steps.",
+ aboutTitle:"Dr. Sally",
+ aboutP:"A specialist in child and adolescent mental health. [Short statement in the doctor's own voice: why she does this work and how she works with families.]",
+ photoPh:"Doctor's photo (with her approval)",
+ fQual:"Qualifications", fReg:"Registration number", fLangs:"Consultation languages", fLangsV:"Arabic, Kurdish (Badini), English",
+ fAges:"Age range", fFocus:"Focus areas", fFocusV:"Autism, ADHD, adolescence",
+ fBase:"Based in", fBaseV:"Duhok, Kurdistan Region of Iraq",
+ toConfirm:"To be confirmed",
+ consultTitle:"Online consultation",
+ consultLead:"For families in Duhok and the Kurdistan Region, and Kurdish- and Arabic-speaking families abroad.",
+ canTitle:"What we offer online",
+ canList:"<li>Initial consultation to understand your concerns</li><li>Parent guidance sessions</li><li>Second opinion on an earlier diagnosis</li><li>Regular follow-up</li><li>Guidance for schools and teachers</li>",
+ cantTitle:"What isn't done online",
+ cantList:"<li>Emergencies</li><li>Some cases may need an in-person assessment</li><li>Prescribing outside Iraq <span class='ph'>[to be confirmed by the doctor]</span></li>",
+ practTitle:"Practical details",
+ practList:"<li>Platform: <span class='ph'>[WhatsApp video / Google Meet]</span></li><li>Times shown in Iraq time (UTC+3)</li><li>Parents book for children. <span class='ph'>[Policy on teenagers contacting directly]</span></li><li>Countries served: <span class='ph'>[to be confirmed]</span></li>",
+ feesTitle:"Fees and payment",
+ feesP:"[Fees and payment methods inside and outside Iraq — to be confirmed]",
+ learnTitle:"Free guides for parents, teachers and specialists",
+ learnLead:"Each guide is written for parents first, with a section for teachers and another for specialists.",
+ bookTitle:"Book your consultation",
+ bookLead:"Send a short WhatsApp message and we'll reply to arrange a time.",
+ bookHint:"Please don't send medical reports or sensitive details in your first message. We'll guide you on how to share them securely.",
+ waMissing:"[WhatsApp number not added yet]",
+ waMsg:"Hello Dr. Sally, I'd like to book an online consultation.",
+ fab:"WhatsApp",
+ emergency:"Online consultations are not for emergencies. If a child is in immediate danger, contact your local emergency services or go to the nearest hospital. In the Kurdistan Region of Iraq: [verified emergency number].",
+ parents:"For parents", teachers:"For teachers", specialists:"For specialists", whenBook:"When to book a consultation",
+ langNote:""
+}};
+
+/* ===== Guides (Arabic + English; Kurdish shows Arabic until translated) ===== */
+const G = {
+ar:{
+autism:`<h3>التوحد: العلامات المبكرة والخطوات الأولى</h3>
+<p>التوحد اختلاف في طريقة نمو الدماغ يؤثر على التواصل والتفاعل الاجتماعي والسلوك. ليس مرضًا يُشفى منه، وليس نتيجة تربية خاطئة. لكن الدعم المبكر يصنع فرقًا حقيقيًا في مهارات الطفل وحياة الأسرة كلها.</p>
+<h4>علامات تستحق الانتباه</h4>
+<p>كل طفل يتطور بسرعته الخاصة، ووجود علامة واحدة لا يعني التوحد. لكن راجعوا مختصًا إذا لاحظتم:</p>
+<ul><li>قلة النظر في العين، أو عدم الاستجابة لاسمه في عمر سنة تقريبًا.</li><li>عدم الإشارة إلى الأشياء ليُريكم ما يهمه في عمر 14 شهرًا تقريبًا.</li><li>عدم نطق كلمات مفردة في عمر 16 شهرًا، أو جمل من كلمتين في عمر سنتين.</li><li>حركات متكررة كرفرفة اليدين أو الدوران، أو ترتيب الأشياء في صفوف.</li><li>انزعاج شديد من تغيير الروتين، أو حساسية غير عادية للأصوات والملمس.</li></ul>
+<div class="alert">فقدان أي مهارة لغوية أو اجتماعية كان قد اكتسبها، في أي عمر، يستدعي التقييم دون تأخير.</div>
+<h4>ماذا تفعلون الآن؟</h4>
+<ol><li>دوّنوا ملاحظاتكم مع أمثلة وتواريخ، وصوّروا مقاطع قصيرة لسلوك الطفل في البيت.</li><li>لا تنتظروا «حتى يكبر». التقييم المبكر لا يضر، والانتظار يضيّع وقتًا ثمينًا.</li><li>اطلبوا فحص السمع، فضعف السمع قد يشبه بعض علامات التوحد.</li><li>ابدأوا باللعب التفاعلي اليومي: قلّدوا طفلكم، واتبعوا اهتمامه، وتحدثوا بجمل قصيرة.</li><li>احذروا من أي جهة تعد بـ«علاج التوحد» أو «الشفاء التام».</li></ol>
+<div class="story">[مساحة للدكتورة سالي: تجربة مجهولة الهوية من عملها]</div>
+<details class="layer"><summary>{teachers}</summary><div class="in"><ul><li>استخدموا جدولًا مصوّرًا لروتين اليوم، ونبّهوا الطفل قبل أي تغيير.</li><li>أعطوا تعليمات قصيرة وواضحة، واحدة في كل مرة.</li><li>وفّروا ركنًا هادئًا يلجأ إليه الطفل عند الضغط الحسي.</li><li>شاركوا الأهل ملاحظاتكم بلطف ودون تشخيص، واقترحوا مراجعة مختص.</li></ul></div></details>
+<details class="layer"><summary>{specialists}</summary><div class="in"><ul><li>يُوصى بالفحص الروتيني بأداة M-CHAT-R/F في عمر 18 و24 شهرًا.</li><li>التشخيص وفق DSM-5-TR: صعوبات مستمرة في التواصل والتفاعل الاجتماعي، وأنماط سلوك أو اهتمامات مقيدة ومتكررة.</li><li>استبعدوا ضعف السمع واضطرابات اللغة، وانتبهوا للحالات المصاحبة: فرط الحركة، القلق، الصرع، صعوبات النوم.</li><li>التدخلات المدعومة بالأدلة: التدخل السلوكي النمائي المبكر، تدريب الأهل، علاج النطق، العلاج الوظيفي.</li></ul></div></details>
+<h4>{whenBook}</h4><p>إذا كانت لديكم مخاوف حول تواصل طفلكم أو سلوكه، أو تريدون رأيًا ثانيًا، أو خطة عملية للبيت والمدرسة.</p>`,
+adhd:`<h3>فرط الحركة وتشتت الانتباه في البيت والمدرسة</h3>
+<p>حالة نمائية تؤثر على قدرة الطفل على التركيز، وضبط حركته، والتحكم في اندفاعه. الطفل ليس كسولًا ولا «قليل أدب»، والأهل ليسوا السبب. مع الفهم الصحيح والدعم المناسب ينجح كثير من هؤلاء الأطفال نجاحًا لافتًا.</p>
+<h4>كيف يظهر؟</h4>
+<p>كل الأطفال يتحركون ويسرحون أحيانًا. الفرق أن الأعراض هنا تستمر ستة أشهر على الأقل، وتظهر في البيت والمدرسة معًا، وتعيق حياة الطفل اليومية.</p>
+<ul><li><b>تشتت الانتباه:</b> ينسى كثيرًا، يضيّع أغراضه، لا يكمل المهام، يبدو وكأنه لا يسمع.</li><li><b>فرط الحركة:</b> لا يستطيع البقاء جالسًا، يتململ، يتكلم كثيرًا.</li><li><b>الاندفاع:</b> يجيب قبل انتهاء السؤال، يقاطع، يصعب عليه انتظار دوره.</li></ul>
+<p>البنات كثيرًا ما يظهر لديهن تشتت الانتباه بهدوء دون حركة زائدة، فيتأخر اكتشافه.</p>
+<h4>ماذا يساعد في البيت؟</h4>
+<ol><li>روتين ثابت ومتوقع للنوم والطعام والواجبات.</li><li>تعليمات قصيرة مع تواصل بالعين، وطلب واحد في كل مرة.</li><li>قسّموا المهام الكبيرة إلى خطوات صغيرة مع استراحات حركة.</li><li>امدحوا السلوك الجيد فورًا وبتحديد: «أحسنت، أكملت الصفحة كلها».</li><li>قللوا وقت الشاشات، خاصة قبل النوم.</li><li>العلاج الدوائي قرار طبي بعد تقييم كامل ومع متابعة منتظمة.</li></ol>
+<div class="story">[مساحة للدكتورة سالي: تجربة مجهولة الهوية من عملها]</div>
+<details class="layer"><summary>{teachers}</summary><div class="in"><ul><li>أجلسوا الطفل قرب المعلم وبعيدًا عن النوافذ والباب.</li><li>اسمحوا بحركة منظّمة: توزيع الأوراق، مسح السبورة.</li><li>بطاقة متابعة يومية بين المدرسة والبيت بهدفين أو ثلاثة فقط.</li><li>ركّزوا على التعزيز الإيجابي، وتجنبوا الإحراج أمام الصف.</li></ul></div></details>
+<details class="layer"><summary>{specialists}</summary><div class="in"><ul><li>DSM-5-TR: ستة أعراض أو أكثر في أحد المجالين (خمسة من عمر 17)، بداية قبل 12 سنة، في بيئتين على الأقل، مع أثر واضح على الأداء.</li><li>أدوات: Vanderbilt أو SNAP-IV من الأهل والمعلم معًا.</li><li>قيّموا الحالات المصاحبة: صعوبات التعلم، القلق، اضطرابات السلوك والنوم، والتوحد.</li><li>من 4 إلى 5 سنوات: تدريب الأهل السلوكي أولًا. من 6 سنوات: الدواء مع التدخل السلوكي والدعم المدرسي.</li></ul></div></details>
+<h4>{whenBook}</h4><p>إذا كانت المدرسة تشتكي باستمرار، أو أثّر التشتت على تحصيل طفلكم وعلاقاته، أو تريدون مناقشة خيارات العلاج.</p>`,
+teen:`<h3>المراهقة: كيف تتحدثون مع أبنائكم عن المشاعر</h3>
+<p>المراهقة مرحلة تغيّر طبيعي في الجسم والعقل والعلاقات. تقلّب المزاج والرغبة في الخصوصية أمران متوقعان. لكن بعض التغيرات تشير إلى ضيق حقيقي يحتاج انتباهكم ودعمًا متخصصًا.</p>
+<h4>الطبيعي مقابل ما يستدعي الانتباه</h4>
+<table class="compare"><tr><th>غالبًا طبيعي</th><th>يستحق الانتباه والاستشارة</th></tr>
+<tr><td>تقلّب المزاج لساعات أو أيام</td><td>حزن أو عصبية مستمرة لأكثر من أسبوعين</td></tr>
+<tr><td>وقت أطول مع الأصدقاء</td><td>الانسحاب من الأصدقاء والعائلة معًا</td></tr>
+<tr><td>السهر أحيانًا</td><td>تغيّر كبير في النوم أو الأكل</td></tr>
+<tr><td>خلافات حول القواعد</td><td>تراجع واضح ومفاجئ في الدراسة</td></tr>
+<tr><td>الرغبة في الخصوصية</td><td>فقدان الاهتمام بكل ما كان يحبه</td></tr></table>
+<div class="alert">أي حديث عن إيذاء النفس أو عدم الرغبة في الحياة يستدعي طلب المساعدة في اليوم نفسه. اتصلوا بالطوارئ أو توجهوا إلى أقرب مستشفى.</div>
+<h4>كيف تفتحون باب الحديث؟</h4>
+<ol><li><b>استمعوا أكثر مما تتكلمون.</b> الهدف أن يشعر بأنه مسموع.</li><li><b>تحدثوا جنبًا إلى جنب:</b> في السيارة، أثناء المشي، أو تحضير الطعام.</li><li><b>اعترفوا بمشاعره قبل النصيحة:</b> «يبدو أن هذا أزعجك كثيرًا» تفتح الباب.</li><li><b>تجنبوا المحاضرات والمقارنة</b> بالإخوة أو أبناء الأقارب.</li><li><b>احترموا خصوصيته</b> مع حدود واضحة للسلامة.</li><li><b>كونوا قدوة:</b> تحدثوا عن مشاعركم أنتم بهدوء.</li></ol>
+<div class="story">[مساحة للدكتورة سالي: تجربة مجهولة الهوية من عملها]</div>
+<details class="layer"><summary>{teachers}</summary><div class="in"><ul><li>التغير المفاجئ في السلوك أو الدرجات أو العلاقات غالبًا أول إشارة.</li><li>خصصوا وقتًا قصيرًا للحديث الفردي بعيدًا عن الصف.</li><li>تعاملوا بجدية مع أي تنمّر، بما فيه الإلكتروني.</li><li>لا تَعِدوا الطالب بكتمان ما يمس سلامته؛ أشركوا المرشد والأهل.</li></ul></div></details>
+<details class="layer"><summary>{specialists}</summary><div class="in"><ul><li>إطار HEADSSS للمقابلة النفسية الاجتماعية الشاملة.</li><li>أدوات فحص: PHQ-A للاكتئاب، GAD-7 للقلق.</li><li>قابلوا المراهق منفردًا جزءًا من الجلسة، ووضّحوا حدود السرية منذ البداية.</li><li>اسألوا عن إيذاء النفس مباشرة؛ السؤال لا يزيد الخطر.</li></ul></div></details>
+<h4>{whenBook}</h4><p>إذا استمرت التغيرات أكثر من أسبوعين، أو أثرت على الدراسة والعلاقات، أو أصبح الحديث معه مستحيلًا.</p>`
+},
+en:{
+autism:`<h3>Autism: Early Signs and First Steps</h3>
+<p>Autism is a difference in how the brain develops. It affects communication, social interaction and behaviour. It is not a disease to be cured, and it is not caused by parenting. Early support makes a real difference to a child's skills and to the whole family's life.</p>
+<h4>Signs worth noticing</h4>
+<p>Every child develops at their own pace, and one sign alone does not mean autism. Talk to a specialist if you notice:</p>
+<ul><li>Little eye contact, or not responding to their name by around 12 months.</li><li>Not pointing to show you things of interest by around 14 months.</li><li>No single words by 16 months, or no two-word phrases by 24 months.</li><li>Repetitive movements such as hand-flapping or spinning, or lining objects up.</li><li>Strong distress at changes in routine, or unusual sensitivity to sounds or textures.</li></ul>
+<div class="alert">Loss of any language or social skill they already had, at any age, needs assessment without delay.</div>
+<h4>What to do now</h4>
+<ol><li>Write down what you notice, with examples and dates. Short home videos help a lot.</li><li>Don't "wait and see". Early assessment does no harm; waiting loses valuable time.</li><li>Ask for a hearing test, since hearing problems can look like some signs of autism.</li><li>Start daily interactive play: copy your child, follow their interests, use short sentences.</li><li>Be wary of anyone promising to "cure" autism.</li></ol>
+<div class="story">[Space for Dr. Sally: an anonymised story from her practice]</div>
+<details class="layer"><summary>{teachers}</summary><div class="in"><ul><li>Use a visual timetable, and give warning before any change.</li><li>Give short, clear instructions, one at a time.</li><li>Offer a quiet corner for moments of sensory overload.</li><li>Share observations with parents gently, without diagnosing, and suggest a specialist review.</li></ul></div></details>
+<details class="layer"><summary>{specialists}</summary><div class="in"><ul><li>Routine M-CHAT-R/F screening at 18 and 24 months.</li><li>DSM-5-TR: persistent deficits in social communication and interaction, plus restricted, repetitive patterns of behaviour or interests.</li><li>Rule out hearing loss and language disorders; watch for ADHD, anxiety, epilepsy and sleep difficulties.</li><li>Evidence-based options: naturalistic developmental behavioural interventions, parent-mediated programmes, speech and occupational therapy.</li></ul></div></details>
+<h4>{whenBook}</h4><p>If you have concerns about your child's communication or behaviour, want a second opinion, or need a practical plan for home and school.</p>`,
+adhd:`<h3>ADHD at Home and at School</h3>
+<p>ADHD is a developmental condition that affects focus, movement and impulse control. The child is not lazy or "badly behaved", and parents are not to blame. With the right understanding and support, many children with ADHD do remarkably well.</p>
+<h4>How it shows</h4>
+<p>All children fidget and daydream sometimes. Here, symptoms last at least six months, appear at home and at school, and get in the way of daily life.</p>
+<ul><li><b>Inattention:</b> forgetful, loses things, leaves tasks unfinished, seems not to listen.</li><li><b>Hyperactivity:</b> can't stay seated, fidgets, talks a lot.</li><li><b>Impulsivity:</b> blurts out answers, interrupts, struggles to wait their turn.</li></ul>
+<p>Girls often show quiet inattention without hyperactivity, so it is noticed later.</p>
+<h4>What helps at home</h4>
+<ol><li>A steady, predictable routine for sleep, meals and homework.</li><li>Short instructions with eye contact, one request at a time.</li><li>Break big tasks into small steps, with movement breaks.</li><li>Praise good behaviour straight away and specifically.</li><li>Cut screen time, especially before bed.</li><li>Medication is a medical decision made after a full assessment, with regular follow-up.</li></ol>
+<div class="story">[Space for Dr. Sally: an anonymised story from her practice]</div>
+<details class="layer"><summary>{teachers}</summary><div class="in"><ul><li>Seat the child near the teacher, away from windows and the door.</li><li>Allow structured movement: handing out papers, wiping the board.</li><li>Use a daily home–school report card with two or three goals.</li><li>Focus on positive reinforcement; avoid embarrassing the child in class.</li></ul></div></details>
+<details class="layer"><summary>{specialists}</summary><div class="in"><ul><li>DSM-5-TR: six or more symptoms in either domain (five from age 17), onset before 12, in at least two settings, with clear impairment.</li><li>Tools: Vanderbilt or SNAP-IV, from parents and teachers.</li><li>Assess co-occurring learning disorders, anxiety, conduct and sleep problems, and autism.</li><li>Ages 4–5: behavioural parent training first. From 6: medication plus behavioural and school support.</li></ul></div></details>
+<h4>{whenBook}</h4><p>If school complaints are constant, attention problems affect learning or friendships, or you want to discuss treatment options.</p>`,
+teen:`<h3>Adolescence: Talking With Your Teenager About Feelings</h3>
+<p>Adolescence brings natural change in body, mind and relationships. Mood swings and a wish for privacy are expected. But some changes signal real distress that needs attention and specialist support.</p>
+<h4>Normal vs. worth a closer look</h4>
+<table class="compare"><tr><th>Usually normal</th><th>Worth attention and a consultation</th></tr>
+<tr><td>Mood swings lasting hours or days</td><td>Sadness or irritability for more than two weeks</td></tr>
+<tr><td>More time with friends</td><td>Withdrawing from both friends and family</td></tr>
+<tr><td>Staying up late sometimes</td><td>Big changes in sleep or eating</td></tr>
+<tr><td>Arguments about rules</td><td>A sudden, clear drop in schoolwork</td></tr>
+<tr><td>Wanting privacy</td><td>Losing interest in everything they enjoyed</td></tr></table>
+<div class="alert">Any talk of self-harm or not wanting to live needs help the same day. Call emergency services or go to the nearest hospital.</div>
+<h4>How to open the conversation</h4>
+<ol><li><b>Listen more than you talk.</b> The goal is for them to feel heard.</li><li><b>Talk side by side:</b> in the car, on a walk, while cooking.</li><li><b>Acknowledge feelings before advice:</b> "That sounds really upsetting" opens the door.</li><li><b>Avoid lectures and comparisons</b> with siblings or cousins.</li><li><b>Respect privacy</b> while keeping clear safety limits.</li><li><b>Model it:</b> talk calmly about your own feelings.</li></ol>
+<div class="story">[Space for Dr. Sally: an anonymised story from her practice]</div>
+<details class="layer"><summary>{teachers}</summary><div class="in"><ul><li>Sudden changes in behaviour, grades or friendships are often the first sign.</li><li>Make time for short one-to-one conversations.</li><li>Take all bullying seriously, including cyberbullying.</li><li>Never promise secrecy about safety; involve the counsellor and parents.</li></ul></div></details>
+<details class="layer"><summary>{specialists}</summary><div class="in"><ul><li>HEADSSS framework for a thorough psychosocial interview.</li><li>Screening: PHQ-A for depression, GAD-7 for anxiety.</li><li>See the adolescent alone for part of the session; explain confidentiality limits at the start.</li><li>Ask about self-harm directly; asking does not increase risk.</li></ul></div></details>
+<h4>{whenBook}</h4><p>If changes last more than two weeks, affect studies or relationships, or talking with them feels impossible.</p>`
+}};
+
+/* ===== Rendering ===== */
+let current = "ar";
+function setLang(lang){
+  current = lang;
+  const t = T[lang];
+  document.documentElement.lang = lang === "ku" ? "ku" : lang;
+  document.documentElement.dir = lang === "en" ? "ltr" : "rtl";
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const v = t[el.dataset.i18n];
+    if (v !== undefined) el.innerHTML = v;
+  });
+  const g = G[lang] || G.ar;
+  document.querySelectorAll("[data-guide-body]").forEach(el => {
+    let html = g[el.dataset.guideBody]
+      .replaceAll("{teachers}", t.teachers).replaceAll("{specialists}", t.specialists).replaceAll("{whenBook}", t.whenBook);
+    if (lang === "ku") html = `<div class="lang-note">${t.langNote}</div><div dir="rtl" lang="ar">${html}</div>`;
+    el.innerHTML = html;
+  });
+  document.querySelectorAll(".langs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang));
+  // WhatsApp links
+  const has = WHATSAPP_NUMBER.trim() !== "";
+  document.querySelectorAll(".wa-link").forEach(a => {
+    if (has) { a.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(t.waMsg)}`; a.target = "_blank"; }
+    else { a.href = "#book"; a.removeAttribute("target"); }
+  });
+  document.getElementById("wa-missing").hidden = has;
+  try { localStorage.setItem("drsally-lang", lang); } catch(e){}
+}
+function showGuide(id){
+  document.querySelectorAll(".guide").forEach(g => g.hidden = g.id !== "g-" + id);
+  document.querySelectorAll(".learn-tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === id));
+}
+document.querySelectorAll(".langs button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
+document.querySelectorAll(".learn-tabs button").forEach(b => b.addEventListener("click", () => showGuide(b.dataset.tab)));
+document.querySelectorAll("[data-guide]").forEach(a => a.addEventListener("click", () => showGuide(a.dataset.guide)));
+
+// active tab highlight while scrolling
+const navLinks = [...document.querySelectorAll("nav.tabs a")];
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id)); });
+}, { rootMargin: "-45% 0px -50% 0px" });
+["home","about","consult","learn","book"].forEach(id => obs.observe(document.getElementById(id)));
+
+let start = "ar";
+try { const s = localStorage.getItem("drsally-lang"); if (s && T[s]) start = s; } catch(e){}
+const q = new URLSearchParams(location.search).get("lang"); if (q && T[q]) start = q;
+setLang(start); showGuide("autism");
+</script>
+</body>
+</html>
