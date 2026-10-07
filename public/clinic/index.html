@@ -110,6 +110,17 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .tw{overflow-x:auto}.vt.ed input{width:100%;min-width:70px;padding:6px;border:1px solid var(--line);border-radius:6px;font:inherit;margin:1px 0}
 .savebar{display:flex;gap:8px;align-items:center;padding:10px;position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line)}
 @media (max-width:480px){.two{grid-template-columns:1fr}}
+
+.sumbox{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}.sumbox div{background:#F2F6FC;border:1px solid var(--line);border-radius:10px;padding:8px 10px}.sumbox small{display:block;color:var(--muted);font-size:12px}.sumbox b{font-size:15px;color:var(--navy)}.sumbox .wide{grid-column:span 2}
+.printhead{display:none}
+@media (max-width:480px){.sumbox{grid-template-columns:1fr 1fr}}
+@media print{
+  body.printcard header,body.printcard .tabs,body.printcard .bar,body.printcard #pats,body.printcard #note,body.printcard #pickBar,body.printcard #toast{display:none!important}
+  body.printcard{background:#fff}.printhead{display:flex;justify-content:space-between;border-bottom:2px solid #13285C;padding:0 0 8px;margin:0 0 10px;font-size:14px}
+  .pcard .phead{background:#fff!important;color:#000!important;border-bottom:1px solid #999}.pcard .phead *{color:#000!important}
+  .vt{width:100%;border-collapse:collapse;font-size:12px}.vt th,.vt td{border:1px solid #999;padding:4px 6px}.vt tr{break-inside:avoid}
+  .sumbox div{background:#fff;border:1px solid #999}
+}
 </style>
 </head>
 <body>
@@ -141,7 +152,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     </div>
   </div>
   <div id="pats" hidden>
-    <div class="tbar"><button class="btn" id="selMode" type="button">☑ تحديد للدمج</button><button class="btn" id="dupBtn" type="button">🧩 مكررات محتملة</button></div>
+    <div class="tbar"><button class="btn" id="selMode" type="button">☑ تحديد للدمج</button><button class="btn" id="dupBtn" type="button">🧩 مكررات محتملة</button><button class="btn" id="impBtn" type="button">💵 استيراد الحسابات (Excel)</button></div>
     <form id="pform" class="sbox"><input id="pq" type="search" placeholder="اسم المريض أو رقم الهاتف أو رقم البطاقة" autocomplete="off"><button class="btn">بحث</button></form>
     <p class="note" id="pstats"></p>
     <details class="imp"><summary>💵 استيراد ملف الحسابات (Excel)</summary>
@@ -569,6 +580,7 @@ async function showDuplicates() {
       catch (err) { x.disabled = false; alert(err.message); } }
   };
 }
+$("impBtn").onclick = () => { const d = document.querySelector("#pats .imp"); d.open = true; d.scrollIntoView({ behavior: "smooth" }); };
 $("dupBtn").onclick = () => { $("list").onclick = null; showDuplicates(); };
 
 /* ---- merge dialog: preview, choose the main card and the name, then undo if needed ---- */
@@ -640,6 +652,8 @@ function cardLines(d) {
   return lines.sort((a, b) => a.day.localeCompare(b.day) || String(a.time).localeCompare(String(b.time)));
 }
 let cardData = null;
+addEventListener("beforeprint", () => document.body.classList.toggle("printcard", current === "card"));
+addEventListener("afterprint", () => document.body.classList.remove("printcard"));
 async function openCard(no) {
   current = "card"; $("list").onclick = null;
   $("list").innerHTML = `<div class="spin"></div>`;
@@ -667,8 +681,11 @@ function renderCard(editing) {
        <td class="m">${x.hasMoney ? amt(x.paid_iqd, x.paid_usd) : "—"}</td><td class="m">${x.hasMoney ? amt(x.due_iqd, x.due_usd) : "—"}</td></tr>`).join("");
   const mp = lines.filter((l) => l.hasMoney), tot = (f) => mp.reduce((t, l) => t + (Number(l[f]) || 0), 0);
   const lastDue = [...mp].reverse().find((l) => l.due_iqd != null || l.due_usd != null);
-  const summary = mp.length ? `<p class="note" style="font-size:14px;color:var(--navy)"><b>مجموع المدفوع:</b> ${amt(tot("paid_iqd"), tot("paid_usd")).replace("<br>", " + ")} · <b>المتبقي حسب آخر سجل (${lastDue ? lastDue.day : "—"}):</b> ${lastDue ? amt(lastDue.due_iqd, lastDue.due_usd).replace("<br>", " + ") : "—"}</p>`
-    : `<p class="note">لا توجد سجلات مالية لهذا المريض.</p>`;
+  const paidAll = amt(tot("paid_iqd"), tot("paid_usd")).replace("<br>", " + "), dueAll = lastDue ? amt(lastDue.due_iqd, lastDue.due_usd).replace("<br>", " + ") : "—";
+  const nVisits = lines.filter((l) => l.visit).length;
+  const summary = `<div class="sumbox"><div><small>عدد الزيارات</small><b>${nVisits}</b></div>`
+    + (mp.length ? `<div><small>مجموع المدفوع</small><b>${paidAll}</b></div><div><small>المتبقي${lastDue ? " (" + lastDue.day + ")" : ""}</small><b>${dueAll}</b></div>`
+      : `<div class="wide"><small>الحسابات</small><b>لا توجد سجلات مالية</b></div>`) + `</div>`;
   const head = editing
     ? `<div class="ef"><label>الاسم<input id="eName" value="${esc(p.name)}" placeholder="${esc(p.auto_name)}"></label>
         <label>الهواتف (افصل بينها بفاصلة)<input id="ePhones" dir="ltr" value="${esc(p.phones.join(", "))}" placeholder="${esc(p.auto_phones.join(", "))}"></label>
@@ -676,16 +693,17 @@ function renderCard(editing) {
         <label class="wide">ملاحظات / الحالة الطبية<textarea id="eNotes" rows="2">${esc(p.notes || "")}</textarea></label></div>
         <p class="note">الاسم الأصلي من التقويم: ${esc(p.auto_name)}${p.auto_phones.length ? " · الهواتف من التقويم: " + esc(p.auto_phones.join("، ")) : ""}. اترك الحقل فارغًا للرجوع إليه.</p>`
     : (p.notes || p.card_no ? `<p class="note" style="color:var(--navy)">${p.notes ? "📝 " + esc(p.notes) : ""}</p>` : "");
-  $("list").innerHTML = `<div class="pcard"><div class="phead">
+  $("list").innerHTML = `<div class="pcard"><div class="printhead"><b>عيادة د. سليم أندراوس لطب الأسنان — دهوك</b><span>تقرير مريض · طُبع ${new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10)}</span></div><div class="phead">
       <div class="no">DSA-P-${p.no}${p.card_no ? " · بطاقة ورقية " + esc(p.card_no) : ""}</div><h3>${esc(p.name)}</h3>
       <div class="meta"><span>📞 ${phones}</span><span>أول زيارة ${vdays[0] || ""}</span><span>آخر زيارة ${vdays[vdays.length - 1] || ""}</span>${p.edited_at ? `<span>✏️ آخر تعديل ${p.edited_at.slice(0, 10)}</span>` : ""}</div></div>
     <div class="pbody">
       ${editing ? "" : `<div class="pf noprint"><button class="btn pri" id="editP">✏️ تعديل</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn" onclick="print()">🖨 طباعة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>`}
+      ${editing ? "" : summary}
       ${head}
       ${!editing && p.merged.length ? `<p class="note">مدموجة معها: ${p.merged.map((m) => `#${m.no} <a href="#" data-un="${m.no}">فكّ</a>`).join(" · ")}</p>` : ""}
       <div class="tw"><table class="vt${editing ? " ed" : ""}"><thead><tr><th>#</th><th>التاريخ</th><th>نوع العمل</th><th>المدفوع</th><th>المتبقي</th>${editing ? "<th></th>" : ""}</tr></thead><tbody id="vbody">${rows}</tbody></table></div>
       ${editing ? `<p><button type="button" class="btn" id="addRow">＋ إضافة زيارة / دفعة</button></p>
-        <div class="savebar"><button class="btn pri" id="saveE">💾 حفظ التغييرات</button><button class="btn" id="cancelE">إلغاء</button><span id="eMsg" class="note"></span></div>` : summary}
+        <div class="savebar"><button class="btn pri" id="saveE">💾 حفظ التغييرات</button><button class="btn" id="cancelE">إلغاء</button><span id="eMsg" class="note"></span></div>` : ""}
     </div></div>`;
   if (!editing) {
     $("editP").onclick = () => renderCard(true);
