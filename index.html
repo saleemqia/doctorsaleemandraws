@@ -61,7 +61,7 @@
         <p class="lead" style="color:var(--ink)" data-i18n="playLead"></p>
         <div class="btns"><a class="btn primary" href="/play/" data-i18n="btnPlay"></a></div>
       </div>
-      <div class="emojis" aria-hidden="true">😊🃏<br>🫧🗓️</div>
+      <div class="emojis" aria-hidden="true">😊🃏<br>🌬️🗓️</div>
     </div>
   </section>
 
@@ -81,13 +81,18 @@
       <div>
         <h2 data-i18n="brand"></h2>
         <p data-i18n="aboutP"></p>
+        <div class="stat-row" style="--c:var(--teal)">
+          <div class="stat"><b>+1000</b><span data-i18n="sCases"></span></div>
+          <div class="stat"><b>2010</b><span data-i18n="sSince"></span></div>
+          <div class="stat"><b>2020</b><span data-i18n="sCenter"></span></div>
+        </div>
         <div class="facts">
-          <div class="fact"><b data-i18n="fQual"></b><span class="ph" data-i18n="toConfirm"></span></div>
+          <div class="fact"><b data-i18n="fQual"></b><span data-i18n="fQualV"></span></div>
+          <div class="fact"><b data-i18n="fSpec"></b><span class="ph" data-i18n="toConfirm"></span></div>
           <div class="fact"><b data-i18n="fReg"></b><span class="ph" data-i18n="toConfirm"></span></div>
           <div class="fact"><b data-i18n="fLangs"></b><span data-i18n="fLangsV"></span></div>
-          <div class="fact"><b data-i18n="fAges"></b><span class="ph" data-i18n="toConfirm"></span></div>
           <div class="fact"><b data-i18n="fFocus"></b><span data-i18n="fFocusV"></span></div>
-          <div class="fact"><b data-i18n="fBase"></b><span data-i18n="base"></span></div>
+          <div class="fact"><b data-i18n="fCommunity"></b><span data-i18n="fCommunityV"></span></div>
         </div>
       </div>
     </div>
@@ -120,7 +125,7 @@ window.PAGE = { id:"home", t:{
 ar:{
  heroEyebrow:"استشارات أونلاين بالعربية والكوردية والإنجليزية",
  heroTitle:"دعم متخصص لصحة طفلك النفسية، أينما كنتم",
- heroLead:"طبيبة نفسية للأطفال والمراهقين من دهوك، بخبرة في التوحد وفرط الحركة وتشتت الانتباه ومرحلة المراهقة. نستمع لمخاوفكم، ونضع معًا خطوات واضحة للبيت والمدرسة.",
+ heroLead:"طبيبة نفسية للأطفال والمراهقين من دهوك، تابعت أكثر من 1000 حالة من التوحد وفرط الحركة وتشتت الانتباه وصعوبات التعلم ومرحلة المراهقة. نستمع لمخاوفكم، ونضع معًا خطوات واضحة للبيت والمدرسة.",
  btnPlay:"ألعاب وأنشطة للأطفال",
  focusTitle:"اختاروا الموضوع", focusLead:"لكل موضوع صفحة خاصة فيها أقسام للعائلات والمعلمين والباحثين.",
  fAutism:"التوحد", fAutismP:"علامات مبكرة، تقييم، رأي ثانٍ، وخطة عملية لدعم تواصل الطفل ومهاراته.",
@@ -133,10 +138,12 @@ ar:{
  how2:"اختاروا الموعد", how2p:"نؤكد معكم الوقت المناسب بتوقيت العراق.",
  how3:"استشارة فيديو", how3p:"جلسة خاصة، ثم خطة واضحة للخطوات التالية.",
  aboutEyebrow:"عن الدكتورة",
- aboutP:"طبيبة متخصصة في الصحة النفسية للأطفال والمراهقين. [نبذة قصيرة بصوت الدكتورة: لماذا تعمل في هذا المجال، وكيف تعمل مع العائلات.]",
+ aboutP:"تخرجت الدكتورة سالي في كلية الطب، جامعة الموصل (طب نينوى) عام 2008، وتعيّنت طبيبةً عام 2010. منذ عام 2020 تعمل ممارسةً ومديرةً لمركز نفسية الطفل في دهوك، حيث تابعت أكثر من 1000 حالة من التوحد وفرط الحركة وتشتت الانتباه وصعوبات التعلم ومشكلات المراهقة. أدارت عددًا من الدورات التدريبية، وشاركت مع منظمات المجتمع المدني في زيارات لمخيمات المهجّرين والنازحين.",
+ sCases:"حالة تابعتها: توحد، فرط حركة، صعوبات تعلم، ومراهقة", sSince:"بداية الممارسة الطبية", sCenter:"مديرة مركز نفسية الطفل في دهوك",
+ fQualV:"بكالوريوس طب وجراحة عامة، جامعة الموصل (طب نينوى)، 2008", fSpec:"الاختصاص", fCommunity:"العمل المجتمعي", fCommunityV:"دورات تدريبية، وزيارات لمخيمات المهجّرين والنازحين مع منظمات المجتمع المدني",
  photoPh:"صورة الدكتورة (بعد موافقتها)",
  fQual:"المؤهلات", fReg:"رقم التسجيل المهني", fLangs:"لغات الاستشارة", fLangsV:"العربية، الكوردية (البادينية)، الإنجليزية",
- fAges:"الفئة العمرية", fFocus:"مجالات التركيز", fFocusV:"التوحد، فرط الحركة وتشتت الانتباه، المراهقة", fBase:"المقر",
+ fAges:"الفئة العمرية", fFocus:"مجالات التركيز", fFocusV:"التوحد، فرط الحركة وتشتت الانتباه، صعوبات التعلم، المراهقة", fBase:"المقر",
  toConfirm:"بانتظار التأكيد",
  consultEyebrow:"الاستشارة أونلاين", consultTitle:"الاستشارة أونلاين",
  consultLead:"لعائلات في دهوك وإقليم كوردستان، وللعائلات الناطقة بالكوردية والعربية في الخارج.",
@@ -154,7 +161,7 @@ ar:{
 ku:{
  heroEyebrow:"شێوەرێن ئۆنلاین ب کوردی، عەرەبی و ئینگلیزی",
  heroTitle:"پشتەڤانیا پسپۆڕ بۆ ساخلەمیا دەروونیا زارۆکێ تە، ل هەر جهەکێ هوین لێ بن",
- heroLead:"دکتۆرەکا دەروونی یا زارۆکان و هەرزەکاران ژ دهۆکێ، ب شارەزایی د ئۆتیزم، زێدە-جوولە و کێمیا سەرنجێ و قۆناغا هەرزەکاریێ دا. گوهێ خۆ ددەینە نیگەرانیێن هەوە، و پێکڤە پێنگاڤێن ئاشکرا بۆ مال و قوتابخانێ دادنێین.",
+ heroLead:"دکتۆرەکا دەروونی یا زارۆکان و هەرزەکاران ژ دهۆکێ، کو زێدەتر ژ 1000 حالەتێن ئۆتیزم، زێدە-جوولە و کێمیا سەرنجێ، زەحمەتیێن فێربوونێ و هەرزەکاریێ دویڤچوون بۆ کرینە. گوهێ خۆ ددەینە نیگەرانیێن هەوە، و پێکڤە پێنگاڤێن ئاشکرا بۆ مال و قوتابخانێ دادنێین.",
  btnPlay:"یاری و چالاکی بۆ زارۆکان",
  focusTitle:"بابەتەکی هەلبژێرن", focusLead:"بۆ هەر بابەتەکی پەڕەکا تایبەت هەیە، دگەل بەشێن خێزانان، مامۆستایان و ڤەکۆلەران.",
  fAutism:"ئۆتیزم", fAutismP:"نیشانێن زوو، هەلسەنگاندن، بیروڕایا دووێ، و پلانەکا کرداری بۆ پشتەڤانیا زارۆکی.",
@@ -167,10 +174,12 @@ ku:{
  how2:"دەمێ هەلبژێرە", how2p:"دەمێ گونجای ب دەمژمێرا عێراقێ پشتڕاست دکەین.",
  how3:"شێوەرا ڤیدیۆیی", how3p:"دانیشتنەکا تایبەت، پاشی پلانەکا ئاشکرا.",
  aboutEyebrow:"دەربارەی دکتۆرێ",
- aboutP:"دکتۆرەکا پسپۆڕ د ساخلەمیا دەروونی یا زارۆکان و هەرزەکاران دا. [کورتیەک ب دەنگێ دکتۆرێ.]",
+ aboutP:"دکتۆرە سالی ل ساڵا 2008 ژ کۆلیژا پزیشکی یا زانکۆیا مووسڵ (پزیشکیا نەینەوا) دەرچوویە، و ل ساڵا 2010 دامەزرایە. ژ ساڵا 2020 ڤە وەک پزیشک و ڕێڤەبەرا سەنتەرێ دەروونیا زارۆکان ل دهۆکێ کار دکەت، و زێدەتر ژ 1000 حالەتێن ئۆتیزم، زێدە-جوولە، زەحمەتیێن فێربوونێ و ئاریشێن هەرزەکاریێ دویڤچوون بۆ کرینە. گەلەک خولێن ڕاهێنانێ بڕێڤەبرینە، و دگەل ڕێکخراوێن جڤاکا مەدەنی سەرەدانا کەمپێن ئاوارە و دەربەدەران کریە.",
+ sCases:"حالەت: ئۆتیزم، زێدە-جوولە، زەحمەتیێن فێربوونێ و هەرزەکاری", sSince:"دەستپێکا کارێ پزیشکی", sCenter:"ڕێڤەبەرا سەنتەرێ دەروونیا زارۆکان ل دهۆکێ",
+ fQualV:"بەکالۆریۆسا پزیشکی، زانکۆیا مووسڵ (پزیشکیا نەینەوا)، 2008", fSpec:"پسپۆڕی", fCommunity:"کارێ جڤاکی", fCommunityV:"خولێن ڕاهێنانێ، و سەرەدانا کەمپێن ئاوارە و دەربەدەران دگەل ڕێکخراوێن جڤاکا مەدەنی",
  photoPh:"وێنێ دکتۆرێ (پشتی ڕەزامەندیا وێ)",
  fQual:"بڕوانامە", fReg:"ژمارا تۆمارا پیشەیی", fLangs:"زمانێن شێوەرێ", fLangsV:"کوردی (بادینی)، عەرەبی، ئینگلیزی",
- fAges:"تەمەن", fFocus:"بوارێن سەرەکی", fFocusV:"ئۆتیزم، زێدە-جوولە و کێمیا سەرنجێ، هەرزەکاری", fBase:"جه",
+ fAges:"تەمەن", fFocus:"بوارێن سەرەکی", fFocusV:"ئۆتیزم، زێدە-جوولە و کێمیا سەرنجێ، زەحمەتیێن فێربوونێ، هەرزەکاری", fBase:"جه",
  toConfirm:"چاڤەڕێی پشتڕاستکرنێ",
  consultEyebrow:"شێوەرا ئۆنلاین", consultTitle:"شێوەرا ئۆنلاین",
  consultLead:"بۆ خێزانێن ل دهۆک و هەرێما کوردستانێ، و خێزانێن کورد و عەرەب ل دەرڤەی وەڵاتی.",
@@ -188,7 +197,7 @@ ku:{
 en:{
  heroEyebrow:"Online consultations in Arabic, Kurdish and English",
  heroTitle:"Expert support for your child's emotional wellbeing, wherever you are",
- heroLead:"A child and adolescent psychiatrist from Duhok, experienced in autism, ADHD and adolescence. We listen to your concerns and agree clear next steps for home and school, together.",
+ heroLead:"A child and adolescent psychiatrist from Duhok who has followed more than 1,000 children and teens with autism, ADHD, learning difficulties and adolescent challenges. We listen to your concerns and agree clear next steps for home and school, together.",
  btnPlay:"Games & activities for children",
  focusTitle:"Choose a topic", focusLead:"Each topic has its own page, with sections for families, teachers and researchers.",
  fAutism:"Autism", fAutismP:"Early signs, assessment, second opinions, and a practical plan to support communication and skills.",
@@ -201,10 +210,12 @@ en:{
  how2:"Choose a time", how2p:"We confirm a suitable time in Iraq time.",
  how3:"Video consultation", how3p:"A private session, followed by a clear plan for next steps.",
  aboutEyebrow:"About",
- aboutP:"A specialist in child and adolescent mental health. [Short statement in the doctor's own voice: why she does this work and how she works with families.]",
+ aboutP:"Dr. Sally graduated from the College of Medicine, University of Mosul (Nineveh Medicine) in 2008 and was appointed as a physician in 2010. Since 2020 she has practised at, and directed, the Child Psychology Centre in Duhok, where she has followed more than 1,000 children and teenagers with autism, ADHD, learning difficulties and adolescent challenges. She has led training courses and worked with civil-society organisations on visits to camps for displaced families.",
+ sCases:"cases followed: autism, ADHD, learning difficulties, adolescence", sSince:"in medical practice since", sCenter:"director of the Child Psychology Centre, Duhok",
+ fQualV:"MBChB, University of Mosul (Nineveh Medicine), 2008", fSpec:"Specialty", fCommunity:"Community work", fCommunityV:"Training courses, and camp visits for displaced families with civil-society organisations",
  photoPh:"Doctor's photo (with her approval)",
  fQual:"Qualifications", fReg:"Registration number", fLangs:"Consultation languages", fLangsV:"Arabic, Kurdish (Badini), English",
- fAges:"Age range", fFocus:"Focus areas", fFocusV:"Autism, ADHD, adolescence", fBase:"Based in",
+ fAges:"Age range", fFocus:"Focus areas", fFocusV:"Autism, ADHD, learning difficulties, adolescence", fBase:"Based in",
  toConfirm:"To be confirmed",
  consultEyebrow:"Online consultation", consultTitle:"Online consultation",
  consultLead:"For families in Duhok and the Kurdistan Region, and Kurdish- and Arabic-speaking families abroad.",

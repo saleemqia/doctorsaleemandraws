@@ -3,7 +3,7 @@
    Text keys used from PAGE.t: title, lead, myth, fact, fam, tea, res. */
 (function(){
   const P = window.PAGE, T = P.topic;
-  const GAMES = { emotions:"😊", memory:"🃏", breath:"🫧", schedule:"🗓️", thermo:"🌡️" };
+  const GAMES = { emotions:"😊", memory:"🃏", breath:"🌬️", schedule:"🗓️", thermo:"🌡️" };
   const GKEY = { emotions:"gEmotions", memory:"gMemory", breath:"gBreath", schedule:"gSchedule", thermo:"gThermo" };
   const main = document.getElementById("topic");
   main.style.setProperty("--c", `var(--${T.color})`);
