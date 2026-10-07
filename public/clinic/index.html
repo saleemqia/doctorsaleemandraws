@@ -135,6 +135,25 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   .files.nofiles,body.noimgs .files{display:none!important}.files h4{border-bottom:1px solid #999;padding-bottom:3px}
 }
 .pickbar[hidden],#toast[hidden]{display:none!important}
+
+#rpt{position:fixed;inset:0;z-index:80;background:#5b6472;display:flex;flex-direction:column}#rpt[hidden]{display:none}
+.rptbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#fff;padding:10px 12px;box-shadow:0 2px 12px #0003}.rptbar .btn{white-space:nowrap}.rptbar label{font-size:13px;display:flex;gap:4px;align-items:center}
+.rptscroll{flex:1;overflow:auto;padding:14px 8px}.rptzoom{width:794px;margin:0 auto}
+.sheet{width:794px;min-height:1123px;background:#fff;color:#13285C;padding:34px 40px;box-sizing:border-box;direction:rtl;font-size:14px;box-shadow:0 6px 30px #0006}
+.sheet h1{margin:0;font-size:22px}.sheet .rp-top{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #13285C;padding-bottom:10px;margin-bottom:16px}
+.sheet .rp-top small{display:block;color:#5b6b85;font-size:12px}
+.sheet .rp-pt{display:flex;gap:18px;align-items:flex-start;margin-bottom:14px}.sheet .rp-pt>div:first-child{flex:1}.sheet .rp-name{font-size:24px;font-weight:800;margin:0 0 6px}
+.sheet .rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;font-size:13px}.sheet .rp-grid span{color:#5b6b85}
+.sheet .rp-qr{width:96px;text-align:center;font-size:10px;color:#5b6b85}.sheet .rp-qr svg{width:96px;height:96px;display:block}
+.sheet .rp-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 16px}.sheet .rp-sum div{border:1.5px solid #13285C;border-radius:10px;padding:8px 12px}.sheet .rp-sum small{display:block;color:#5b6b85;font-size:12px}.sheet .rp-sum b{font-size:17px}
+.sheet h3{margin:16px 0 6px;font-size:15px;border-bottom:1px solid #b9c4d8;padding-bottom:3px}
+.sheet table{width:100%;border-collapse:collapse;font-size:12.5px}.sheet th{background:#E7EEF9;text-align:right}.sheet th,.sheet td{border:1px solid #b9c4d8;padding:5px 7px;vertical-align:top}.sheet tr{break-inside:avoid}
+.sheet .rp-img{display:grid;grid-template-columns:1fr 1fr;gap:12px}.sheet figure{margin:0;border:1px solid #b9c4d8;border-radius:8px;overflow:hidden;break-inside:avoid}.sheet figure img{width:100%;max-height:300px;object-fit:contain;background:#f3f5f9;display:block}.sheet figcaption{padding:5px 8px;font-size:12px}
+.sheet .rp-foot{margin-top:22px;border-top:1px solid #b9c4d8;padding-top:6px;font-size:11px;color:#5b6b85;display:flex;justify-content:space-between}
+@media print{
+  body.previewing>*:not(#rpt){display:none!important}body.previewing{background:#fff}
+  #rpt{position:static;background:#fff;display:block}.rptbar{display:none!important}.rptscroll{overflow:visible;padding:0}.rptzoom{zoom:1!important;width:auto;margin:0}.sheet{box-shadow:none;width:auto;padding:0;min-height:0}
+}
 </style>
 </head>
 <body>
@@ -190,6 +209,10 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   <p class="note" id="note"></p>
   <div id="toast" hidden></div>
   <dialog id="mdlg"></dialog>
+  <div id="rpt" hidden><div class="rptbar"><button class="btn pri" id="rpPdf" type="button">⬇ تنزيل PDF</button><button class="btn" id="rpShare" type="button">📤 مشاركة</button><button class="btn" id="rpPrint" type="button">🖨 طباعة</button>
+    <label><input type="checkbox" id="rpMoney" checked> الدفعات</label><label><input type="checkbox" id="rpImgs" checked> الأشعة والصور</label><label><input type="checkbox" id="rpNotes" checked> الملاحظات</label><label><input type="checkbox" id="rpQr" checked> QR</label>
+    <span id="rpMsg" class="note"></span><button class="btn" id="rpClose" type="button" style="margin-inline-start:auto">✕ إغلاق</button></div>
+  <div class="rptscroll" id="rpScroll"><div class="rptzoom" id="rpZoom"><div class="sheet" id="sheet"></div></div></div></div>
   <dialog id="idlg"><img id="idImg" alt=""><br><button class="btn" id="idClose" type="button">إغلاق</button></dialog>
   <section id="list"><div class="spin"></div></section>
   <div class="pickbar" id="pickBar" hidden><span id="pickN"></span><button class="btn pri" id="pickGo" disabled>🔗 دمج</button><button class="btn" id="pickClear" type="button">مسح</button></div>
@@ -702,7 +725,7 @@ async function loadFiles(p) {
   const nos = [p.no, ...p.merged.map((m) => m.no)];
   let list = [];
   try { list = (await (await fetch(`/clinic/api/files?nos=${nos.join(",")}`, { cache: "no-store" })).json()).files || []; } catch { /* offline */ }
-  box.classList.toggle("nofiles", !list.length);
+  cardFiles = list; box.classList.toggle("nofiles", !list.length);
   $("fgrid").innerHTML = list.map((f) => `<figure data-id="${f.id}"><img loading="lazy" src="/clinic/api/files?id=${f.id}" alt="${esc(f.title)}">
     <figcaption><b>${esc(f.title || (f.kind === "xray" ? "أشعة" : "صورة حالة"))}</b>${f.kind === "xray" ? "🩻 أشعة" : "📷 صورة"} · ${esc(f.taken || String(f.created_at).slice(0, 10))}
     <span class="noprint"><button data-ren="${f.id}" title="تغيير الاسم">✏️</button><button data-del="${f.id}" title="حذف">🗑</button></span></figcaption></figure>`).join("");
@@ -731,6 +754,64 @@ async function loadFiles(p) {
   };
 }
 addEventListener("beforeprint", () => document.body.classList.toggle("noimgs", $("fPrint") ? !$("fPrint").checked : false));
+
+
+/* ---- report preview (A4 sheet), real PDF download and sharing ---- */
+let cardCtx = null, cardFiles = [], pdfLib = null;
+const loadPdfLib = () => pdfLib || (pdfLib = new Promise((ok, bad) => { if (window.html2pdf) return ok(window.html2pdf); const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"; s.onload = () => ok(window.html2pdf); s.onerror = () => { pdfLib = null; bad(new Error("تعذّر تحميل مكتبة PDF، تحقق من الإنترنت")); }; document.head.appendChild(s); }));
+function sheetHTML(o) {
+  const { p, lines, nVisits, paidAll, dueAll, vdays, hasMoney } = cardCtx, today = new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10);
+  const money = o.money && hasMoney;
+  const rows = lines.map((x, i) => `<tr><td>${i + 1}</td><td>${x.day}</td><td>${esc(x.work) || "—"}${x.extra ? `<br><small>${esc(x.extra)}</small>` : ""}${o.notes && x.notes ? `<br><small>${esc(x.notes)}</small>` : ""}</td>`
+    + (o.money ? `<td>${x.hasMoney ? amt(x.paid_iqd, x.paid_usd) : "—"}</td><td>${x.hasMoney ? amt(x.due_iqd, x.due_usd) : "—"}</td>` : "") + `</tr>`).join("");
+  const qr = o.qr ? ($("qr")?.innerHTML || "") : "";
+  const imgs = o.imgs ? cardFiles : [];
+  return `<div class="rp-top"><div><h1>عيادة د. سليم أندراوس لطب الأسنان</h1><small>دهوك · قاضي محمد · تقرير مريض</small></div><div style="text-align:left"><small>تاريخ التقرير</small><b dir="ltr">${today}</b></div></div>
+    <div class="rp-pt"><div><p class="rp-name">${esc(p.name)}</p><div class="rp-grid">
+      <div><span>رقم البطاقة: </span>DSA-P-${p.no}${p.card_no ? " · ورقية " + esc(p.card_no) : ""}</div><div><span>الهاتف: </span><bdi dir="ltr">${esc(p.phones.join(" · ")) || "—"}</bdi></div>
+      <div><span>أول زيارة: </span>${vdays[0] || "—"}</div><div><span>آخر زيارة: </span>${vdays[vdays.length - 1] || "—"}</div>
+      ${o.notes && p.notes ? `<div style="grid-column:1/-1"><span>ملاحظات: </span>${esc(p.notes)}</div>` : ""}</div></div>
+      ${qr ? `<div class="rp-qr">${qr}امسح للوصول للبطاقة</div>` : ""}</div>
+    <div class="rp-sum"><div><small>عدد الزيارات</small><b>${nVisits}</b></div>${money ? `<div><small>مجموع المدفوع</small><b>${paidAll}</b></div><div><small>المتبقي</small><b>${dueAll}</b></div>` : ""}</div>
+    <h3>الزيارات${o.money ? " والحسابات" : ""}</h3><table><thead><tr><th>#</th><th>التاريخ</th><th>نوع العمل</th>${o.money ? "<th>المدفوع</th><th>المتبقي</th>" : ""}</tr></thead><tbody>${rows}</tbody></table>
+    ${imgs.length ? `<h3>الأشعة وصور الحالة</h3><div class="rp-img">${imgs.map((f) => `<figure><img src="/clinic/api/files?id=${f.id}" alt=""><figcaption><b>${esc(f.title || (f.kind === "xray" ? "أشعة" : "صورة حالة"))}</b> · ${esc(f.taken || String(f.created_at).slice(0, 10))}</figcaption></figure>`).join("")}</div>` : ""}
+    <div class="rp-foot"><span>عيادة د. سليم أندراوس — دهوك</span><span>DSA-P-${p.no}</span></div>`;
+}
+const rpOpts = () => ({ money: $("rpMoney").checked, imgs: $("rpImgs").checked, notes: $("rpNotes").checked, qr: $("rpQr").checked });
+function fitSheet() { const w = $("rpScroll").clientWidth - 16; $("rpZoom").style.zoom = Math.min(1, w / 794); }
+function drawSheet() { $("sheet").innerHTML = sheetHTML(rpOpts()); const imgs = [...$("sheet").querySelectorAll("img")]; fitSheet(); imgs.forEach((i) => { i.onload = fitSheet; }); }
+async function openReport() {
+  if (!cardCtx) return;
+  const q = $("qr"); if (q && !q.innerHTML) await drawQR(q, `${location.origin}/clinic/#card=${cardCtx.p.no}`);
+  document.body.classList.add("previewing"); $("rpt").hidden = false; $("rpMsg").textContent = ""; drawSheet();
+}
+const closeReport = () => { $("rpt").hidden = true; document.body.classList.remove("previewing"); };
+async function reportPdf() {
+  const msg = $("rpMsg"); msg.textContent = "جارٍ إنشاء PDF…";
+  const host = document.createElement("div"); host.style.cssText = "position:fixed;left:-10000px;top:0;width:794px;background:#fff";
+  const el = document.createElement("div"); el.className = "sheet"; el.style.boxShadow = "none"; el.style.minHeight = "0"; el.innerHTML = $("sheet").innerHTML; host.appendChild(el); document.body.appendChild(host);
+  try {
+    const lib = await loadPdfLib();
+    await Promise.all([...el.querySelectorAll("img")].map((i) => i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })));
+    const name = `${cardCtx.p.name} - ${new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10)}.pdf`;
+    const blob = await lib().set({ margin: [8, 0, 8, 0], filename: name, image: { type: "jpeg", quality: 0.95 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: "#fff" },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }, pagebreak: { mode: ["css", "legacy"], avoid: ["tr", "figure", "h3"] } }).from(el).outputPdf("blob");
+    msg.textContent = ""; return { blob, name };
+  } catch (e) { msg.textContent = "تعذّر إنشاء PDF: " + (e.message || e); return null; }
+  finally { host.remove(); }
+}
+$("rpPdf").onclick = async () => { const r = await reportPdf(); if (!r) return; const a = document.createElement("a"); a.href = URL.createObjectURL(r.blob); a.download = r.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 20000); };
+$("rpShare").onclick = async () => {
+  const r = await reportPdf(); if (!r) return; const f = new File([r.blob], r.name, { type: "application/pdf" });
+  try {
+    if (navigator.canShare?.({ files: [f] })) await navigator.share({ files: [f], title: cardCtx.p.name });
+    else { const a = document.createElement("a"); a.href = URL.createObjectURL(r.blob); a.download = r.name; a.click(); $("rpMsg").textContent = "هذا الجهاز لا يدعم المشاركة المباشرة، تم تنزيل الملف لترسله يدويًا."; }
+  } catch { /* cancelled */ }
+};
+$("rpPrint").onclick = () => print();
+$("rpClose").onclick = closeReport;
+["rpMoney", "rpImgs", "rpNotes", "rpQr"].forEach((id) => { $(id).onchange = drawSheet; });
+addEventListener("resize", () => { if (!$("rpt").hidden) fitSheet(); });
 
 function renderCard(editing) {
   const d = cardData, p = d.patient, lines = cardLines(d);
@@ -764,7 +845,7 @@ function renderCard(editing) {
       <div class="no">DSA-P-${p.no}${p.card_no ? " · بطاقة ورقية " + esc(p.card_no) : ""}</div><h3>${esc(p.name)}</h3>
       <div class="meta"><span>📞 ${phones}</span><span>أول زيارة ${vdays[0] || ""}</span><span>آخر زيارة ${vdays[vdays.length - 1] || ""}</span>${p.edited_at ? `<span>✏️ آخر تعديل ${p.edited_at.slice(0, 10)}</span>` : ""}</div></div>
     <div class="pbody">
-      ${editing ? "" : `<div class="pf noprint"><button class="btn pri" id="editP">✏️ تعديل</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn" id="pdfP">📄 حفظ PDF / طباعة</button><button class="btn" id="shareP">📤 مشاركة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>`}
+      ${editing ? "" : `<div class="pf noprint"><button class="btn pri" id="editP">✏️ تعديل</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn pri" id="prevP">👁 معاينة التقرير · PDF · مشاركة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>`}
       ${editing ? "" : summary}
       ${head}
       ${!editing && p.merged.length ? `<p class="note">مدموجة معها: ${p.merged.map((m) => `#${m.no} <a href="#" data-un="${m.no}">فكّ</a>`).join(" · ")}</p>` : ""}
@@ -781,11 +862,8 @@ function renderCard(editing) {
     $("editP").onclick = () => renderCard(true);
     drawQR($("qr"), `${location.origin}/clinic/#card=${p.no}`);
     loadFiles(p);
-    $("pdfP").onclick = () => { const t = document.title; document.title = `${p.name} - ${new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10)}`; print(); setTimeout(() => { document.title = t; }, 1500); };
-    $("shareP").onclick = async () => {
-      const text = `${p.name}\nعيادة د. سليم أندراوس لطب الأسنان - دهوك\nعدد الزيارات: ${nVisits}\nأول زيارة: ${vdays[0] || "—"} · آخر زيارة: ${vdays[vdays.length - 1] || "—"}` + (mp.length ? `\nمجموع المدفوع: ${paidAll}\nالمتبقي: ${dueAll}` : "");
-      try { if (navigator.share) await navigator.share({ title: p.name, text }); else window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank"); } catch { /* cancelled */ }
-    };
+    cardCtx = { p, lines, nVisits, paidAll, dueAll, vdays, hasMoney: mp.length > 0 };
+    $("prevP").onclick = openReport;
     $("backP").onclick = () => patients();
     $("mergeP").onclick = () => mergeFromCard(p);
     document.querySelectorAll("[data-un]").forEach((a) => a.onclick = async (e) => {
