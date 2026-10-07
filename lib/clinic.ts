@@ -303,7 +303,7 @@ export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExc
 /** One-time schema upgrades, remembered in clinic_settings 'schema_v'. */
 export async function ensureSchema(env: Env) {
   const v = (await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = 'schema_v'").first<{ value: string }>())?.value;
-  if (v === "3") return;
+  if (v === "4") return;
   for (const sql of [
     "ALTER TABLE patients ADD COLUMN visits INTEGER DEFAULT 0",
     "ALTER TABLE patients ADD COLUMN first_day TEXT",
@@ -317,8 +317,18 @@ export async function ensureSchema(env: Env) {
        paid_iqd REAL, paid_usd REAL, due_iqd REAL, due_usd REAL, work TEXT, notes TEXT, phone TEXT, matched TEXT)`,
     "CREATE INDEX IF NOT EXISTS payments_key ON payments(patient_key)",
     "CREATE INDEX IF NOT EXISTS payments_sheet ON payments(sheet)",
+    // v4: owner's edits on cards. They are kept apart from calendar/Excel data, so a re-sync or re-import never undoes them.
+    "ALTER TABLE patients ADD COLUMN display_name TEXT",
+    "ALTER TABLE patients ADD COLUMN phone_override TEXT",
+    "ALTER TABLE patients ADD COLUMN edited_at TEXT",
+    // ref = 'a:<appointment uid>' or 'p:<payment src>' (an edit of that row) or NULL (a row the owner added by hand).
+    `CREATE TABLE IF NOT EXISTS card_rows (id INTEGER PRIMARY KEY, patient_key TEXT, ref TEXT UNIQUE, data TEXT, hidden INTEGER DEFAULT 0,
+       updated_at TEXT DEFAULT (datetime('now')))`,
+    "CREATE INDEX IF NOT EXISTS card_rows_key ON card_rows(patient_key)",
+    // Pairs the owner marked "not the same person": never suggested or auto-merged again.
+    "CREATE TABLE IF NOT EXISTS merge_no (a TEXT, b TEXT, PRIMARY KEY (a, b))",
   ]) { try { await env.DB.prepare(sql).run(); } catch { /* already there */ } }
-  await setSetting(env, "schema_v", "3");
+  await setSetting(env, "schema_v", "4");
   await setSetting(env, "stats_dirty", "1");
 }
 

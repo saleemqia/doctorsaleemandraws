@@ -92,6 +92,24 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 @media print{.pcard{box-shadow:none}.pf,.noprint{display:none!important}.vt th{position:static}}
 @media (max-width:480px){.tabs{flex-wrap:wrap}.tabs input{max-width:none;flex-basis:100%}}
 @media print{header,.tabs,.tools,.wa2{display:none}main{margin:0}.appt{box-shadow:none;border:1px solid #ccc;break-inside:avoid}}
+
+.pl.sel{background:#E8F0FD}.pl .ck{font-size:18px;color:var(--navy)}
+.tbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 8px}.btn.on{background:var(--navy);color:#fff}
+.pickbar{position:sticky;bottom:0;z-index:20;display:flex;gap:8px;align-items:center;background:#fff;border-top:2px solid var(--navy);padding:10px 12px;box-shadow:0 -4px 18px #13285C22;border-radius:12px 12px 0 0}
+.pickbar span{flex:1;font-size:13px}.btn:disabled{opacity:.45}.btn.pri{background:var(--navy);color:#fff}.btn.sm{padding:4px 8px}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 16px;border-radius:12px;z-index:60;box-shadow:0 6px 24px #0004;max-width:92vw}
+#toast a{color:#9CC4FF;font-weight:700;margin-inline-start:10px}
+#mdlg{border:0;border-radius:16px;padding:16px;max-width:560px;width:94vw;color:var(--navy);font:inherit}#mdlg::backdrop{background:#0007}
+#mdlg table{width:100%;border-collapse:collapse;margin:6px 0}#mdlg td,#mdlg th{padding:6px;border-bottom:1px solid var(--line);font-size:13px}
+.opt{display:block;padding:8px;border:1px solid var(--line);border-radius:10px;margin:5px 0}.opt input[type=text],.opt input:not([type]){width:60%}
+.acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.m{text-align:center}
+.dp{background:#fff;border-radius:14px;box-shadow:0 4px 18px #13285C14;padding:10px;margin:8px 0}.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mc{border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column}.mc a{color:var(--navy)}.mc small{color:var(--muted)}
+.okS{color:#1a7f37;font-size:12px}.warnS{color:#b45309;font-size:12px}
+.ef{display:grid;gap:8px;padding:10px}.ef label{display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:3px}.ef input,.ef textarea{padding:9px;border:1px solid var(--line);border-radius:8px;font:inherit;color:var(--navy)}.ef .wide{grid-column:1/-1}.ef .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tw{overflow-x:auto}.vt.ed input{width:100%;min-width:70px;padding:6px;border:1px solid var(--line);border-radius:6px;font:inherit;margin:1px 0}
+.savebar{display:flex;gap:8px;align-items:center;padding:10px;position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line)}
+@media (max-width:480px){.two{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -123,6 +141,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     </div>
   </div>
   <div id="pats" hidden>
+    <div class="tbar"><button class="btn" id="selMode" type="button">☑ تحديد للدمج</button><button class="btn" id="dupBtn" type="button">🧩 مكررات محتملة</button></div>
     <form id="pform" class="sbox"><input id="pq" type="search" placeholder="اسم المريض أو رقم الهاتف أو رقم البطاقة" autocomplete="off"><button class="btn">بحث</button></form>
     <p class="note" id="pstats"></p>
     <details class="imp"><summary>💵 استيراد ملف الحسابات (Excel)</summary>
@@ -144,7 +163,10 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     </details>
   </div>
   <p class="note" id="note"></p>
+  <div id="toast" hidden></div>
+  <dialog id="mdlg"></dialog>
   <section id="list"><div class="spin"></div></section>
+  <div class="pickbar" id="pickBar" hidden><span id="pickN"></span><button class="btn pri" id="pickGo" disabled>🔗 دمج</button><button class="btn" id="pickClear" type="button">مسح</button></div>
 </main>
 <script>
 const CLINIC = "عيادة الدكتور سليم أندراوس", CLINIC_PHONE = "0750 781 6500";
@@ -414,6 +436,30 @@ async function rebuildIfNeeded(pending) {
     if (!r.ok || r.done === 0) break; left = r.left;
   }
 }
+/* ---- patient list, selection for merging ---- */
+const picked = new Map();          // no → {no, name, visits, last, phones} chosen for merging
+let selMode = false;
+const post = async (action, body) => {
+  const res = await fetch(`/clinic/api/patients?action=${action}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const j = await res.json().catch(() => ({ ok: false, error: "HTTP " + res.status }));
+  if (!j.ok) throw new Error(j.error || "HTTP " + res.status);
+  return j;
+};
+function toast(html, ms = 7000) {
+  const t = $("toast"); t.innerHTML = html; t.hidden = false;
+  clearTimeout(t._h); t._h = setTimeout(() => { t.hidden = true; }, ms);
+  return t;
+}
+function updatePickBar() {
+  const n = picked.size, bar = $("pickBar");
+  bar.hidden = !selMode;
+  $("pickN").textContent = n ? `${n} محددة: ` + [...picked.values()].map((p) => esc(p.name)).join("، ") : "اضغط على البطاقات لتحديدها، ويمكنك البحث بين التحديدات";
+  $("pickGo").disabled = n < 2;
+  $("selMode").classList.toggle("on", selMode);
+}
+const plRow = (p) => `<div class="pl${picked.has(p.no) ? " sel" : ""}" data-no="${p.no}">${selMode ? `<span class="ck">${picked.has(p.no) ? "☑" : "☐"}</span>` : ""}<span class="pno">#${p.no}</span><b>${esc(p.name)}</b><span class="v">${p.visits} زيارة</span>
+    <span class="s">آخر زيارة ${p.last || "—"}${p.phones ? " · " + esc(String(p.phones).split(",")[0]) : ""}</span></div>`;
+let lastList = [];
 async function patients() {
   const q = $("pq").value.trim();
   $("title").textContent = q ? `مرضى: ${q}` : "المرضى"; $("note").textContent = "";
@@ -432,13 +478,170 @@ async function patients() {
   if (!window._am) { window._am = 1; fetch("/clinic/api/patients?action=automerge", { method: "POST" }).catch(() => {}); }
   $("pstats").textContent = `${d.total} مريضًا (بطاقة لكل مريض، مرتبة حسب آخر زيارة)` + (d.patients.length >= 100 ? " · تظهر أول 100، ابحث للوصول للباقي" : "");
   $("count").textContent = q ? d.patients.length + " نتيجة" : "";
+  lastList = d.patients;
+  updatePickBar();
   if (!d.patients.length) { $("list").innerHTML = `<div class="empty">لا نتائج</div>`; return; }
-  $("list").innerHTML = `<div class="rows">` + d.patients.map((p) => `<div class="pl" data-no="${p.no}"><span class="pno">#${p.no}</span><b>${esc(p.name)}</b><span class="v">${p.visits} زيارة</span>
-    <span class="s">آخر زيارة ${p.last}${p.phones ? " · " + esc(p.phones.split(",")[0]) : ""}</span></div>`).join("") + `</div>`;
+  $("list").innerHTML = `<div class="rows">` + d.patients.map(plRow).join("") + `</div>`;
 }
 $("pform").onsubmit = (e) => { e.preventDefault(); patients(); };
-$("list").addEventListener("click", (e) => { const r = e.target.closest(".pl"); if (r) openCard(r.dataset.no); });
+$("list").addEventListener("click", (e) => {
+  const r = e.target.closest(".pl"); if (!r || !$("list").contains(r)) return;
+  const no = +r.dataset.no;
+  if (!selMode) return openCard(no);
+  if (picked.has(no)) picked.delete(no); else { const p = lastList.find((x) => x.no === no); if (p) picked.set(no, p); }
+  r.outerHTML = plRow(lastList.find((x) => x.no === no) || { no, name: "", visits: 0 });
+  updatePickBar();
+});
+$("selMode").onclick = () => { selMode = !selMode; if (!selMode) picked.clear(); updatePickBar(); if (current === "patients") patients(); };
+$("pickClear").onclick = () => { selMode = false; picked.clear(); updatePickBar(); patients(); };
+$("pickGo").onclick = () => mergeDialog([...picked.values()]);
+
+/* ---- likely duplicates (computed here in the browser from one summary read) ---- */
+function looseName(k) {
+  const m = String(k).replace(/^د /, "").replace(/(لم تاتي|لم ياتي|تاجل|تاجيل)/g, " ")
+    .replace(/ژ/g, "ز").replace(/ڤ/g, "ف").replace(/[گک]/g, "ك").replace(/پ/g, "ب").replace(/ی/g, "ي").replace(/ڕ/g, "ر")
+    .replace(/عبد ال/g, "عبدال").replace(/\s+/g, " ").trim();
+  return m ? m.split(" ").map((w) => w[0] + w.slice(1).replace(/[اي]/g, "").replace(/ه$/, "")) : [];
+}
+function lev(a, b) {
+  const d = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) { let prev = d[0]; d[0] = i;
+    for (let j = 1; j <= b.length; j++) { const t = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = t; } }
+  return d[b.length];
+}
+function sameName(x, y) {   // x, y = looseName() word lists; same rules as the server's automatic merging
+  if (!x.length || !y.length) return false;
+  if (x.join("") === y.join("")) return true;
+  if (x[0] !== y[0]) return x.length > 1 && x.length === y.length && x[0].length >= 4 && x[0].length === y[0].length && lev(x[0], y[0]) <= 1 && x.slice(1).join("") === y.slice(1).join("");
+  const [s, l] = x.length <= y.length ? [x, y] : [y, x];
+  if (s.length >= 2 && s.every((w, i) => w === l[i])) return true;
+  const r1 = x.slice(1).join(""), r2 = y.slice(1).join("");
+  if (!r1 || !r2) return false;
+  if (r1 === r2) return true;
+  const n = Math.min(x.length, y.length);
+  return lev(x.slice(1, n).join(""), y.slice(1, n).join("")) <= 1 && Math.min(r1.length, r2.length) >= 3;
+}
+let allCache = null;
+async function allCards(fresh) {
+  if (allCache && !fresh && Date.now() - allCache.t < 10 * 60000) return allCache;
+  const res = await fetch("/clinic/api/patients?all=1", { cache: "no-store" });
+  const j = await res.json(); if (!res.ok || j.error) throw new Error(j.error || "HTTP " + res.status);
+  j.patients.forEach((p) => { p.loose = looseName(p.key); p.ph = String(p.phones || "").split(",").filter(Boolean); });
+  allCache = { t: Date.now(), patients: j.patients, no: new Set(j.no.map((r) => r.a + "|" + r.b)) };
+  return allCache;
+}
+/** Pairs that are probably one person written two ways. only = limit to pairs involving that card number. */
+function duplicates(all, only) {
+  const buckets = new Map(), flat = new Map();
+  const add = (m, k, p) => { if (!k) return; if (!m.has(k)) m.set(k, []); m.get(k).push(p); };
+  for (const p of all.patients) { add(buckets, p.loose[0] + "|" + p.loose.length + (p.loose.length > 2 ? "" : ""), p); add(buckets, p.loose[0], p); add(flat, p.loose.join(""), p); add(buckets, "L|" + p.loose.slice(1).join(" ") + "|" + (p.loose[0] || "").length, p); }
+  const seen = new Set(), out = [];
+  for (const group of [...buckets.values(), ...flat.values()]) {
+    if (group.length < 2 || group.length > 400) continue;
+    for (let i = 0; i < group.length; i++) for (let j = i + 1; j < group.length; j++) {
+      const a = group[i], b = group[j];
+      if (a.no === b.no || (only && a.no !== only && b.no !== only)) continue;
+      const id = Math.min(a.no, b.no) + "-" + Math.max(a.no, b.no); if (seen.has(id)) continue; seen.add(id);
+      if (all.no.has([a.key, b.key].sort().join("|")) || !sameName(a.loose, b.loose)) continue;
+      const share = a.ph.some((x) => b.ph.includes(x)), both = a.ph.length && b.ph.length;
+      out.push({ a, b, score: share ? 3 : both ? 1 : 2, diff: both && !share });
+    }
+  }
+  return out.sort((x, y) => y.score - x.score || (y.a.visits + y.b.visits) - (x.a.visits + x.b.visits));
+}
+const miniCard = (p) => `<div class="mc"><a href="#" data-open="${p.no}"><b>${esc(p.name)}</b></a><small>#${p.no} · ${p.visits} زيارة · آخر ${p.last || "—"}${p.ph?.length ? " · " + esc(p.ph[0]) : ""}</small></div>`;
+async function showDuplicates() {
+  current = "dups"; $("title").textContent = "🧩 مكررات محتملة"; $("count").textContent = ""; $("list").innerHTML = `<div class="spin"></div>`;
+  let all; try { all = await allCards(true); } catch (err) { $("list").innerHTML = `<div class="empty">تعذّر التحميل:<br><small dir="ltr">${esc(err.message)}</small></div>`; return; }
+  const pairs = duplicates(all).slice(0, 150);
+  $("count").textContent = pairs.length + " زوج";
+  if (!pairs.length) { $("list").innerHTML = `<div class="empty">لا توجد مكررات محتملة ✔</div>`; return; }
+  $("list").innerHTML = `<p class="note">أسماء متقاربة في بطاقات منفصلة. راجع كل زوج: «دمج» يجمع زياراتهما، و«ليسا نفس الشخص» يخفي الاقتراح نهائيًا.</p><div class="rows">` +
+    pairs.map((d, i) => `<div class="dp" data-i="${i}"><div class="two">${miniCard(d.a)}${miniCard(d.b)}</div>
+      ${d.diff ? `<small class="warnS">⚠ رقما هاتف مختلفان: قد يكونان شخصين</small>` : d.score === 3 ? `<small class="okS">✔ نفس رقم الهاتف</small>` : ""}
+      <div class="acts"><button class="btn" data-m="${i}">🔗 دمج</button><button class="btn" data-x="${i}">ليسا نفس الشخص</button></div></div>`).join("") + `</div>`;
+  $("list").onclick = async (e) => {
+    const o = e.target.closest("[data-open]"); if (o) { e.preventDefault(); $("list").onclick = null; return openCard(+o.dataset.open); }
+    const m = e.target.closest("[data-m]"); if (m) { const d = pairs[+m.dataset.m]; return mergeDialog([d.a, d.b], () => showDuplicates()); }
+    const x = e.target.closest("[data-x]");
+    if (x) { const d = pairs[+x.dataset.x]; x.disabled = true;
+      try { await post("nomerge", { a: d.a.no, b: d.b.no }); allCache?.no.add([d.a.key, d.b.key].sort().join("|")); x.closest(".dp").remove(); }
+      catch (err) { x.disabled = false; alert(err.message); } }
+  };
+}
+$("dupBtn").onclick = () => { $("list").onclick = null; showDuplicates(); };
+
+/* ---- merge dialog: preview, choose the main card and the name, then undo if needed ---- */
+function mergeDialog(cards, after, mainNo) {
+  cards = [...new Map(cards.map((c) => [c.no, c])).values()];
+  if (cards.length < 2) return;
+  const main = mainNo || [...cards].sort((a, b) => b.visits - a.visits || a.no - b.no)[0].no;
+  const names = [...new Set(cards.map((c) => c.name))];
+  const dlg = $("mdlg");
+  dlg.innerHTML = `<form method="dialog"><h3>🔗 دمج ${cards.length} بطاقات في بطاقة واحدة</h3>
+    <p class="note">كل الزيارات والمدفوعات تُجمع في البطاقة الرئيسية. يمكنك التراجع بعد الدمج.</p>
+    <table class="vt"><thead><tr><th>الرئيسية</th><th>البطاقة</th><th>زيارات</th><th>آخر زيارة</th><th>الهاتف</th></tr></thead><tbody>
+    ${cards.map((c) => `<tr><td class="m"><input type="radio" name="main" value="${c.no}" ${c.no === main ? "checked" : ""}></td><td><b>${esc(c.name)}</b><br><small>#${c.no}</small></td>
+      <td class="m">${c.visits ?? ""}</td><td class="m">${c.last || "—"}</td><td class="m" dir="ltr">${esc(String(c.phones || c.ph?.join(",") || "").split(",")[0] || "—")}</td></tr>`).join("")}
+    </tbody></table>
+    <p style="margin:12px 0 6px"><b>الاسم الذي يظهر على البطاقة:</b></p>
+    ${names.map((n, i) => `<label class="opt"><input type="radio" name="nm" value="${esc(n)}" ${i === 0 ? "checked" : ""}> ${esc(n)}</label>`).join("")}
+    <label class="opt"><input type="radio" name="nm" value="*"> اسم آخر: <input id="nmOther" placeholder="اكتب الاسم الصحيح"></label>
+    <p class="note">المجموع بعد الدمج: ${cards.reduce((t, c) => t + (+c.visits || 0), 0)} زيارة.</p>
+    <div class="acts"><button class="btn pri" value="ok" id="mOk">🔗 دمج الآن</button><button class="btn" value="cancel">إلغاء</button></div></form>`;
+  const setName = () => { const m = +dlg.querySelector("[name=main]:checked").value; const c = cards.find((x) => x.no === m);
+    const r = [...dlg.querySelectorAll("[name=nm]")].find((x) => x.value === c.name); if (r) r.checked = true; };
+  dlg.querySelectorAll("[name=main]").forEach((r) => r.onchange = setName); setName();
+  $("nmOther").onfocus = () => { dlg.querySelector("[name=nm][value='*']").checked = true; };
+  dlg.onclose = async () => {
+    if (dlg.returnValue !== "ok") return;
+    const to = +dlg.querySelector("[name=main]:checked").value;
+    let name = dlg.querySelector("[name=nm]:checked").value; if (name === "*") name = $("nmOther").value.trim();
+    const from = cards.map((c) => c.no).filter((n) => n !== to);
+    try {
+      const r = await post("merge", { to, from, name });
+      allCache = null; picked.clear(); selMode = false; updatePickBar();
+      const t = toast(`✔ دُمجت ${r.merged.length + 1} بطاقات في #${to}. <button class="btn" id="undoM">↶ تراجع</button>`, 15000);
+      t.querySelector("#undoM").onclick = async () => {
+        t.hidden = true;
+        for (const no of r.merged) await post("unmerge", { no, undo: true }).catch(() => {});
+        allCache = null; toast("تم التراجع عن الدمج."); after ? after() : openCard(to);
+      };
+      after ? after() : openCard(to);
+    } catch (err) { alert("تعذّر الدمج: " + err.message); }
+  };
+  dlg.showModal();
+}
+
+/* ---- one card: view, edit, merge from inside ---- */
+const fmt = (n) => (n == null || n === "" ? "" : Number(n).toLocaleString("en"));
+const amt = (iqd, usd) => [iqd ? fmt(iqd) + " د.ع" : "", usd ? fmt(usd) + " $" : ""].filter(Boolean).join("<br>") || (iqd === 0 || usd === 0 ? "0" : "—");
+const MONEY = ["paid_iqd", "paid_usd", "due_iqd", "due_usd"];
+/** Calendar visits + accounts rows + the owner's edits → the lines of the card (one per visit, payments of that day on it). */
+function cardLines(d) {
+  const ov = new Map(d.rows.filter((r) => r.ref).map((r) => [r.ref, r]));
+  const apply = (ref, base) => { const r = ov.get(ref); if (r?.hidden) return null; return { ...base, ...(r?.data || {}), ref, edited: !!r }; };
+  const V = d.visits.map((v) => apply("a:" + v.uid, { day: v.day, time: v.allDay ? "" : ampm(v.start), title: v.title, work: v.treatment || "" })).filter(Boolean);
+  const P = [...d.payments.map((y) => apply("p:" + y.src, { day: y.day, work: y.work || "", notes: y.notes || "", ...Object.fromEntries(MONEY.map((f) => [f, y[f]])) })),
+    ...d.rows.filter((r) => !r.ref && !r.hidden).map((r) => ({ ...r.data, ref: "m:" + r.id, manual: true, edited: true }))].filter(Boolean);
+  const byDay = {}; P.forEach((x, i) => (byDay[x.day] = byDay[x.day] || []).push(i));
+  const used = new Set(), lines = [];
+  const sum = (items, f) => { const v = items.filter((y) => y[f] != null && y[f] !== ""); return v.length ? v.reduce((t, y) => t + Number(y[f]), 0) : null; };
+  for (const x of V) {
+    const ids = (byDay[x.day] || []).filter((i) => !used.has(i)); ids.forEach((i) => used.add(i));
+    const pays = ids.map((i) => P[i]), own = MONEY.some((f) => x[f] != null);
+    const money = own ? [x, ...pays] : pays;
+    lines.push({ visit: x, pays, day: x.day, time: x.time, work: x.work, extra: pays.map((y) => y.work).filter((w) => w && w !== x.work).join(" · "),
+      sub: x.title.trim() !== d.patient.name ? x.title : "", notes: pays.map((y) => y.notes).filter(Boolean).join(" · "),
+      hasMoney: money.length > 0, edited: x.edited || pays.some((y) => y.edited), ...Object.fromEntries(MONEY.map((f) => [f, sum(money, f)])) });
+  }
+  P.forEach((y, i) => { if (!used.has(i)) lines.push({ visit: null, pays: [y], day: y.day, time: y.manual ? "✍" : "💵", work: y.work, extra: "", sub: "", notes: y.notes || "",
+    hasMoney: true, edited: y.edited, ...Object.fromEntries(MONEY.map((f) => [f, y[f] ?? null])) }); });
+  return lines.sort((a, b) => a.day.localeCompare(b.day) || String(a.time).localeCompare(String(b.time)));
+}
+let cardData = null;
 async function openCard(no) {
+  current = "card"; $("list").onclick = null;
   $("list").innerHTML = `<div class="spin"></div>`;
   let d;
   try {
@@ -446,52 +649,126 @@ async function openCard(no) {
     const txt = await res.text(); try { d = JSON.parse(txt); } catch { d = { error: `HTTP ${res.status}: ${txt.slice(0, 160)}` }; }
     if (!res.ok || d.error) throw new Error(d.error || "HTTP " + res.status);
   } catch (err) { $("list").innerHTML = `<div class="empty">تعذّر فتح البطاقة:<br><small dir="ltr">${esc(err.message)}</small></div>`; return; }
-  const p = d.patient, v = d.visits, pay = d.payments || [];
-  $("title").textContent = "بطاقة مريض"; $("count").textContent = v.length + " زيارة";
+  d.rows = d.rows || []; cardData = d; renderCard(false);
+}
+function renderCard(editing) {
+  const d = cardData, p = d.patient, lines = cardLines(d);
+  $("title").textContent = editing ? "✏️ تعديل البطاقة" : "بطاقة مريض"; $("count").textContent = lines.filter((l) => l.visit).length + " زيارة";
   const phones = p.phones.map((x) => `<a href="tel:${esc(x)}" dir="ltr">${esc(x)}</a>`).join(" · ") || "لا يوجد رقم";
-  const fmt = (n) => (n == null ? "" : Number(n).toLocaleString("en"));
-  const amt = (iqd, usd) => [iqd ? fmt(iqd) + " د.ع" : "", usd ? fmt(usd) + " $" : ""].filter(Boolean).join("<br>") || (iqd === 0 || usd === 0 ? "0" : "—");
-  const byDay = {}; pay.forEach((x, i) => { (byDay[x.day] = byDay[x.day] || []).push(i); });
-  const used = new Set(), lines = [];
-  for (const x of v) {
-    const ids = (byDay[x.day] || []).filter((i) => !used.has(i)); ids.forEach((i) => used.add(i));
-    const ps = ids.map((i) => pay[i]);
-    const sum = (f) => ps.reduce((t, y) => t + (y[f] || 0), 0) || (ps.some((y) => y[f] === 0) ? 0 : null);
-    const xw = ps.map((y) => y.work).filter((w) => w && w !== x.treatment).join(" · ");
-    lines.push({ day: x.day, time: x.allDay ? "" : ampm(x.start), work: (esc(x.treatment) || "") + (xw ? `${x.treatment ? "<br>" : ""}<small style="color:var(--blue)">💵 ${esc(xw)}</small>` : "") || `<span style="color:var(--muted)">—</span>`,
-      sub: x.title.trim() !== p.name ? esc(x.title) : "", paid: ps.length ? amt(sum("paid_iqd"), sum("paid_usd")) : "—", due: ps.length ? amt(sum("due_iqd"), sum("due_usd")) : "—" });
-  }
-  pay.forEach((y, i) => { if (!used.has(i)) lines.push({ day: y.day, time: "💵", work: esc(y.work) || "دفعة", sub: y.notes ? esc(y.notes) : "", paid: amt(y.paid_iqd, y.paid_usd), due: amt(y.due_iqd, y.due_usd) }); });
-  lines.sort((a, b) => a.day.localeCompare(b.day));
-  const rows = lines.map((x, i) => `<tr><td class="m">${i + 1}</td><td class="d">${x.day}<br><small style="color:var(--muted)">${x.time}</small></td>
-    <td>${x.work}${x.sub ? `<br><small style="color:var(--muted)">${x.sub}</small>` : ""}</td><td class="m">${x.paid}</td><td class="m">${x.due}</td></tr>`).join("");
-  const paidIqd = pay.reduce((t, y) => t + (y.paid_iqd || 0), 0), paidUsd = pay.reduce((t, y) => t + (y.paid_usd || 0), 0);
-  const lastDue = [...pay].reverse().find((y) => y.due_iqd != null || y.due_usd != null);
-  const summary = pay.length ? `<p class="note" style="font-size:14px;color:var(--navy)"><b>مجموع المدفوع:</b> ${amt(paidIqd, paidUsd).replace("<br>", " + ")} · <b>المتبقي حسب آخر سجل (${lastDue ? lastDue.day : "—"}):</b> ${lastDue ? amt(lastDue.due_iqd, lastDue.due_usd).replace("<br>", " + ") : "—"}</p>` : `<p class="note">لا توجد سجلات مالية لهذا المريض في ملفات الحسابات.</p>`;
+  const vdays = lines.map((l) => l.day);
+  const rows = lines.map((x, i) => editing
+    ? `<tr data-i="${i}"><td class="m">${i + 1}</td><td><input type="date" class="e-day" value="${x.day}">${x.time ? `<br><small>${esc(x.time)}</small>` : ""}</td>
+       <td><input class="e-work" value="${esc(x.work)}" placeholder="نوع العمل">${x.sub ? `<br><small>${esc(x.sub)}</small>` : ""}</td>
+       <td>${x.pays.length > 1 ? `<small class="warnS">مجموع ${x.pays.length} سجلات</small><br>` : ""}<input class="e-money" data-f="paid_iqd" inputmode="numeric" placeholder="دينار" value="${x.paid_iqd ?? ""}"><input class="e-money" data-f="paid_usd" inputmode="decimal" placeholder="$" value="${x.paid_usd ?? ""}"></td>
+       <td><input class="e-money" data-f="due_iqd" inputmode="numeric" placeholder="دينار" value="${x.due_iqd ?? ""}"><input class="e-money" data-f="due_usd" inputmode="decimal" placeholder="$" value="${x.due_usd ?? ""}"></td>
+       <td class="m"><button type="button" class="btn sm e-del" title="حذف السطر">🗑</button></td></tr>`
+    : `<tr><td class="m">${i + 1}${x.edited ? `<br><small title="معدّل يدويًا">✏️</small>` : ""}</td><td class="d">${x.day}<br><small style="color:var(--muted)">${esc(x.time)}</small></td>
+       <td>${esc(x.work) || `<span style="color:var(--muted)">—</span>`}${x.extra ? `<br><small style="color:var(--blue)">💵 ${esc(x.extra)}</small>` : ""}${x.sub ? `<br><small style="color:var(--muted)">${esc(x.sub)}</small>` : ""}${x.notes ? `<br><small style="color:var(--muted)">${esc(x.notes)}</small>` : ""}</td>
+       <td class="m">${x.hasMoney ? amt(x.paid_iqd, x.paid_usd) : "—"}</td><td class="m">${x.hasMoney ? amt(x.due_iqd, x.due_usd) : "—"}</td></tr>`).join("");
+  const mp = lines.filter((l) => l.hasMoney), tot = (f) => mp.reduce((t, l) => t + (Number(l[f]) || 0), 0);
+  const lastDue = [...mp].reverse().find((l) => l.due_iqd != null || l.due_usd != null);
+  const summary = mp.length ? `<p class="note" style="font-size:14px;color:var(--navy)"><b>مجموع المدفوع:</b> ${amt(tot("paid_iqd"), tot("paid_usd")).replace("<br>", " + ")} · <b>المتبقي حسب آخر سجل (${lastDue ? lastDue.day : "—"}):</b> ${lastDue ? amt(lastDue.due_iqd, lastDue.due_usd).replace("<br>", " + ") : "—"}</p>`
+    : `<p class="note">لا توجد سجلات مالية لهذا المريض.</p>`;
+  const head = editing
+    ? `<div class="ef"><label>الاسم<input id="eName" value="${esc(p.name)}" placeholder="${esc(p.auto_name)}"></label>
+        <label>الهواتف (افصل بينها بفاصلة)<input id="ePhones" dir="ltr" value="${esc(p.phones.join(", "))}" placeholder="${esc(p.auto_phones.join(", "))}"></label>
+        <label>رقم البطاقة الورقية<input id="eCard" value="${esc(p.card_no || "")}"></label>
+        <label class="wide">ملاحظات / الحالة الطبية<textarea id="eNotes" rows="2">${esc(p.notes || "")}</textarea></label></div>
+        <p class="note">الاسم الأصلي من التقويم: ${esc(p.auto_name)}${p.auto_phones.length ? " · الهواتف من التقويم: " + esc(p.auto_phones.join("، ")) : ""}. اترك الحقل فارغًا للرجوع إليه.</p>`
+    : (p.notes || p.card_no ? `<p class="note" style="color:var(--navy)">${p.notes ? "📝 " + esc(p.notes) : ""}</p>` : "");
   $("list").innerHTML = `<div class="pcard"><div class="phead">
       <div class="no">DSA-P-${p.no}${p.card_no ? " · بطاقة ورقية " + esc(p.card_no) : ""}</div><h3>${esc(p.name)}</h3>
-      <div class="meta"><span>📞 ${phones}</span><span>أول زيارة ${v[0]?.day || ""}</span><span>آخر زيارة ${v[v.length - 1]?.day || ""}</span><span>${v.length} زيارة</span></div></div>
+      <div class="meta"><span>📞 ${phones}</span><span>أول زيارة ${vdays[0] || ""}</span><span>آخر زيارة ${vdays[vdays.length - 1] || ""}</span>${p.edited_at ? `<span>✏️ آخر تعديل ${p.edited_at.slice(0, 10)}</span>` : ""}</div></div>
     <div class="pbody">
-      <div class="pf"><input id="cardNo" placeholder="رقم البطاقة الورقية (إن وجد)" value="${esc(p.card_no || "")}"><textarea id="pnotes" rows="2" placeholder="ملاحظات / الحالة الطبية">${esc(p.notes || "")}</textarea></div>
-      <div class="pf noprint"><button class="btn" id="saveP">💾 حفظ</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn" onclick="print()">🖨 طباعة البطاقة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>
-      ${p.merged.length ? `<p class="note">مدموجة معها: ${p.merged.map((m) => `#${m.no} <a href="#" data-un="${m.no}">فكّ</a>`).join(" · ")}</p>` : ""}
-      <table class="vt"><thead><tr><th>#</th><th>التاريخ</th><th>نوع العمل</th><th>المدفوع</th><th>المتبقي</th></tr></thead><tbody>${rows}</tbody></table>
-      ${summary}
+      ${editing ? "" : `<div class="pf noprint"><button class="btn pri" id="editP">✏️ تعديل</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn" onclick="print()">🖨 طباعة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>`}
+      ${head}
+      ${!editing && p.merged.length ? `<p class="note">مدموجة معها: ${p.merged.map((m) => `#${m.no} <a href="#" data-un="${m.no}">فكّ</a>`).join(" · ")}</p>` : ""}
+      <div class="tw"><table class="vt${editing ? " ed" : ""}"><thead><tr><th>#</th><th>التاريخ</th><th>نوع العمل</th><th>المدفوع</th><th>المتبقي</th>${editing ? "<th></th>" : ""}</tr></thead><tbody id="vbody">${rows}</tbody></table></div>
+      ${editing ? `<p><button type="button" class="btn" id="addRow">＋ إضافة زيارة / دفعة</button></p>
+        <div class="savebar"><button class="btn pri" id="saveE">💾 حفظ التغييرات</button><button class="btn" id="cancelE">إلغاء</button><span id="eMsg" class="note"></span></div>` : summary}
     </div></div>`;
-  $("saveP").onclick = async () => {
-    await fetch("/clinic/api/patients?action=note", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ no: p.no, notes: $("pnotes").value, card_no: $("cardNo").value }) });
-    $("saveP").textContent = "✔ حُفظ";
+  if (!editing) {
+    $("editP").onclick = () => renderCard(true);
+    $("backP").onclick = () => patients();
+    $("mergeP").onclick = () => mergeFromCard(p);
+    document.querySelectorAll("[data-un]").forEach((a) => a.onclick = async (e) => {
+      e.preventDefault();
+      if (!confirm(`فكّ البطاقة #${a.dataset.un} من هذه البطاقة؟ لن يقترح النظام دمجهما مرة أخرى.`)) return;
+      await post("unmerge", { no: a.dataset.un }).catch((err) => alert(err.message)); allCache = null; openCard(p.no);
+    });
+    return;
+  }
+  const tb = $("vbody");
+  tb.onclick = (e) => { const b = e.target.closest(".e-del"); if (!b) return; const tr = b.closest("tr"); tr.classList.toggle("gone"); b.textContent = tr.classList.contains("gone") ? "↶" : "🗑"; };
+  $("addRow").onclick = () => {
+    const tr = document.createElement("tr"); tr.dataset.new = "1";
+    tr.innerHTML = `<td class="m">＋</td><td><input type="date" class="e-day" value="${new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10)}"></td><td><input class="e-work" placeholder="نوع العمل"></td>
+      <td><input class="e-money" data-f="paid_iqd" inputmode="numeric" placeholder="دينار"><input class="e-money" data-f="paid_usd" inputmode="decimal" placeholder="$"></td>
+      <td><input class="e-money" data-f="due_iqd" inputmode="numeric" placeholder="دينار"><input class="e-money" data-f="due_usd" inputmode="decimal" placeholder="$"></td>
+      <td class="m"><button type="button" class="btn sm e-del">🗑</button></td>`;
+    tb.appendChild(tr); tr.querySelector(".e-work").focus();
   };
-  $("backP").onclick = () => patients();
-  $("mergeP").onclick = async () => {
-    const other = prompt("اكتب رقم البطاقة الأخرى لنفس المريض (مثل 10234) لتُضم زياراتها إلى هذه البطاقة:");
-    if (!other) return;
-    const r = await (await fetch("/clinic/api/patients?action=merge", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ from: other.replace(/\D/g, ""), to: p.no }) })).json();
-    if (r.ok) openCard(p.no); else alert("رقم غير صحيح");
+  $("cancelE").onclick = () => renderCard(false);
+  $("saveE").onclick = async () => {
+    const val = (tr) => { const o = { day: tr.querySelector(".e-day").value, work: tr.querySelector(".e-work").value.trim() };
+      tr.querySelectorAll(".e-money").forEach((i) => { const v = toEn(i.value).replace(/[^\d.]/g, ""); o[i.dataset.f] = v === "" ? null : Number(v); }); return o; };
+    const rowsOut = [], add = [];
+    tb.querySelectorAll("tr").forEach((tr) => {
+      if (tr.dataset.new) { if (!tr.classList.contains("gone")) { const o = val(tr); if (o.day && (o.work || MONEY.some((f) => o[f] != null))) add.push(o); } return; }
+      const l = lines[+tr.dataset.i]; const refs = [l.visit, ...l.pays].filter(Boolean);
+      if (tr.classList.contains("gone")) { refs.forEach((x) => rowsOut.push({ ...x, ref: x.ref, hidden: 1 })); return; }
+      const o = val(tr);
+      const moneyChanged = MONEY.some((f) => (o[f] ?? null) !== (l[f] ?? null));
+      if (o.day === l.day && o.work === (l.work || "") && !moneyChanged) return;
+      const keep = (x) => Object.fromEntries(["day", "work", "notes", ...MONEY].filter((f) => f in x).map((f) => [f, x[f]]));
+      if (l.visit) {
+        const v = { ...keep(l.visit), ref: l.visit.ref, day: o.day, work: o.work };
+        if (!l.pays.length && (moneyChanged || MONEY.some((f) => l.visit[f] != null))) MONEY.forEach((f) => (v[f] = o[f]));
+        rowsOut.push(v);
+        if (l.pays.length && moneyChanged) l.pays.forEach((y, k) => rowsOut.push({ ...keep(y), ref: y.ref, day: o.day, ...Object.fromEntries(MONEY.map((f) => [f, k === 0 ? o[f] : null])) }));
+        else if (l.pays.length && o.day !== l.day) l.pays.forEach((y) => rowsOut.push({ ...keep(y), ref: y.ref, day: o.day }));
+      } else l.pays.forEach((y, k) => rowsOut.push({ ...keep(y), ref: y.ref, day: o.day, work: k === 0 ? o.work : y.work, ...Object.fromEntries(MONEY.map((f) => [f, k === 0 ? o[f] : null])) }));
+    });
+    const body = { no: cardData.patient.no, rows: rowsOut, add };
+    const nm = $("eName").value.trim(), ph = $("ePhones").value.trim();
+    body.name = nm && nm !== cardData.patient.auto_name ? nm : null;
+    body.phones = ph && ph.replace(/\s/g, "") !== cardData.patient.auto_phones.join(",") ? ph : null;
+    body.card_no = $("eCard").value.trim(); body.notes = $("eNotes").value.trim();
+    $("saveE").disabled = true; $("eMsg").textContent = "جارٍ الحفظ…";
+    try { await post("save", body); allCache = null; await openCard(cardData.patient.no); toast("✔ حُفظت التعديلات على البطاقة."); }
+    catch (err) { $("saveE").disabled = false; $("eMsg").className = "note warn"; $("eMsg").textContent = "تعذّر الحفظ: " + err.message; }
   };
-  document.querySelectorAll("[data-un]").forEach((a) => a.onclick = async (e) => {
-    e.preventDefault(); await fetch("/clinic/api/patients?action=unmerge", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ no: a.dataset.un }) }); openCard(p.no);
-  });
+}
+async function mergeFromCard(p) {
+  const me = { no: p.no, name: p.name, visits: cardData.visits.length, last: cardData.visits[cardData.visits.length - 1]?.day, phones: p.phones.join(",") };
+  const chosen = new Map();
+  const dlg = $("mdlg");
+  dlg.innerHTML = `<form method="dialog"><h3>🔗 دمج بطاقات أخرى مع «${esc(p.name)}»</h3>
+    <p class="note">اختر البطاقات التي تخص نفس المريض. المقترحة أسماء متقاربة، أو ابحث بالاسم أو الهاتف أو الرقم.</p>
+    <div id="sugg"><div class="spin"></div></div>
+    <div class="sbox"><input id="mq" type="search" placeholder="ابحث عن البطاقة الأخرى" autocomplete="off"><button type="button" class="btn" id="mqGo">بحث</button></div>
+    <div id="mres"></div>
+    <div class="acts"><button class="btn pri" value="next" id="mNext" disabled>متابعة ←</button><button class="btn" value="cancel">إلغاء</button></div></form>`;
+  const item = (c) => `<label class="opt pick"><input type="checkbox" data-no="${c.no}" ${chosen.has(c.no) ? "checked" : ""}> <b>${esc(c.name)}</b> <small>#${c.no} · ${c.visits} زيارة · آخر ${c.last || "—"}${c.phones || c.ph?.length ? " · " + esc(String(c.phones || c.ph.join(",")).split(",")[0]) : ""}</small></label>`;
+  const pool = new Map();
+  const show = (el, list, empty) => { list.forEach((c) => pool.set(c.no, c)); el.innerHTML = list.length ? list.map(item).join("") : `<p class="note">${empty}</p>`; };
+  dlg.onchange = (e) => { const cb = e.target.closest("[data-no]"); if (!cb) return; const no = +cb.dataset.no;
+    if (cb.checked) chosen.set(no, pool.get(no)); else chosen.delete(no); $("mNext").disabled = !chosen.size;
+    dlg.querySelectorAll(`[data-no="${no}"]`).forEach((x) => (x.checked = cb.checked)); };
+  const search = async () => {
+    const q = $("mq").value.trim(); if (!q) return; $("mres").innerHTML = `<div class="spin"></div>`;
+    const j = await (await fetch(`/clinic/api/patients?q=${encodeURIComponent(q)}`, { cache: "no-store" })).json();
+    show($("mres"), (j.patients || []).filter((c) => c.no !== p.no).slice(0, 30), "لا نتائج");
+  };
+  $("mqGo").onclick = search; $("mq").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); search(); } };
+  dlg.onclose = () => { if (dlg.returnValue === "next" && chosen.size) mergeDialog([me, ...chosen.values()], null, p.no); };
+  dlg.showModal();
+  try {
+    const all = await allCards();
+    const sug = duplicates(all, p.no).slice(0, 12).map((d) => (d.a.no === p.no ? d.b : d.a));
+    $("sugg").innerHTML = sug.length ? `<p style="margin:6px 0"><b>مقترحة:</b></p><div id="suggL"></div>` : `<p class="note">لا توجد أسماء متقاربة مقترحة. ابحث بالأسفل.</p>`;
+    if (sug.length) show($("suggL"), sug, "");
+  } catch { $("sugg").innerHTML = ""; }
 }
 
 async function load(r = current) {
@@ -525,7 +802,7 @@ $("pick").addEventListener("change", (e) => {
   document.querySelectorAll(".tabs button").forEach((x) => x.classList.remove("on"));
   load(e.target.value);
 });
-$("refresh").onclick = () => load();
+$("refresh").onclick = () => load(current === "card" || current === "dups" ? "patients" : current);
 function stepDay(n) {
   const d = addDays(curFrom || today, n);
   const tab = d === today ? "today" : d === addDays(today, -1) ? "yesterday" : d === addDays(today, 1) ? "tomorrow" : "";
@@ -535,8 +812,8 @@ function stepDay(n) {
 }
 $("prevDay").onclick = () => stepDay(-1);
 $("nextDay").onclick = () => stepDay(1);
-document.addEventListener("visibilitychange", () => { if (!document.hidden && current !== "archive" && current !== "patients") load(); });
-setInterval(() => { if (!document.hidden && current !== "archive" && current !== "patients") load(); }, 5 * 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && !["archive","patients","card","dups"].includes(current)) load(); });
+setInterval(() => { if (!document.hidden && !["archive","patients","card","dups"].includes(current)) load(); }, 5 * 60000);
 load("today");
 </script>
 </body>

@@ -3,7 +3,12 @@
 // GET  /clinic/api/patients?no=10023         → one card: patient + all visits
 // POST /clinic/api/patients?action=rebuild   → fills patient_key for rows that lack it (≤1500 per call; repeat until left=0)
 // POST /clinic/api/patients?action=automerge → same phone + nearly the same name → one card (at most every 6 h)
-// POST /clinic/api/patients?action=merge {from,to} | unmerge {no} | note {no, notes, card_no}
+// GET  /clinic/api/patients?all=1           → every card's summary (no, key, name, phones, visits, last) + "not the same" pairs,
+//                                              for finding likely duplicates in the browser (one read per card)
+// POST /clinic/api/patients?action=merge {to, from: no | no[], name?}  → the "from" cards join "to" (name = name to keep)
+// POST ?action=unmerge {no} | nomerge {a, b} ("not the same person") | note {no, notes, card_no}
+// POST ?action=save {no, name, phones, card_no, notes, rows:[{ref, day, work, paid_iqd, paid_usd, due_iqd, due_usd, hidden}], add:[…]}
+//      Edits are stored in card_rows / patients.display_name, apart from the calendar and Excel data, so they survive re-syncs.
 //
 // D1's free plan counts every row a query reads (5 million a day), so the list reads a summary kept on the
 // patients table (visits, first/last day, name, phones). It is rebuilt at most every 2 hours, only when visits changed.
@@ -61,8 +66,10 @@ async function autoMerge(env: Env) {
     .bind(JSON.stringify(keys)).all<{ key: string; no: number; merged_into: string | null }>();
   const info = new Map(rows.map((r) => [r.key, r]));
   const groups = results.map((r) => (JSON.parse(r.ks) as string[]).sort((a, b) => (info.get(a)?.no || 0) - (info.get(b)?.no || 0)));
+  const { results: no } = await env.DB.prepare("SELECT a, b FROM merge_no").all<{ a: string; b: string }>();
+  const refused = new Set(no.map((r) => r.a + "|" + r.b));
   const stmts = autoMergePairs(groups)
-    .filter(([from]) => info.get(from)?.merged_into == null)
+    .filter(([from, to]) => info.get(from)?.merged_into == null && !refused.has([from, to].sort().join("|")))
     .map(([from, to]) => env.DB.prepare("UPDATE patients SET merged_into = ? WHERE key = ? AND merged_into IS NULL").bind(info.get(to)?.merged_into || to, from));
   for (let i = 0; i < stmts.length; i += 100) await env.DB.batch(stmts.slice(i, i + 100));
   if (stmts.length) await setSetting(env, "stats_dirty", "1");
@@ -79,35 +86,53 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     const no = parseInt(u.searchParams.get("no") || "");
 
     if (no) {
-      const p = await env.DB.prepare("SELECT key, no, notes, card_no, merged_into FROM patients WHERE no = ?").bind(no).first<Record<string, string>>();
+      const COLS = "key, no, notes, card_no, merged_into, display_name, phone_override, edited_at";
+      const p = await env.DB.prepare(`SELECT ${COLS} FROM patients WHERE no = ?`).bind(no).first<Record<string, string>>();
       if (!p) return json({ error: "not found" }, 404);
       const main = p.merged_into || p.key;
-      const card = main === p.key ? p : await env.DB.prepare("SELECT key, no, notes, card_no FROM patients WHERE key = ?").bind(main).first<Record<string, string>>();
+      const card = main === p.key ? p : await env.DB.prepare(`SELECT ${COLS} FROM patients WHERE key = ?`).bind(main).first<Record<string, string>>();
       const { results: members } = await env.DB.prepare("SELECT key, no FROM patients WHERE key = ?1 OR merged_into = ?1").bind(main).all<{ key: string; no: number }>();
       const { results: visits } = await env.DB.prepare(
-        `SELECT day, start, end, title, phone, treatment, description, all_day AS allDay FROM appointments
+        `SELECT uid, day, start, end, title, phone, treatment, description, all_day AS allDay FROM appointments
          WHERE removed = 0 AND patient_key IN (SELECT value FROM json_each(?)) ORDER BY start`,
       ).bind(JSON.stringify(members.map((m) => m.key))).all<Record<string, string>>();
       const { results: payments } = await env.DB.prepare(
-        `SELECT day, name, paid_iqd, paid_usd, due_iqd, due_usd, work, notes FROM payments
+        `SELECT src, day, name, paid_iqd, paid_usd, due_iqd, due_usd, work, notes FROM payments
          WHERE patient_key IN (SELECT value FROM json_each(?)) ORDER BY day, id`,
       ).bind(JSON.stringify(members.map((m) => m.key))).all<Record<string, string>>();
+      const refs = [...visits.map((v) => "a:" + v.uid), ...payments.map((y) => "p:" + y.src)];
+      const { results: rows } = await env.DB.prepare(
+        `SELECT id, ref, data, hidden, updated_at FROM card_rows
+         WHERE patient_key IN (SELECT value FROM json_each(?1)) OR ref IN (SELECT value FROM json_each(?2))`,
+      ).bind(JSON.stringify(members.map((m) => m.key)), JSON.stringify(refs)).all<Record<string, string>>();
       const count: Record<string, number> = {};
       for (const v of visits) count[v.title.trim()] = (count[v.title.trim()] || 0) + 1;
-      const name = Object.entries(count).sort((a, b) => b[1] - a[1])[0]?.[0] || main;
-      const phones = [...new Set(visits.map((v) => v.phone).filter(Boolean))];
-      return json({ patient: { ...card, name, phones, merged: members.filter((m) => m.key !== main) }, visits, payments });
+      const auto = Object.entries(count).sort((a, b) => b[1] - a[1])[0]?.[0] || payments[0]?.name || main;
+      const autoPhones = [...new Set(visits.map((v) => v.phone).filter(Boolean))];
+      const name = card?.display_name || auto;
+      const phones = card?.phone_override != null ? card.phone_override.split(",").map((x) => x.trim()).filter(Boolean) : autoPhones;
+      return json({ patient: { ...card, name, auto_name: auto, phones, auto_phones: autoPhones, merged: members.filter((m) => m.key !== main) },
+        visits, payments, rows: rows.map((r) => ({ ...r, data: JSON.parse(r.data || "{}") })) });
     }
 
     if (!pending?.n) await refreshStats(env);
+    if (u.searchParams.get("all")) {
+      const { results } = await env.DB.prepare(
+        `SELECT no, key, coalesce(display_name, name, key) AS name, coalesce(phone_override, phones) AS phones, visits, last_day AS last,
+                merged_into = '' AS unmerged FROM patients WHERE merged_into IS NULL OR merged_into = ''`,
+      ).all();
+      const { results: no } = await env.DB.prepare("SELECT a, b FROM merge_no").all();
+      return json({ patients: results, no });
+    }
     const q = (u.searchParams.get("q") || "").trim().slice(0, 60);
     const offset = Math.max(0, parseInt(u.searchParams.get("offset") || "0") || 0);
     const digits = q.replace(/[٠-٩]/g, (c) => String("٠١٢٣٤٥٦٧٨٩".indexOf(c))).replace(/\D/g, "");
     const nq = q ? patientKey(q).replace(/^#/, "") : "";
     const { results } = await env.DB.prepare(
-      `SELECT no, key, visits, first_day AS first, last_day AS last, coalesce(name, key) AS name, phones FROM patients
+      `SELECT no, key, visits, first_day AS first, last_day AS last, coalesce(display_name, name, key) AS name, coalesce(phone_override, phones) AS phones FROM patients
        WHERE (merged_into IS NULL OR merged_into = '') AND (visits > 0 OR EXISTS (SELECT 1 FROM payments y WHERE y.patient_key = patients.key))
-         AND (?1 = '' OR key LIKE '%' || ?1 || '%' OR (?2 <> '' AND phones LIKE '%' || ?2 || '%') OR CAST(no AS TEXT) = ?3
+         AND (?1 = '' OR key LIKE '%' || ?1 || '%' OR (?2 <> '' AND (phones LIKE '%' || ?2 || '%' OR phone_override LIKE '%' || ?2 || '%'))
+              OR CAST(no AS TEXT) = ?3 OR (?3 <> '' AND display_name LIKE '%' || ?3 || '%')
               OR EXISTS (SELECT 1 FROM patients c WHERE c.merged_into = patients.key AND (c.key LIKE '%' || ?1 || '%' OR CAST(c.no AS TEXT) = ?3)))
        ORDER BY coalesce(last_day, '0') DESC, no DESC LIMIT 100 OFFSET ?4`,
     ).bind(nq, digits.length >= 4 ? digits : "", q, offset).all();
@@ -131,21 +156,82 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     }
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
     if (action === "merge") {
-      const from = await env.DB.prepare("SELECT key FROM patients WHERE no = ?").bind(Number(body.from)).first<{ key: string }>();
       const to = await env.DB.prepare("SELECT key, merged_into FROM patients WHERE no = ?").bind(Number(body.to)).first<{ key: string; merged_into: string }>();
-      if (!from || !to || from.key === to.key) return json({ ok: false, error: "bad numbers" }, 400);
+      const fromNos = (Array.isArray(body.from) ? body.from : [body.from]).map(Number).filter(Boolean).slice(0, 30);
+      if (!to || !fromNos.length) return json({ ok: false, error: "bad numbers" }, 400);
       const target = to.merged_into || to.key;
-      await env.DB.prepare("UPDATE patients SET merged_into = ? WHERE key = ? OR merged_into = ?").bind(target, from.key, from.key).run();
+      const { results: from } = await env.DB.prepare("SELECT key, no FROM patients WHERE no IN (SELECT value FROM json_each(?))")
+        .bind(JSON.stringify(fromNos)).all<{ key: string; no: number }>();
+      const moving = from.filter((f) => f.key !== target);
+      if (!moving.length) return json({ ok: false, error: "bad numbers" }, 400);
+      const stmts = moving.flatMap((f) => [
+        env.DB.prepare("UPDATE patients SET merged_into = ? WHERE key = ? OR merged_into = ?").bind(target, f.key, f.key),
+        env.DB.prepare("DELETE FROM merge_no WHERE (a = ?1 AND b = ?2) OR (a = ?2 AND b = ?1)").bind(f.key, target),
+      ]);
+      if (typeof body.name === "string" && body.name.trim())
+        stmts.push(env.DB.prepare("UPDATE patients SET display_name = ?, edited_at = datetime('now') WHERE key = ?").bind(body.name.trim().slice(0, 120), target));
+      await env.DB.batch(stmts);
       await refreshOne(env, target);
-      return json({ ok: true });
+      return json({ ok: true, merged: moving.map((f) => f.no) });
     }
     if (action === "unmerge") {
       const p = await env.DB.prepare("SELECT key, merged_into FROM patients WHERE no = ?").bind(Number(body.no)).first<{ key: string; merged_into: string }>();
       if (!p) return json({ ok: false, error: "bad number" }, 400);
-      await env.DB.prepare("UPDATE patients SET merged_into = '' WHERE no = ?").bind(Number(body.no)).run();
+      // undo = the merge was a slip: back to an ordinary card. Otherwise the owner says "not the same person": remembered.
+      const stmts = [env.DB.prepare("UPDATE patients SET merged_into = ? WHERE no = ?").bind(body.undo ? null : "", Number(body.no))];
+      if (p.merged_into && !body.undo) stmts.push(env.DB.prepare("INSERT OR IGNORE INTO merge_no (a, b) VALUES (?, ?)").bind(...[p.key, p.merged_into].sort()));
+      await env.DB.batch(stmts);
       await refreshOne(env, p.key);
       if (p.merged_into) await refreshOne(env, p.merged_into);
       return json({ ok: true });
+    }
+    if (action === "nomerge") {
+      const { results } = await env.DB.prepare("SELECT key FROM patients WHERE no IN (?, ?)").bind(Number(body.a), Number(body.b)).all<{ key: string }>();
+      if (results.length !== 2) return json({ ok: false, error: "bad numbers" }, 400);
+      await env.DB.prepare("INSERT OR IGNORE INTO merge_no (a, b) VALUES (?, ?)").bind(...results.map((r) => r.key).sort()).run();
+      return json({ ok: true });
+    }
+    if (action === "save") {
+      const p = await env.DB.prepare("SELECT key, merged_into FROM patients WHERE no = ?").bind(Number(body.no)).first<{ key: string; merged_into: string }>();
+      if (!p) return json({ ok: false, error: "bad number" }, 400);
+      const main = p.merged_into || p.key;
+      const str = (v: unknown, n: number) => (v == null ? null : String(v).trim().slice(0, n) || null);
+      const num = (v: unknown) => (v === null || v === undefined || v === "" || isNaN(Number(v)) ? null : Number(v));
+      const clean = (r: Record<string, unknown>) => {
+        const d: Record<string, unknown> = {};
+        if (typeof r.day === "string" && /^\d{4}-\d{2}-\d{2}$/.test(r.day)) d.day = r.day;
+        if ("work" in r) d.work = str(r.work, 300) ?? "";
+        if ("notes" in r) d.notes = str(r.notes, 300) ?? "";
+        for (const f of ["paid_iqd", "paid_usd", "due_iqd", "due_usd"]) if (f in r) d[f] = num(r[f]);
+        return d;
+      };
+      const stmts: D1PreparedStatement[] = [];
+      if ("name" in body || "phones" in body || "notes" in body || "card_no" in body) {
+        const phones = body.phones == null ? null : String(body.phones).replace(/[٠-٩]/g, (c) => String("٠١٢٣٤٥٦٧٨٩".indexOf(c)))
+          .split(/[,،\n]+/).map((x) => x.replace(/[^\d+]/g, "")).filter((x) => x.length >= 7).join(",");
+        stmts.push(env.DB.prepare(
+          `UPDATE patients SET display_name = ?, phone_override = ?, notes = ?, card_no = ?, edited_at = datetime('now') WHERE key = ?`,
+        ).bind(str(body.name, 120), body.phones == null ? null : phones, str(body.notes, 2000) ?? "", str(body.card_no, 20) ?? "", main));
+      }
+      for (const r of (Array.isArray(body.rows) ? body.rows : []).slice(0, 200) as Record<string, unknown>[]) {
+        const ref = String(r.ref || "");
+        if (/^m:\d+$/.test(ref)) {
+          stmts.push(env.DB.prepare("UPDATE card_rows SET data = ?, hidden = ?, updated_at = datetime('now') WHERE id = ? AND ref IS NULL")
+            .bind(JSON.stringify(clean(r)), r.hidden ? 1 : 0, Number(ref.slice(2))));
+        } else if (/^[ap]:/.test(ref)) {
+          stmts.push(env.DB.prepare(
+            `INSERT INTO card_rows (patient_key, ref, data, hidden) VALUES (?, ?, ?, ?)
+             ON CONFLICT(ref) DO UPDATE SET data = excluded.data, hidden = excluded.hidden, updated_at = datetime('now')`,
+          ).bind(main, ref.slice(0, 200), JSON.stringify(clean(r)), r.hidden ? 1 : 0));
+        }
+      }
+      for (const r of (Array.isArray(body.add) ? body.add : []).slice(0, 50) as Record<string, unknown>[]) {
+        const d = clean(r); if (!d.day) continue;
+        stmts.push(env.DB.prepare("INSERT INTO card_rows (patient_key, ref, data) VALUES (?, NULL, ?)").bind(main, JSON.stringify(d)));
+      }
+      if (!stmts.length) return json({ ok: true, saved: 0 });
+      for (let i = 0; i < stmts.length; i += 50) await env.DB.batch(stmts.slice(i, i + 50));
+      return json({ ok: true, saved: stmts.length });
     }
     if (action === "note") {
       await env.DB.prepare("UPDATE patients SET notes = ?, card_no = ? WHERE no = ?")
