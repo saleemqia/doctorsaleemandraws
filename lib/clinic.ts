@@ -303,7 +303,7 @@ export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExc
 /** One-time schema upgrades, remembered in clinic_settings 'schema_v'. */
 export async function ensureSchema(env: Env) {
   const v = (await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = 'schema_v'").first<{ value: string }>())?.value;
-  if (v === "5") return;
+  if (v === "6") return;
   for (const sql of [
     "ALTER TABLE patients ADD COLUMN visits INTEGER DEFAULT 0",
     "ALTER TABLE patients ADD COLUMN first_day TEXT",
@@ -331,8 +331,12 @@ export async function ensureSchema(env: Env) {
     `CREATE TABLE IF NOT EXISTS card_files (id INTEGER PRIMARY KEY, no INTEGER, kind TEXT, title TEXT, mime TEXT, data TEXT,
        size INTEGER, taken TEXT, created_at TEXT DEFAULT (datetime('now')))`,
     "CREATE INDEX IF NOT EXISTS card_files_no ON card_files(no)",
+    // v6: message list. no_msg = 1 → never include this patient in reminders/announcements; msg_log remembers who was messaged and when.
+    "ALTER TABLE patients ADD COLUMN no_msg INTEGER DEFAULT 0",
+    "CREATE TABLE IF NOT EXISTS msg_log (id INTEGER PRIMARY KEY, no INTEGER, sent_at TEXT DEFAULT (datetime('now')), campaign TEXT)",
+    "CREATE INDEX IF NOT EXISTS msg_log_no ON msg_log(no)",
   ]) { try { await env.DB.prepare(sql).run(); } catch { /* already there */ } }
-  await setSetting(env, "schema_v", "5");
+  await setSetting(env, "schema_v", "6");
   await setSetting(env, "stats_dirty", "1");
 }
 

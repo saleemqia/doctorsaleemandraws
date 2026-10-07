@@ -119,7 +119,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     if (u.searchParams.get("all")) {
       const { results } = await env.DB.prepare(
         `SELECT no, key, coalesce(display_name, name, key) AS name, coalesce(phone_override, phones) AS phones, visits, last_day AS last,
-                merged_into = '' AS unmerged FROM patients WHERE merged_into IS NULL OR merged_into = ''`,
+                merged_into = '' AS unmerged, no_msg, (SELECT max(sent_at) FROM msg_log m WHERE m.no = patients.no) AS last_msg FROM patients WHERE merged_into IS NULL OR merged_into = ''`,
       ).all();
       const { results: no } = await env.DB.prepare("SELECT a, b FROM merge_no").all();
       return json({ patients: results, no });
@@ -183,6 +183,15 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       await env.DB.batch(stmts);
       await refreshOne(env, p.key);
       if (p.merged_into) await refreshOne(env, p.merged_into);
+      return json({ ok: true });
+    }
+    if (action === "nomsg") {
+      await env.DB.prepare("UPDATE patients SET no_msg = ? WHERE no = ?").bind(body.value ? 1 : 0, Number(body.no)).run();
+      return json({ ok: true });
+    }
+    if (action === "sent") {
+      const nos = (Array.isArray(body.nos) ? body.nos : [body.no]).map(Number).filter((n: number) => n > 0).slice(0, 200);
+      if (nos.length) await env.DB.batch(nos.map((n: number) => env.DB.prepare("INSERT INTO msg_log (no, campaign) VALUES (?, ?)").bind(n, String(body.campaign || "").slice(0, 60))));
       return json({ ok: true });
     }
     if (action === "nomerge") {

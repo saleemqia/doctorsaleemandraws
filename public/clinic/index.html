@@ -154,6 +154,13 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   body.previewing>*:not(#rpt){display:none!important}body.previewing{background:#fff}
   #rpt{position:static;background:#fff;display:block}.rptbar{display:none!important}.rptscroll{overflow:visible;padding:0}.rptzoom{zoom:1!important;width:auto;margin:0}.sheet{box-shadow:none;width:auto;padding:0;min-height:0}
 }
+
+.bc{background:#fff;border-radius:14px;padding:12px;box-shadow:0 4px 18px #13285C14}.bc h3{margin:0 0 8px}.bc .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0}
+.bc select,.bc input[type=number]{padding:8px;border:1px solid var(--line);border-radius:8px;font:inherit;width:auto}.bc input[type=number]{width:70px}
+.bc textarea{width:100%;min-height:130px;padding:10px;border:1px solid var(--line);border-radius:10px;font:inherit;box-sizing:border-box}
+.bc .tpl{font-size:13px}.bc .warn{background:#FFF7E6;border:1px solid #F3D9A4;border-radius:10px;padding:8px 10px;font-size:13px;margin:8px 0}
+.bl{margin-top:10px}.bl .it{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:8px 4px;border-bottom:1px solid var(--line);align-items:center}.bl .it.done{opacity:.5}
+.bl .it small{color:var(--muted)}.bl .it .go{display:flex;gap:6px}
 </style>
 </head>
 <body>
@@ -185,7 +192,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     </div>
   </div>
   <div id="pats" hidden>
-    <div class="tbar"><button class="btn" id="selMode" type="button">☑ تحديد للدمج</button><button class="btn" id="dupBtn" type="button">🧩 مكررات محتملة</button><button class="btn" id="impBtn" type="button">💵 استيراد الحسابات (Excel)</button></div>
+    <div class="tbar"><button class="btn" id="selMode" type="button">☑ تحديد للدمج</button><button class="btn" id="dupBtn" type="button">🧩 مكررات محتملة</button><button class="btn pri" id="msgBtn" type="button">📣 رسائل للمرضى</button><button class="btn" id="impBtn" type="button">💵 استيراد الحسابات (Excel)</button></div>
     <form id="pform" class="sbox"><input id="pq" type="search" placeholder="اسم المريض أو رقم الهاتف أو رقم البطاقة" autocomplete="off"><button class="btn">بحث</button></form>
     <p class="note" id="pstats"></p>
     <details class="imp"><summary>💵 استيراد ملف الحسابات (Excel)</summary>
@@ -704,6 +711,72 @@ async function openCard(no) {
   } catch (err) { $("list").innerHTML = `<div class="empty">تعذّر فتح البطاقة:<br><small dir="ltr">${esc(err.message)}</small></div>`; return; }
   d.rows = d.rows || []; cardData = d; renderCard(false);
 }
+
+/* ---- broadcast list: reminders / announcements sent one by one through WhatsApp ---- */
+const waNumber = (raw) => {
+  const out = []; for (const x of String(raw || "").split(/[,;،]/)) {
+    let d = toEn(x).replace(/\D/g, ""); if (d.startsWith("00")) d = d.slice(2);
+    if (/^07\d{9}$/.test(d)) d = "964" + d.slice(1); else if (/^7\d{9}$/.test(d)) d = "964" + d;
+    if (d.length >= 11) out.push(d);
+  }
+  return out.find((n) => /^9647\d{9}$/.test(n)) || out[0] || "";
+};
+const TPL = {
+  remind: "مرحبًا {الاسم} 🌷\nمرّت فترة منذ آخر زيارة لك لعيادة د. سليم أندراوس لطب الأسنان. ننصح بفحص دوري كل 6 أشهر للاطمئنان على صحة أسنانك ولاكتشاف أي مشكلة مبكرًا.\nيسعدنا حجز موعد مناسب لك، فقط ردّ على هذه الرسالة.\nعيادة د. سليم أندراوس — دهوك",
+  offer: "مرحبًا {الاسم} 🌟\nيسرّ عيادة د. سليم أندراوس لطب الأسنان إعلامكم بعرض خاص: [اكتب العرض هنا]\nللحجز ردّ على هذه الرسالة.\nعيادة د. سليم أندراوس — دهوك",
+  news: "مرحبًا {الاسم} 👋\nنودّ إعلامكم بـ: [اكتب الخبر أو التحديث هنا]\nعيادة د. سليم أندراوس — دهوك",
+};
+async function showBroadcast() {
+  current = "bc"; $("list").onclick = null; $("pats").hidden = false; $("title").textContent = "📣 رسائل للمرضى"; $("count").textContent = ""; $("note").textContent = "";
+  $("list").innerHTML = `<div class="spin"></div>`;
+  let all; try { all = await allCards(true); } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر التحميل: ${esc(e.message)}</div>`; return; }
+  const base = all.patients.map((p) => ({ ...p, wa: waNumber(p.phones) })).filter((p) => p.wa);
+  const st = { mode: "months", months: 6, skipDays: 30, text: TPL.remind, sent: new Set() };
+  const monthsAgo = (n) => { const d = new Date(Date.now() + 180 * 60000); d.setUTCMonth(d.getUTCMonth() - n); return d.toISOString().slice(0, 10); };
+  const audience = () => base.filter((p) => !p.no_msg).filter((p) => st.mode === "all" || (p.last && p.last <= monthsAgo(st.months)))
+    .filter((p) => !st.skipDays || !p.last_msg || p.last_msg.slice(0, 10) < new Date(Date.now() - st.skipDays * 86400000).toISOString().slice(0, 10))
+    .sort((a, b) => String(a.last || "").localeCompare(String(b.last || "")));
+  const link = (p) => `https://wa.me/${p.wa}?text=${encodeURIComponent(st.text.replaceAll("{الاسم}", String(p.name).split(/\s+/)[0]))}`;
+  const draw = () => {
+    const aud = audience(), left = aud.filter((p) => !st.sent.has(p.no));
+    $("bcN").textContent = `${aud.length} مريضًا مطابقًا (من ${base.length} لديهم رقم واتساب) · بقي ${left.length} لم تُرسل لهم في هذه الجلسة`;
+    $("bcList").innerHTML = aud.map((p) => `<div class="it${st.sent.has(p.no) ? " done" : ""}" data-no="${p.no}"><div><b>${esc(p.name)}</b><br><small dir="ltr">+${p.wa}</small> · <small>آخر زيارة ${p.last || "—"}${p.last_msg ? " · آخر رسالة " + p.last_msg.slice(0, 10) : ""}</small></div>
+      <div class="go"><a class="btn pri" href="${link(p)}" target="_blank" rel="noopener" data-send="${p.no}">💬 ${st.sent.has(p.no) ? "أُرسلت" : "واتساب"}</a><button class="btn" data-stop="${p.no}" title="لا ترسل له رسائل جماعية بعد الآن">🚫</button></div></div>`).join("") || `<div class="empty">لا أحد بهذه الشروط</div>`;
+    $("bcNext").disabled = !left.length;
+  };
+  $("list").innerHTML = `<div class="bc"><h3>اختر المستلمين</h3>
+    <div class="row"><select id="bcMode"><option value="months">لم يزوروا منذ…</option><option value="all">كل المرضى</option></select><span id="bcM"><input type="number" id="bcMonths" min="1" max="120" value="6"> شهر أو أكثر</span></div>
+    <div class="row"><label><input type="checkbox" id="bcSkip" checked> تخطّي من وصلته رسالة خلال آخر <input type="number" id="bcDays" min="1" max="365" value="30"> يومًا</label></div>
+    <h3>نص الرسالة <small style="font-weight:400;color:var(--muted)">({الاسم} يُستبدل بالاسم الأول لكل مريض)</small></h3>
+    <div class="row tpl"><button class="btn" data-t="remind">⏰ تذكير بالزيارة</button><button class="btn" data-t="offer">🎁 عرض</button><button class="btn" data-t="news">📰 إعلان / تحديث</button></div>
+    <textarea id="bcText">${esc(st.text)}</textarea>
+    <div class="warn">تُرسل كل رسالة بشكل منفصل عبر واتساب، ويُفتح التطبيق بالنص جاهزًا، وتضغط أنت إرسال. للحذر من تقييد رقمك أرسل على دفعات صغيرة (نحو 20–30 يوميًا) ولمن سبق أن تعامل مع العيادة فقط. زر 🚫 يستثني المريض من القوائم.</div>
+    <div class="row"><button class="btn pri" id="bcNext">▶ إرسال للتالي</button><button class="btn" id="bcCopy">📋 نسخ الأرقام</button><button class="btn" id="bcCsv">⬇ ملف Excel/CSV</button><button class="btn" id="bcBack">↩ المرضى</button></div>
+    <p class="note" id="bcN"></p><div class="bl" id="bcList"></div></div>`;
+  const mark = async (no) => { st.sent.add(+no); fetch("/clinic/api/patients?action=sent", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ no: +no, campaign: st.text.slice(0, 40) }) }).catch(() => {});
+    const p = base.find((x) => x.no == no); if (p) p.last_msg = new Date().toISOString(); };
+  $("bcMode").onchange = (e) => { st.mode = e.target.value; $("bcM").hidden = st.mode === "all"; draw(); };
+  $("bcMonths").oninput = (e) => { st.months = Math.max(1, +e.target.value || 6); draw(); };
+  $("bcSkip").onchange = $("bcDays").oninput = () => { st.skipDays = $("bcSkip").checked ? Math.max(1, +$("bcDays").value || 30) : 0; draw(); };
+  $("bcText").oninput = (e) => { st.text = e.target.value; };
+  document.querySelectorAll("[data-t]").forEach((b) => b.onclick = () => { st.text = TPL[b.dataset.t]; $("bcText").value = st.text; });
+  $("bcList").onclick = async (e) => {
+    const s = e.target.closest("[data-send]"), x = e.target.closest("[data-stop]");
+    if (s) { setTimeout(async () => { await mark(s.dataset.send); draw(); }, 400); return; }
+    if (x && confirm("استثناء هذا المريض من الرسائل الجماعية؟")) { await post("nomsg", { no: +x.dataset.stop, value: 1 }).catch((err) => alert(err.message)); base.find((p) => p.no == x.dataset.stop).no_msg = 1; draw(); }
+  };
+  $("bcNext").onclick = () => { const p = audience().find((q) => !st.sent.has(q.no)); if (!p) return; window.open(link(p), "_blank", "noopener"); setTimeout(async () => { await mark(p.no); draw(); }, 400); };
+  $("bcCopy").onclick = async () => { const t = audience().map((p) => "+" + p.wa).join("\n"); try { await navigator.clipboard.writeText(t); $("bcN").textContent = `✔ نُسخ ${audience().length} رقمًا`; } catch { prompt("انسخ الأرقام:", t); } };
+  $("bcCsv").onclick = () => {
+    const q = (v) => `"${String(v ?? "").replaceAll('"', '""')}"`;
+    const csv = "\uFEFF" + ["الاسم,الهاتف,آخر زيارة,آخر رسالة", ...audience().map((p) => [q(p.name), q("+" + p.wa), q(p.last), q(p.last_msg ? p.last_msg.slice(0, 10) : "")].join(","))].join("\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); a.download = "patients-phones.csv"; a.click();
+  };
+  $("bcBack").onclick = () => patients();
+  draw();
+}
+$("msgBtn").onclick = showBroadcast;
+
 /* ---- QR code (library loaded on demand) and X-ray / photo attachments ---- */
 let qrLib = null;
 const loadQR = () => qrLib || (qrLib = new Promise((ok, bad) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"; s.onload = () => ok(window.qrcode); s.onerror = () => { qrLib = null; bad(); }; document.head.appendChild(s); }));
@@ -987,8 +1060,8 @@ function stepDay(n) {
 }
 $("prevDay").onclick = () => stepDay(-1);
 $("nextDay").onclick = () => stepDay(1);
-document.addEventListener("visibilitychange", () => { if (!document.hidden && !["archive","patients","card","dups"].includes(current)) load(); });
-setInterval(() => { if (!document.hidden && !["archive","patients","card","dups"].includes(current)) load(); }, 5 * 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && !["archive","patients","card","dups","bc"].includes(current)) load(); });
+setInterval(() => { if (!document.hidden && !["archive","patients","card","dups","bc"].includes(current)) load(); }, 5 * 60000);
 const deep = location.hash.match(/card=(\d+)/);
 if (deep) {
   document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x.dataset.r === "patients"));
