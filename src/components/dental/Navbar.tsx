@@ -45,15 +45,15 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
     href === "/links" ? href : href.startsWith("/") ? pathFor(language, href as SitePage) : onHome ? href : pathFor(language, "") + href;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50">
-      <div className="mx-3 sm:mx-4 md:mx-8 mt-3 sm:mt-4">
-        <nav className={`flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl bg-card/90 backdrop-blur-xl border border-border/50 shadow-soft ${dir === "rtl" ? "" : ""}`}>
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-[hsl(var(--gold)/0.28)] bg-[hsl(var(--ink)/0.94)] text-[hsl(40_30%_96%)] backdrop-blur-xl">
+      <div className="mx-3 sm:mx-4 md:mx-8">
+        <nav className="flex items-center justify-between gap-3 py-2.5 sm:py-3">
           {/* Logo */}
           <a href={pathFor(language, "")} className="flex flex-1 min-w-0 items-center gap-3 group">
             <img 
               src={clinicLogo} 
               alt="Dr. Saleem Andraws Dental Clinic" 
-              className="h-10 sm:h-12 w-auto object-contain shrink-0"
+              className="h-9 sm:h-11 w-auto object-contain shrink-0 rounded-md bg-white/95 p-1"
             />
             <AssyrianName />
           </a>
@@ -64,7 +64,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
               <a
                 key={link.key}
                 href={hrefFor(link.href)}
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                className="text-sm font-medium text-[hsl(200_20%_80%)] hover:text-white transition-colors"
               >
                 {t(`nav.${link.key}`)}
               </a>
@@ -77,11 +77,11 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
             <div className="relative">
               <button
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-secondary transition-colors ${dir === "rtl" ? "" : ""}`}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
               >
-                <Globe className="w-4 h-4 text-muted-foreground" />
+                <Globe className="w-4 h-4 text-[hsl(200_20%_80%)]" />
                 <span className="text-sm">{currentLang?.flag}</span>
-                <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform ${langMenuOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3 h-3 text-[hsl(200_20%_80%)] transition-transform ${langMenuOpen ? "rotate-180" : ""}`} />
               </button>
 
               <AnimatePresence>
@@ -90,7 +90,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className={`absolute top-full mt-2 ${dir === "rtl" ? "left-0" : "right-0"} w-40 p-2 rounded-xl bg-card border border-border shadow-card`}
+                    className={`absolute top-full mt-2 ${dir === "rtl" ? "left-0" : "right-0"} w-40 p-2 rounded-lg bg-card text-foreground border border-border shadow-card`}
                   >
                     {languages.map((lang) => (
                       <button
@@ -113,23 +113,23 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
             </div>
 
             <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-[hsl(200_20%_84%)] hover:bg-white/10 hover:text-white">
                 <Instagram className="w-4 h-4" />
               </Button>
             </a>
             <a href="tel:07507816500" className="hidden xl:inline-flex">
-              <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "" : ""}`}>
+              <Button variant="ghost" size="sm" className="gap-2 text-[hsl(200_20%_84%)] hover:bg-white/10 hover:text-white">
                 <Phone className="w-4 h-4" />
                 <span className="hidden 2xl:inline">07507816500</span>
               </Button>
             </a>
             <a href="tel:07781665000" className="hidden xl:inline-flex">
-              <Button variant="ghost" size="sm" className={`gap-2 ${dir === "rtl" ? "" : ""}`}>
+              <Button variant="ghost" size="sm" className="gap-2 text-[hsl(200_20%_84%)] hover:bg-white/10 hover:text-white">
                 <Phone className="w-4 h-4" />
                 <span className="hidden 2xl:inline">07781665000</span>
               </Button>
             </a>
-            <Button variant="teal" size="sm" onClick={onBookingClick} className={`gap-2 ${dir === "rtl" ? "" : ""}`}>
+            <Button size="sm" onClick={onBookingClick} className="gap-2 bg-[hsl(40_48%_62%)] text-[hsl(var(--ink))] hover:bg-[hsl(40_52%_70%)]">
               <Calendar className="w-4 h-4" />
               {t("nav.bookAppointment")}
             </Button>
@@ -138,7 +138,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="min-[1850px]:hidden p-2.5 -m-1 rounded-lg hover:bg-secondary transition-colors" aria-label="Menu"
+            className="min-[1850px]:hidden p-2.5 -m-1 rounded-lg hover:bg-white/10 transition-colors" aria-label="Menu"
           >
             {mobileMenuOpen ? (
               <X className="w-5 h-5" />
@@ -156,7 +156,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="min-[1850px]:hidden mt-2 p-5 sm:p-6 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl bg-card/95 backdrop-blur-xl border border-border/50 shadow-elevated"
+              className="min-[1850px]:hidden mb-3 p-5 sm:p-6 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-lg bg-card text-foreground border border-border shadow-elevated"
             >
               <div className="flex flex-col gap-4">
                 {/* Language Selector Mobile */}

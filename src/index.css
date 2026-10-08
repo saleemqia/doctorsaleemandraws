@@ -1,4 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
+/* Fonts are hosted on the site (no external requests): Fraunces for Latin headings, Noto Naskh Arabic for Arabic/Kurdish headings, IBM Plex Sans Arabic (Latin + Arabic) for text. */
+@font-face{font-family:'Fraunces';src:url('/fonts/fraunces-latin.woff2') format('woff2');font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Noto Naskh Arabic';src:url('/fonts/naskh-500.woff2') format('woff2');font-weight:400 500;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:'Noto Naskh Arabic';src:url('/fonts/naskh-700.woff2') format('woff2');font-weight:600 700;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('/fonts/plex-lat-400.woff2') format('woff2');font-weight:400;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('/fonts/plex-lat-500.woff2') format('woff2');font-weight:500;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('/fonts/plex-lat-600.woff2') format('woff2');font-weight:600 800;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('/fonts/plex-ar-400.woff2') format('woff2');font-weight:400;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('/fonts/plex-ar-500.woff2') format('woff2');font-weight:500;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('/fonts/plex-ar-600.woff2') format('woff2');font-weight:600 800;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
 
 /* Assyrian (Syriac) name in the header: font hosted on the site so it always looks the same. */
 @font-face {
@@ -15,60 +24,64 @@
 
 @layer base {
   :root {
-    --background: 200 60% 99%;
-    --foreground: 205 45% 15%;
+    /* Porcelain paper, ink-blue type, enamel-gold hairlines. */
+    --background: 195 14% 96%;
+    --foreground: 208 60% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 205 45% 15%;
+    --card-foreground: 208 60% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 205 45% 15%;
+    --popover-foreground: 208 60% 11%;
 
-    --primary: 201 90% 34%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 208 58% 19%;
+    --primary-foreground: 40 30% 97%;
 
-    --secondary: 199 80% 95%;
-    --secondary-foreground: 205 45% 20%;
+    --secondary: 200 18% 92%;
+    --secondary-foreground: 208 55% 16%;
 
-    --muted: 199 40% 95%;
-    --muted-foreground: 205 15% 40%;
+    --muted: 200 16% 92%;
+    --muted-foreground: 208 16% 36%;
 
-    --accent: 199 85% 92%;
-    --accent-foreground: 201 90% 28%;
+    --accent: 40 42% 90%;
+    --accent-foreground: 208 60% 14%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 199 45% 87%;
-    --input: 199 45% 87%;
-    --ring: 199 89% 48%;
+    --border: 204 18% 84%;
+    --input: 204 18% 84%;
+    --ring: 38 45% 50%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Dental clinic specific tokens */
-    --teal: 201 90% 34%;
-    --teal-light: 199 85% 92%;
-    --teal-dark: 203 80% 22%;
-    --gold: 45 80% 55%;
-    --gold-light: 45 70% 90%;
-    
-    --gradient-primary: linear-gradient(135deg, hsl(198, 88%, 40%) 0%, hsl(203, 88%, 28%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(200, 100%, 98%) 0%, hsl(199, 90%, 92%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(45, 80%, 55%) 0%, hsl(35, 85%, 50%) 100%);
-    
-    --shadow-soft: 0 4px 20px -4px hsl(205 45% 15% / 0.08);
-    --shadow-card: 0 8px 32px -8px hsl(205 45% 15% / 0.1);
-    --shadow-elevated: 0 24px 48px -12px hsl(205 45% 15% / 0.15);
-    --shadow-teal: 0 8px 24px -4px hsl(199 89% 40% / 0.3);
+    /* Clinic tokens (names kept so every section picks the new palette up) */
+    --teal: 208 58% 19%;
+    --teal-light: 200 30% 90%;
+    --teal-dark: 208 62% 11%;
+    --gold: 38 42% 52%;
+    --gold-light: 40 42% 90%;
+    --ink: 208 62% 11%;
+    --ink-deep: 207 55% 16%;
+    --film: 202 45% 70%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(207, 55%, 20%) 0%, hsl(208, 62%, 12%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(195, 14%, 96%) 0%, hsl(195, 14%, 96%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(40, 48%, 62%) 0%, hsl(36, 44%, 50%) 100%);
+
+    --shadow-soft: 0 1px 2px hsl(208 60% 11% / 0.05), 0 6px 18px -8px hsl(208 60% 11% / 0.1);
+    --shadow-card: 0 2px 4px hsl(208 60% 11% / 0.05), 0 14px 30px -14px hsl(208 60% 11% / 0.16);
+    --shadow-elevated: 0 4px 8px hsl(208 60% 11% / 0.06), 0 28px 50px -22px hsl(208 60% 11% / 0.28);
+    --shadow-teal: 0 10px 24px -10px hsl(208 62% 11% / 0.5);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 201 90% 34%;
+    --sidebar-primary: 208 58% 19%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 199 80% 95%;
-    --sidebar-accent-foreground: 201 90% 28%;
-    --sidebar-border: 199 45% 90%;
-    --sidebar-ring: 199 89% 48%;
+    --sidebar-accent: 200 18% 92%;
+    --sidebar-accent-foreground: 208 58% 19%;
+    --sidebar-border: 204 18% 88%;
+    --sidebar-ring: 38 45% 50%;
   }
 
   .dark {
@@ -118,13 +131,17 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', sans-serif;
+    font-family: 'IBM Plex Sans Arabic', 'Noto Sans Arabic', system-ui, sans-serif;
     scroll-behavior: smooth;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Fraunces', 'Noto Naskh Arabic', Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.012em;
   }
+  [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4 { letter-spacing: 0; line-height: 1.35; }
+  :focus-visible { outline: 2px solid hsl(var(--gold)); outline-offset: 2px; }
 }
 
 @layer utilities {
@@ -133,12 +150,15 @@
     font-weight: 700;
   }
 
-  .text-gradient {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+  /* Used on the second half of many headings: a quiet italic instead of a colour gradient. */
+  .text-gradient { font-style: italic; font-weight: 500; }
+  [dir="rtl"] .text-gradient { font-style: normal; font-weight: 700; }
+
+  /* Film-mount corner ticks: the frame of a radiograph on a light-box. */
+  .film { position: relative; }
+  .film::before, .film::after { content: ""; position: absolute; width: 18px; height: 18px; pointer-events: none; border-color: hsl(var(--gold)); }
+  .film::before { top: 0; inset-inline-start: 0; border-top: 1px solid; border-inline-start: 1px solid; }
+  .film::after { bottom: 0; inset-inline-end: 0; border-bottom: 1px solid; border-inline-end: 1px solid; }
 
   .bg-gradient-primary {
     background: var(--gradient-primary);
@@ -199,7 +219,7 @@
 
   /* RTL Support */
   [dir="rtl"] {
-    font-family: 'Inter', 'Noto Sans Arabic', 'Noto Sans Kurdish', sans-serif;
+    font-family: 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Noto Sans Kurdish', sans-serif;
   }
 
   [dir="rtl"] h1,
@@ -208,7 +228,7 @@
   [dir="rtl"] h4,
   [dir="rtl"] h5,
   [dir="rtl"] h6 {
-    font-family: 'Playfair Display', 'Noto Serif Arabic', serif;
+    font-family: 'Fraunces', 'Noto Naskh Arabic', serif;
   }
 
   .animate-fade-in-up {

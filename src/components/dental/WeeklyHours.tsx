@@ -10,15 +10,15 @@ const OPEN_HOUR = 15;
 const CLOSE_HOUR = 21;
 const DAY_OFF = 5; // Friday (0 = Sunday)
 
-// Week starts on Saturday, as in Iraq. Each day has its own colour.
+// Week starts on Saturday, as in Iraq. Plain cards; today gets a gold ring.
 const DAYS: { idx: number; name: Record<L, string>; color: string; ring: string; text: string }[] = [
-  { idx: 6, name: { en: "Saturday", ar: "السبت", ku: "شەممی" }, color: "bg-sky-100 dark:bg-sky-900/40", ring: "ring-sky-400", text: "text-sky-800 dark:text-sky-200" },
-  { idx: 0, name: { en: "Sunday", ar: "الأحد", ku: "یەکشەممی" }, color: "bg-emerald-100 dark:bg-emerald-900/40", ring: "ring-emerald-400", text: "text-emerald-800 dark:text-emerald-200" },
-  { idx: 1, name: { en: "Monday", ar: "الإثنين", ku: "دووشەممی" }, color: "bg-violet-100 dark:bg-violet-900/40", ring: "ring-violet-400", text: "text-violet-800 dark:text-violet-200" },
-  { idx: 2, name: { en: "Tuesday", ar: "الثلاثاء", ku: "سێشەممی" }, color: "bg-amber-100 dark:bg-amber-900/40", ring: "ring-amber-400", text: "text-amber-800 dark:text-amber-200" },
-  { idx: 3, name: { en: "Wednesday", ar: "الأربعاء", ku: "چارشەممی" }, color: "bg-rose-100 dark:bg-rose-900/40", ring: "ring-rose-400", text: "text-rose-800 dark:text-rose-200" },
-  { idx: 4, name: { en: "Thursday", ar: "الخميس", ku: "پێنجشەممی" }, color: "bg-teal-100 dark:bg-teal-900/40", ring: "ring-teal-400", text: "text-teal-800 dark:text-teal-200" },
-  { idx: 5, name: { en: "Friday", ar: "الجمعة", ku: "ئینی" }, color: "bg-indigo-950", ring: "ring-indigo-400", text: "text-indigo-100" },
+  { idx: 6, name: { en: "Saturday", ar: "السبت", ku: "شەممی" }, color: "bg-card border border-border", ring: "ring-[hsl(var(--gold))]", text: "text-foreground" },
+  { idx: 0, name: { en: "Sunday", ar: "الأحد", ku: "یەکشەممی" }, color: "bg-card border border-border", ring: "ring-[hsl(var(--gold))]", text: "text-foreground" },
+  { idx: 1, name: { en: "Monday", ar: "الإثنين", ku: "دووشەممی" }, color: "bg-card border border-border", ring: "ring-[hsl(var(--gold))]", text: "text-foreground" },
+  { idx: 2, name: { en: "Tuesday", ar: "الثلاثاء", ku: "سێشەممی" }, color: "bg-card border border-border", ring: "ring-[hsl(var(--gold))]", text: "text-foreground" },
+  { idx: 3, name: { en: "Wednesday", ar: "الأربعاء", ku: "چارشەممی" }, color: "bg-card border border-border", ring: "ring-[hsl(var(--gold))]", text: "text-foreground" },
+  { idx: 4, name: { en: "Thursday", ar: "الخميس", ku: "پێنجشەممی" }, color: "bg-card border border-border", ring: "ring-[hsl(var(--gold))]", text: "text-foreground" },
+  { idx: 5, name: { en: "Friday", ar: "الجمعة", ku: "ئینی" }, color: "bg-[hsl(var(--ink))]", ring: "ring-[hsl(var(--gold))]", text: "text-[hsl(40_30%_92%)]" },
 ];
 
 const T: Record<L, Record<string, string>> = {

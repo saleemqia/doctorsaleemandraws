@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Playfair Display', 'serif'],
+        sans: ['IBM Plex Sans Arabic', 'Noto Sans Arabic', 'system-ui', 'sans-serif'],
+        display: ['Fraunces', 'Noto Naskh Arabic', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",

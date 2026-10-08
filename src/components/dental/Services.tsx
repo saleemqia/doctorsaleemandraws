@@ -1,5 +1,3 @@
-import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 // Import service images
@@ -13,7 +11,7 @@ import dentalCleaningImg from "@/assets/services/dental-cleaning.jpg";
 import pediatricDentistryImg from "@/assets/services/pediatric-dentistry.jpg";
 
 const Services = () => {
-  const { t, dir } = useLanguage();
+  const { t } = useLanguage();
 
   const services = [
     {
@@ -59,78 +57,41 @@ const Services = () => {
   ];
 
   return (
-    <section id="services" className="py-16 md:py-24 lg:py-28 bg-secondary/30 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-52 md:w-80 h-52 md:h-80 bg-primary/5 rounded-full blur-3xl" />
+    <section id="services" className="relative bg-background py-16 md:py-24 lg:py-28">
+      <div className="container px-4 sm:px-6">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-20">
+          {/* Heading stays in view while the list scrolls */}
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <p className="mb-4 flex items-center gap-3 text-sm font-medium text-[hsl(var(--gold))]">
+              <span className="h-px w-8 bg-current" aria-hidden="true" />
+              {t("services.badge")}
+            </p>
+            <h2 className="mb-5 text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">
+              {t("services.title1")} {t("services.title2")}
+            </h2>
+            <p className="max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">{t("services.description")}</p>
 
-      <div className="container relative z-10 px-4 sm:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className={`text-center max-w-2xl mx-auto mb-10 md:mb-16 ${dir === "rtl" ? "text-center" : ""}`}
-        >
-          <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 md:mb-6 ${dir === "rtl" ? "" : ""}`}>
-            <Sparkles className="w-4 h-4" />
-            {t("services.badge")}
-          </span>
-          <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
-            {t("services.title1")}{" "}
-            <span className="text-gradient">{t("services.title2")}</span>
-          </h2>
-          <p className="text-muted-foreground text-base md:text-lg px-4">
-            {t("services.description")}
-          </p>
-        </motion.div>
+            {/* The names patients actually search for */}
+            <div className="mt-8 border-t border-border pt-6">
+              <h3 className="mb-3 text-base font-semibold">{t("services.allTitle")}</h3>
+              <ul className="flex flex-wrap gap-x-1 gap-y-1.5 text-sm text-muted-foreground">
+                {t("services.allList").split("|").map((name, i, all) => (
+                  <li key={name}>{name}{i < all.length - 1 && <span className="mx-1.5 text-[hsl(var(--gold))]" aria-hidden="true">/</span>}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.08 }}
-              whileHover={{ y: -6, transition: { duration: 0.3 } }}
-              className="group"
-            >
-              <div className={`h-full rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-elevated transition-all duration-300 overflow-hidden ${dir === "rtl" ? "text-right" : ""}`}>
-                {/* Service Image */}
-                <div className="relative h-28 sm:h-40 md:h-48 overflow-hidden">
-                  <img
-                    src={service.image}
-                    alt={t(service.titleKey)}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+          <ul className="border-t border-border">
+            {services.map((service) => (
+              <li key={service.titleKey} className="group grid grid-cols-[5.5rem_1fr] items-center gap-4 border-b border-border py-5 transition-colors hover:bg-card sm:grid-cols-[8rem_1fr] sm:gap-6 sm:px-3">
+                <div className="film aspect-[4/3] overflow-hidden rounded-[0.25rem] bg-secondary">
+                  <img src={service.image} alt={t(service.titleKey)} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                 </div>
-                
-                {/* Service Content */}
-                <div className="p-3 sm:p-4 md:p-5">
-                  <h3 className="font-display text-base sm:text-lg md:text-xl font-semibold leading-snug mb-1.5 sm:mb-2 group-hover:text-primary transition-colors">
-                    {t(service.titleKey)}
-                  </h3>
-                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed line-clamp-3">
-                    {t(service.descKey)}
-                  </p>
+                <div className="min-w-0">
+                  <h3 className="mb-1 text-lg font-semibold leading-snug sm:text-xl">{t(service.titleKey)}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground sm:text-[15px]">{t(service.descKey)}</p>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Full treatment list: the names patients actually search for, shown to everyone */}
-        <div className="mt-10 md:mt-14 max-w-4xl mx-auto text-center">
-          <h3 className="font-display text-xl md:text-2xl font-semibold mb-4 md:mb-5">{t("services.allTitle")}</h3>
-          <ul className="flex flex-wrap justify-center gap-2 md:gap-2.5">
-            {t("services.allList").split("|").map((name) => (
-              <li
-                key={name}
-                className="px-3.5 py-1.5 md:px-4 md:py-2 rounded-full bg-card border border-border text-sm md:text-[15px] text-foreground"
-              >
-                {name}
               </li>
             ))}
           </ul>
