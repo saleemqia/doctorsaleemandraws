@@ -37,7 +37,7 @@ const AssyrianName = () => {
         ref={textRef}
         dir="rtl"
         lang="syr"
-        className="leading-tight text-[hsl(40_48%_72%)] whitespace-nowrap select-none"
+        className="leading-tight text-primary whitespace-nowrap select-none"
         style={{
           fontSize: size,
           unicodeBidi: "isolate",

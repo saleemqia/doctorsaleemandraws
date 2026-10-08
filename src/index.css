@@ -24,64 +24,68 @@
 
 @layer base {
   :root {
-    /* Porcelain paper, ink-blue type, enamel-gold hairlines. */
-    --background: 195 14% 96%;
-    --foreground: 208 60% 11%;
+    /* Bright and clean: cloud-white page, ocean-blue brand, aqua + sun accents. */
+    --background: 197 63% 98%;
+    --foreground: 202 68% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 208 60% 11%;
+    --card-foreground: 202 68% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 208 60% 11%;
+    --popover-foreground: 202 68% 14%;
 
-    --primary: 208 58% 19%;
-    --primary-foreground: 40 30% 97%;
+    --primary: 202 87% 34%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 200 18% 92%;
-    --secondary-foreground: 208 55% 16%;
+    --secondary: 199 77% 94%;
+    --secondary-foreground: 202 68% 18%;
 
-    --muted: 200 16% 92%;
-    --muted-foreground: 208 16% 36%;
+    --muted: 199 45% 95%;
+    --muted-foreground: 202 22% 34%;
 
-    --accent: 40 42% 90%;
-    --accent-foreground: 208 60% 14%;
+    --accent: 199 80% 92%;
+    --accent-foreground: 202 87% 28%;
 
     --destructive: 0 72% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 204 18% 84%;
-    --input: 204 18% 84%;
-    --ring: 38 45% 50%;
+    --border: 199 40% 86%;
+    --input: 199 40% 86%;
+    --ring: 187 70% 42%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;
 
-    /* Clinic tokens (names kept so every section picks the new palette up) */
-    --teal: 208 58% 19%;
-    --teal-light: 200 30% 90%;
-    --teal-dark: 208 62% 11%;
-    --gold: 38 42% 52%;
-    --gold-light: 40 42% 90%;
-    --ink: 208 62% 11%;
-    --ink-deep: 207 55% 16%;
-    --film: 202 45% 70%;
+    --teal: 202 87% 34%;
+    --teal-light: 199 80% 92%;
+    --teal-dark: 203 80% 22%;
+    --gold: 41 100% 62%;
+    --gold-light: 44 100% 90%;
+    --ink: 202 68% 14%;
+    --ink-deep: 203 70% 20%;
+    --ocean: 202 87% 34%;
+    --aqua: 187 70% 48%;
+    --sun: 41 100% 62%;
+    --coral: 12 100% 70%;
+    --mint: 160 60% 90%;
+    --film: 199 80% 70%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(207, 55%, 20%) 0%, hsl(208, 62%, 12%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsl(195, 14%, 96%) 0%, hsl(195, 14%, 96%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(40, 48%, 62%) 0%, hsl(36, 44%, 50%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(202, 87%, 34%) 0%, hsl(194, 80%, 40%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(199, 80%, 94%) 0%, hsl(197, 63%, 98%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(44, 100%, 68%) 0%, hsl(38, 98%, 58%) 100%);
 
-    --shadow-soft: 0 1px 2px hsl(208 60% 11% / 0.05), 0 6px 18px -8px hsl(208 60% 11% / 0.1);
-    --shadow-card: 0 2px 4px hsl(208 60% 11% / 0.05), 0 14px 30px -14px hsl(208 60% 11% / 0.16);
-    --shadow-elevated: 0 4px 8px hsl(208 60% 11% / 0.06), 0 28px 50px -22px hsl(208 60% 11% / 0.28);
-    --shadow-teal: 0 10px 24px -10px hsl(208 62% 11% / 0.5);
+    --shadow-soft: 0 2px 4px hsl(202 80% 25% / 0.05), 0 10px 24px -10px hsl(202 80% 25% / 0.14);
+    --shadow-card: 0 4px 8px hsl(202 80% 25% / 0.05), 0 20px 40px -16px hsl(202 80% 25% / 0.22);
+    --shadow-elevated: 0 8px 16px hsl(202 80% 25% / 0.06), 0 34px 60px -24px hsl(202 80% 25% / 0.34);
+    --shadow-teal: 0 12px 26px -10px hsl(202 87% 34% / 0.55);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 208 58% 19%;
+    --sidebar-primary: 202 87% 34%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 200 18% 92%;
-    --sidebar-accent-foreground: 208 58% 19%;
-    --sidebar-border: 204 18% 88%;
-    --sidebar-ring: 38 45% 50%;
+    --sidebar-accent: 199 77% 94%;
+    --sidebar-accent-foreground: 202 87% 28%;
+    --sidebar-border: 199 40% 90%;
+    --sidebar-ring: 187 70% 42%;
   }
 
   .dark {
@@ -141,7 +145,7 @@
     letter-spacing: -0.012em;
   }
   [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4 { letter-spacing: 0; line-height: 1.35; }
-  :focus-visible { outline: 2px solid hsl(var(--gold)); outline-offset: 2px; }
+  :focus-visible { outline: 2px solid hsl(var(--aqua)); outline-offset: 2px; }
 }
 
 @layer utilities {
@@ -150,17 +154,27 @@
     font-weight: 700;
   }
 
-  /* Used on the second half of many headings: a quiet italic instead of a colour gradient. */
-  .text-gradient { font-style: italic; font-weight: 500; }
-  [dir="rtl"] .text-gradient { font-style: normal; font-weight: 700; }
+  .text-gradient { background: linear-gradient(100deg, hsl(202 87% 34%) 10%, hsl(187 70% 44%) 90%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
 
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .marquee-track { display: flex; width: max-content; animation: marquee 48s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  .animate-bob { animation: bob 3.2s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) { .animate-bob { animation: none; } }
+  .bg-mesh { background:
+    radial-gradient(60% 50% at 8% 8%, hsl(187 85% 85% / .9) 0%, transparent 70%),
+    radial-gradient(45% 45% at 95% 15%, hsl(44 100% 85% / .95) 0%, transparent 70%),
+    radial-gradient(50% 50% at 80% 100%, hsl(199 90% 86% / .9) 0%, transparent 70%),
+    hsl(197 63% 98%); }
   .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.7,.2,1) var(--reveal-delay, 0ms), transform .7s cubic-bezier(.2,.7,.2,1) var(--reveal-delay, 0ms); }
   .reveal-in { opacity: 1; transform: none; }
   @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
 
   /* Film-mount corner ticks: the frame of a radiograph on a light-box. */
   .film { position: relative; }
-  .film::before, .film::after { content: ""; position: absolute; width: 18px; height: 18px; pointer-events: none; border-color: hsl(var(--gold)); }
+  .film::before, .film::after { content: ""; position: absolute; width: 18px; height: 18px; pointer-events: none; border-color: hsl(var(--aqua)); }
   .film::before { top: 0; inset-inline-start: 0; border-top: 1px solid; border-inline-start: 1px solid; }
   .film::after { bottom: 0; inset-inline-end: 0; border-bottom: 1px solid; border-inline-end: 1px solid; }
 

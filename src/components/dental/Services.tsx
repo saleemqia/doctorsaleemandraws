@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Plus, Calendar, MessageCircle } from "lucide-react";
+import { Calendar, MessageCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PHONES } from "@/config/clinic";
 import Reveal from "@/components/dental/Reveal";
@@ -22,7 +22,7 @@ interface ServicesProps {
 
 const Services = ({ onBookingClick }: ServicesProps) => {
   const { t } = useLanguage();
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState(0);
 
   const services = [
     {
@@ -75,99 +75,98 @@ const Services = ({ onBookingClick }: ServicesProps) => {
     },
   ];
 
+  const TINTS = ["hsl(187 70% 48%)", "hsl(41 100% 62%)", "hsl(12 100% 70%)", "hsl(160 60% 55%)", "hsl(262 80% 72%)", "hsl(202 87% 44%)", "hsl(187 70% 48%)", "hsl(340 90% 72%)"];
+  const cur = services[open];
+  const curTitle = t(cur.titleKey);
+
   return (
-    <section id="services" className="relative bg-background py-16 md:py-24 lg:py-28">
+    <section id="services" className="relative bg-background py-16 md:py-24">
       <div className="container px-4 sm:px-6 lg:px-14">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-20">
-          {/* Heading stays in view while the list scrolls */}
-          <div className="lg:sticky lg:top-28 lg:self-start">
-            <p className="mb-4 flex items-center gap-3 text-sm font-medium text-[hsl(var(--gold))]">
-              <span className="h-px w-8 bg-current" aria-hidden="true" />
-              {t("services.badge")}
-            </p>
-            <h2 className="mb-5 text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">
-              {t("services.title1")} {t("services.title2")}
+        <Reveal>
+          <div className="mx-auto mb-10 max-w-2xl text-center md:mb-14">
+            <p className="mb-3 inline-flex rounded-full bg-[hsl(var(--sun)/0.25)] px-4 py-1 text-sm font-semibold text-[hsl(var(--ink))]">{t("services.badge")}</p>
+            <h2 className="mb-4 text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">
+              {t("services.title1")} <span className="text-gradient">{t("services.title2")}</span>
             </h2>
-            <p className="max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">{t("services.description")}</p>
-
-            {/* The names patients actually search for */}
-            <div className="mt-8 border-t border-border pt-6">
-              <h3 className="mb-3 text-base font-semibold">{t("services.allTitle")}</h3>
-              <ul className="flex flex-wrap gap-x-1 gap-y-1.5 text-sm text-muted-foreground">
-                {t("services.allList").split("|").map((name, i, all) => (
-                  <li key={name}>{name}{i < all.length - 1 && <span className="mx-1.5 text-[hsl(var(--gold))]" aria-hidden="true">/</span>}</li>
-                ))}
-              </ul>
-            </div>
+            <p className="text-base leading-relaxed text-muted-foreground md:text-lg">{t("services.description")}</p>
           </div>
+        </Reveal>
 
-          <ul className="border-t border-border">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-10">
+          {/* Treatment picker: tap one, the big card changes */}
+          <div role="tablist" aria-label={t("services.badge")} className="flex gap-2 overflow-x-auto pb-2 lg:grid lg:overflow-visible lg:pb-0">
             {services.map((service, i) => {
-              const isOpen = open === i;
-              const title = t(service.titleKey);
-              const q = service.faq.replace("faq.a", "faq.q");
+              const active = open === i;
               return (
-                <li key={service.titleKey} className="border-b border-border">
-                  <Reveal delay={i * 50}>
-                    <button
-                      type="button"
-                      aria-expanded={isOpen}
-                      aria-controls={`svc-${i}`}
-                      onClick={() => setOpen(isOpen ? null : i)}
-                      className="group grid w-full grid-cols-[5.5rem_1fr_auto] items-center gap-4 py-5 text-start transition-colors hover:bg-card sm:grid-cols-[8rem_1fr_auto] sm:gap-6 sm:px-3"
-                    >
-                      <span className="film block aspect-[4/3] overflow-hidden rounded-[0.25rem] bg-secondary">
-                        <img src={service.image} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="mb-1 block font-display text-lg font-semibold leading-snug sm:text-xl">{title}</span>
-                        <span className="block text-sm leading-relaxed text-muted-foreground sm:text-[15px]">{t(service.descKey)}</span>
-                      </span>
-                      <span className={`flex h-9 w-9 items-center justify-center rounded-full border border-border text-[hsl(var(--gold))] transition-all duration-300 group-hover:border-[hsl(var(--gold))] ${isOpen ? "rotate-45 bg-[hsl(var(--ink))] text-white" : ""}`} aria-hidden="true">
-                        <Plus className="h-4 w-4" />
-                      </span>
-                    </button>
-                  </Reveal>
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        id={`svc-${i}`}
-                        role="region"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.35, ease: [0.2, 0.7, 0.2, 1] }}
-                        className="overflow-hidden"
-                      >
-                        <div className="grid gap-5 pb-7 pt-1 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] sm:px-3">
-                          <div className="film overflow-hidden rounded-[0.3rem] bg-secondary">
-                            <img src={service.image} alt={title} className="aspect-[16/10] w-full object-cover" />
-                          </div>
-                          <div className="flex flex-col justify-between gap-4">
-                            <div>
-                              <h4 className="mb-2 text-base font-semibold">{t(q)}</h4>
-                              <p className="leading-relaxed text-muted-foreground">{t(service.faq)}</p>
-                            </div>
-                            <div className="flex flex-wrap gap-3">
-                              <Button onClick={onBookingClick} className="gap-2 bg-[hsl(40_48%_62%)] text-[hsl(var(--ink))] hover:bg-[hsl(40_52%_70%)]">
-                                <Calendar className="h-4 w-4" />
-                                {t("nav.bookAppointment")}
-                              </Button>
-                              <Button asChild variant="outline" className="gap-2">
-                                <a href={`https://wa.me/${PHONES[0].whatsapp}?text=${encodeURIComponent(`${t("nav.bookAppointment")}: ${title}`)}`} target="_blank" rel="noopener noreferrer">
-                                  <MessageCircle className="h-4 w-4" />
-                                  WhatsApp
-                                </a>
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </li>
+                <button
+                  key={service.titleKey}
+                  role="tab"
+                  type="button"
+                  id={`svc-tab-${i}`}
+                  aria-selected={active}
+                  aria-controls="svc-panel"
+                  onClick={() => setOpen(i)}
+                  className={`group flex shrink-0 items-center gap-3 rounded-2xl border p-2 pe-4 text-start transition-all lg:p-2.5 ${active ? "border-transparent bg-white shadow-elevated lg:-translate-x-0 lg:scale-[1.02]" : "border-border bg-white/60 hover:bg-white hover:shadow-card"}`}
+                  style={active ? { boxShadow: `0 14px 34px -14px ${TINTS[i]}`, outline: `2px solid ${TINTS[i]}` } : undefined}
+                >
+                  <img src={service.image} alt="" loading="lazy" className="h-12 w-12 shrink-0 rounded-xl object-cover lg:h-14 lg:w-14" />
+                  <span className="min-w-0">
+                    <span className="block whitespace-nowrap font-display text-base font-semibold leading-snug lg:whitespace-normal lg:text-lg">{t(service.titleKey)}</span>
+                    <span className="hidden text-xs leading-snug text-muted-foreground lg:line-clamp-1 lg:block">{t(service.descKey)}</span>
+                  </span>
+                  <ArrowRight className={`ms-auto hidden h-4 w-4 shrink-0 rtl:rotate-180 lg:block ${active ? "opacity-100" : "opacity-0 group-hover:opacity-60"}`} style={{ color: TINTS[i] }} />
+                </button>
               );
             })}
+          </div>
+
+          <div id="svc-panel" role="tabpanel" aria-labelledby={`svc-tab-${open}`} className="lg:sticky lg:top-28 lg:self-start">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={open}
+                initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden rounded-[2rem] border border-border bg-white shadow-elevated"
+              >
+                <div className="relative">
+                  <img src={cur.image} alt={curTitle} className="aspect-[16/10] w-full object-cover" />
+                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 to-transparent" aria-hidden="true" />
+                  <span className="absolute start-4 top-4 rounded-full px-3 py-1 text-xs font-bold text-[hsl(var(--ink))]" style={{ background: TINTS[open] }}>{String(open + 1).padStart(2, "0")} / {String(services.length).padStart(2, "0")}</span>
+                  <h3 className="absolute inset-x-5 bottom-4 text-2xl font-semibold text-white sm:text-3xl">{curTitle}</h3>
+                </div>
+                <div className="p-5 sm:p-7">
+                  <p className="mb-4 text-base leading-relaxed text-foreground">{t(cur.descKey)}</p>
+                  <div className="mb-5 rounded-2xl bg-secondary p-4">
+                    <h4 className="mb-1 text-sm font-semibold text-primary">{t(cur.faq.replace("faq.a", "faq.q"))}</h4>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{t(cur.faq)}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Button onClick={onBookingClick} className="gap-2 rounded-full bg-[hsl(var(--sun))] text-[hsl(var(--ink))] hover:bg-[hsl(41_100%_68%)]">
+                      <Calendar className="h-4 w-4" />
+                      {t("nav.bookAppointment")}
+                    </Button>
+                    <Button asChild variant="outline" className="gap-2 rounded-full">
+                      <a href={`https://wa.me/${PHONES[0].whatsapp}?text=${encodeURIComponent(`${t("nav.bookAppointment")}: ${curTitle}`)}`} target="_blank" rel="noopener noreferrer">
+                        <MessageCircle className="h-4 w-4" />
+                        WhatsApp
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* The names patients actually search for */}
+        <div className="mt-12 rounded-3xl bg-secondary/70 p-6 md:p-8">
+          <h3 className="mb-3 text-base font-semibold">{t("services.allTitle")}</h3>
+          <ul className="flex flex-wrap gap-2 text-sm">
+            {t("services.allList").split("|").map((name) => (
+              <li key={name} className="rounded-full border border-border bg-white px-3 py-1 text-foreground">{name}</li>
+            ))}
           </ul>
         </div>
       </div>

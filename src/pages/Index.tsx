@@ -21,6 +21,7 @@ import ChatBot from "@/components/dental/ChatBot";
 import ScrollToTop from "@/components/dental/ScrollToTop";
 import MobileActionBar from "@/components/dental/MobileActionBar";
 import WelcomeScreen from "@/components/dental/WelcomeScreen";
+import Marquee from "@/components/dental/Marquee";
 import Reveal from "@/components/dental/Reveal";
 
 const WELCOME_KEY = "diamond-welcome-shown";
@@ -65,6 +66,7 @@ const Index = () => {
       <Navbar onBookingClick={openBooking("navbar")} />
       <main>
         <Hero onBookingClick={openBooking("home")} />
+        <Marquee />
         <Services onBookingClick={openBooking("services")} />
         <Reveal threshold={0.04}><About /></Reveal>
         <Reveal threshold={0.04}><ClinicTour /></Reveal>

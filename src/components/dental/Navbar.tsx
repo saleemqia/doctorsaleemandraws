@@ -55,7 +55,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
     href === "/links" ? href : href.startsWith("/") ? pathFor(language, href as SitePage) : onHome ? href : pathFor(language, "") + href;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-[hsl(var(--gold)/0.28)] bg-[hsl(var(--ink)/0.94)] text-[hsl(40_30%_96%)] backdrop-blur-xl">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-[hsl(var(--aqua)/0.25)] bg-white/85 text-foreground shadow-sm backdrop-blur-xl">
       <div className="mx-3 sm:mx-4 md:mx-8">
         <nav className="flex items-center justify-between gap-3 py-2.5 sm:py-3">
           {/* Logo */}
@@ -63,7 +63,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
             <img 
               src={clinicLogo} 
               alt="Dr. Saleem Andraws Dental Clinic" 
-              className="h-9 sm:h-11 w-auto object-contain shrink-0 rounded-md bg-white/95 p-1"
+              className="h-9 sm:h-11 w-auto object-contain shrink-0 rounded-md p-0.5"
             />
             <AssyrianName />
           </a>
@@ -74,7 +74,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
               <a
                 key={link.key}
                 href={hrefFor(link.href)}
-                className="text-sm font-medium text-[hsl(200_20%_80%)] hover:text-white transition-colors"
+                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 {t(`nav.${link.key}`)}
               </a>
@@ -87,11 +87,11 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
             <div className="relative">
               <button
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-secondary transition-colors"
               >
-                <Globe className="w-4 h-4 text-[hsl(200_20%_80%)]" />
+                <Globe className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm">{currentLang?.flag}</span>
-                <ChevronDown className={`w-3 h-3 text-[hsl(200_20%_80%)] transition-transform ${langMenuOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform ${langMenuOpen ? "rotate-180" : ""}`} />
               </button>
 
               <AnimatePresence>
@@ -123,23 +123,23 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
             </div>
 
             <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
-              <Button variant="ghost" size="sm" className="text-[hsl(200_20%_84%)] hover:bg-white/10 hover:text-white">
+              <Button variant="ghost" size="sm" className="text-foreground/80 hover:bg-secondary hover:text-primary">
                 <Instagram className="w-4 h-4" />
               </Button>
             </a>
             <a href="tel:07507816500" className="hidden xl:inline-flex">
-              <Button variant="ghost" size="sm" className="gap-2 text-[hsl(200_20%_84%)] hover:bg-white/10 hover:text-white">
+              <Button variant="ghost" size="sm" className="gap-2 text-foreground/80 hover:bg-secondary hover:text-primary">
                 <Phone className="w-4 h-4" />
                 <span className="hidden 2xl:inline">07507816500</span>
               </Button>
             </a>
             <a href="tel:07781665000" className="hidden xl:inline-flex">
-              <Button variant="ghost" size="sm" className="gap-2 text-[hsl(200_20%_84%)] hover:bg-white/10 hover:text-white">
+              <Button variant="ghost" size="sm" className="gap-2 text-foreground/80 hover:bg-secondary hover:text-primary">
                 <Phone className="w-4 h-4" />
                 <span className="hidden 2xl:inline">07781665000</span>
               </Button>
             </a>
-            <Button size="sm" onClick={onBookingClick} className="gap-2 bg-[hsl(40_48%_62%)] text-[hsl(var(--ink))] hover:bg-[hsl(40_52%_70%)]">
+            <Button size="sm" onClick={onBookingClick} className="gap-2 rounded-full bg-[hsl(var(--sun))] text-[hsl(var(--ink))] shadow-[0_6px_18px_-6px_hsl(var(--sun))] hover:bg-[hsl(41_100%_68%)]">
               <Calendar className="w-4 h-4" />
               {t("nav.bookAppointment")}
             </Button>
@@ -148,7 +148,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="min-[1850px]:hidden p-2.5 -m-1 rounded-lg hover:bg-white/10 transition-colors" aria-label="Menu"
+            className="min-[1850px]:hidden p-2.5 -m-1 rounded-lg hover:bg-secondary transition-colors" aria-label="Menu"
           >
             {mobileMenuOpen ? (
               <X className="w-5 h-5" />
@@ -228,7 +228,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
       </div>
       {/* Reading progress */}
       <div aria-hidden="true" className="absolute inset-x-0 bottom-[-1px] h-[2px] bg-transparent">
-        <div className="h-full bg-[hsl(var(--gold))]" style={{ transform: `scaleX(${progress})`, transformOrigin: dir === "rtl" ? "right" : "left" }} />
+        <div className="h-full bg-gradient-to-r from-[hsl(var(--aqua))] to-[hsl(var(--sun))]" style={{ transform: `scaleX(${progress})`, transformOrigin: dir === "rtl" ? "right" : "left" }} />
       </div>
     </header>
   );
