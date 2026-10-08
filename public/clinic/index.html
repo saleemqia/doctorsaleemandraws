@@ -218,6 +218,12 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   </div>
   <div id="fin" hidden>
     <div class="chips" id="finYears"></div>
+    <details class="imp" id="gsBox" open><summary>🔗 ربط جداول Google Sheets (تحديث تلقائي)</summary>
+      <p>ارفع ملفات الحسابات إلى Google Drive وافتحها كـ Google Sheets، ثم اجعل المشاركة «أي شخص لديه الرابط — مشاهد» والصق الرابط هنا (رابط لكل ملف: 2025 و2026). ما تعدّله في الجدول يظهر هنا في الحسابات وبطاقات المرضى عند الضغط على «مزامنة»، وتتم المزامنة تلقائيًا عند فتح هذا التبويب إذا مرّت أكثر من ساعتين.</p>
+      <textarea id="gsLinks" rows="3" dir="ltr" placeholder="https://docs.google.com/spreadsheets/d/…/edit" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:8px;font:inherit"></textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button class="btn" id="gsSave" type="button">💾 حفظ الروابط</button><button class="btn pri" id="gsSync" type="button">🔄 مزامنة الآن</button><span id="gsOpen"></span></div>
+      <p class="note" id="gsMsg"></p>
+    </details>
     <details class="imp"><summary>📥 تحديث الحسابات من ملف Excel</summary>
       <p>بعد تعديل ملف الحسابات (مثل DentalFinicial2026.xlsx) اختره هنا: تتحدّث الدفعات في بطاقات المرضى والمصاريف والرسوم البيانية معًا، وإعادة الرفع لا تكرّر شيئًا. ما تكتبه بيدك هنا كمصروف يبقى محفوظًا.</p>
       <input type="file" id="finFile2" accept=".xlsx,.xls">
@@ -526,40 +532,49 @@ function expenseRows(XLSX, ws, title, fileYear) {
   }
   return { sheet: ym, rows: out };
 }
-async function importWorkbook(file, msg) {
+const importFile = (file, msg) => importBuffer(() => file.arrayBuffer(), file.name, msg);
+const sheetHash = (o) => { const t = JSON.stringify(o); let h = 5381; for (let i = 0; i < t.length; i++) h = ((h * 33) ^ t.charCodeAt(i)) >>> 0; return h + ":" + t.length; };
+const seen = (() => { try { return JSON.parse(localStorage.getItem("finSeen") || "{}"); } catch { return {}; } })();
+const remember = () => { try { localStorage.setItem("finSeen", JSON.stringify(seen)); } catch { /* private mode */ } };
+async function importBuffer(getBuf, fname, msg) {
   msg.className = "note"; msg.textContent = "جارٍ قراءة الملف…";
   try {
     const XLSX = await loadXlsx();
-    const wb = XLSX.read(await file.arrayBuffer());
-    const fy = (file.name.match(/20\d\d/) || [])[0];
+    const wb = XLSX.read(await getBuf());
+    const fy = (fname.match(/20\d\d/) || [])[0];
     const postJson = async (url, body) => {
       const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const r = await res.json().catch(() => ({ ok: false, error: "HTTP " + res.status })); if (!r.ok) throw new Error(r.error || "HTTP " + res.status); return r;
     };
-    let tot = { saved: 0, exact: 0, near: 0, fresh: 0, months: 0, exp: 0 };
+    let tot = { saved: 0, exact: 0, near: 0, fresh: 0, months: 0, exp: 0, same: 0 };
     for (const name of wb.SheetNames) {
       const part = sheetRows(XLSX, wb.Sheets[name], name, fy ? +fy : 0);
+      const ex = expenseRows(XLSX, wb.Sheets[name], name, fy ? +fy : 0);
+      const ym = part?.sheet || ex?.sheet; if (!ym) continue;
+      const h = sheetHash({ part, ex });
+      if (seen[ym] === h && !msg.dataset.force) { tot.same++; continue; }      // this month did not change since the last sync: no database writes
       if (part && part.rows.length) {
         msg.textContent = `جارٍ حفظ ${name}…`;
         const r = await postJson("/clinic/api/payments", { sheet: part.sheet, rows: part.rows });
         tot.saved += r.saved; tot.exact += r.exact; tot.near += r.near; tot.fresh += r.fresh; tot.months++;
       }
       if (part) await postJson("/clinic/api/finance?action=other", { sheet: part.sheet, rows: part.extra });
-      const ex = expenseRows(XLSX, wb.Sheets[name], name, fy ? +fy : 0);
       if (ex) { const r = await postJson("/clinic/api/finance?action=expenses", ex); tot.exp += r.saved; }
+      seen[ym] = h;
     }
-    msg.textContent = `تم ✔ ${tot.months} شهرًا، ${tot.saved} دفعة (${tot.exact} طابق الاسم، ${tot.near} طابق بيوم الزيارة، ${tot.fresh} مريض جديد) و${tot.exp} مصروفًا.`;
+    msg.textContent = `تم ✔ ${tot.months} شهرًا، ${tot.saved} دفعة (${tot.exact} طابق الاسم، ${tot.near} طابق بيوم الزيارة، ${tot.fresh} مريض جديد) و${tot.exp} مصروفًا${tot.same ? ` (${tot.same} شهرًا لم يتغيّر)` : ""}.`;
+    remember();
     return true;
   } catch (err) { msg.className = "note warn"; msg.textContent = "تعذّر الاستيراد: " + (err?.message || "لم يتم تحميل قارئ ملفات Excel، تحقق من الإنترنت ثم أعد المحاولة"); return false; }
 }
 $("finFile").onchange = async (e) => {
   const file = e.target.files[0]; if (!file) return;
-  if (await importWorkbook(file, $("finMsg"))) patients();
+  if (await importFile(file, $("finMsg"))) patients();
   e.target.value = "";
 };
 $("finFile2").onchange = async (e) => {
   const file = e.target.files[0]; if (!file) return;
-  if (await importWorkbook(file, $("finMsg2"))) loadFin();
+  if (await importFile(file, $("finMsg2"))) loadFin();
   e.target.value = "";
 };
 
@@ -1103,7 +1118,12 @@ async function mergeFromCard(p) {
 const MN_AR = ["كانون الثاني", "شباط", "آذار", "نيسان", "أيار", "حزيران", "تموز", "آب", "أيلول", "تشرين الأول", "تشرين الثاني", "كانون الأول"];
 const MN_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const PAL = ["#1F6FD1", "#C29A4A", "#1E9E5A", "#C2413A", "#7A5AF8", "#0EA5B7", "#E67E22", "#8A94A8"];
-let finYear = "", finCur = "iqd";
+let finYear = "", finCur = "iqd", finBooted = false;
+async function gsAuto() {      // opening the tab pulls fresh numbers when the last sync is over 2 hours old
+  const d = await gsLoad(); if (!d || !d.links.length) return;
+  if (d.synced_at && Date.now() - Date.parse(d.synced_at) < 2 * 3600 * 1000) return;
+  if (await gsSync(false)) loadFin();
+}
 const fm = (n, c) => (c === "usd" ? "$" : "") + Math.round(n).toLocaleString("en-US") + (c === "usd" ? "" : "");
 const short = (n) => { const a = Math.abs(n); return (n < 0 ? "-" : "") + (a >= 1e6 ? (a / 1e6).toFixed(a >= 1e7 ? 0 : 1) + "M" : a >= 1e3 ? Math.round(a / 1e3) + "k" : Math.round(a)); };
 function niceMax(v) { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= v) return m * p; return 10 * p; }
@@ -1128,8 +1148,41 @@ function donut(items) {                          // items: [{label, v}] → ring
   return `<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center"><svg viewBox="0 0 180 180" style="width:170px;direction:ltr">${arcs}<text x="90" y="86" text-anchor="middle" font-size="11" fill="#5B6B8C">المصاريف</text><text x="90" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="#13285C">${short(tot)}</text></svg>
     <div style="min-width:180px;flex:1">${items.map((it, i) => `<div class="xrow" style="padding:5px 0"><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;background:${PAL[i % PAL.length]};margin-inline-end:7px"></i>${esc(it.label)} <small>${Math.round((it.v / tot) * 100)}%</small></span><b>${fm(it.v, finCur)}</b></div>`).join("")}</div></div>`;
 }
+
+/* ---- Google Sheets link: pull the latest accounts from the owner's online sheets ---- */
+const gsId = (u) => (String(u).match(/\/spreadsheets\/d\/(?:e\/)?([A-Za-z0-9_-]{20,})/) || [])[1] || "";
+async function gsLoad() {
+  try {
+    const d = await (await fetch("/clinic/api/sheet?action=links", { cache: "no-store" })).json(); if (!d.ok) return null;
+    if (document.activeElement !== $("gsLinks")) $("gsLinks").value = d.links.join("\n");
+    $("gsOpen").innerHTML = d.links.map((l, i) => `<a class="btn" href="${esc(l)}" target="_blank" rel="noopener">📄 فتح الجدول ${d.links.length > 1 ? i + 1 : ""}</a>`).join("");
+    if (d.synced_at) $("gsMsg").textContent = "آخر مزامنة: " + new Date(d.synced_at).toLocaleString("ar-IQ", { dateStyle: "medium", timeStyle: "short" });
+    return d;
+  } catch { return null; }
+}
+async function gsSync(force) {
+  const msg = $("gsMsg"), d = await gsLoad(); if (!d || !d.links.length) { msg.textContent = "ألصق رابط Google Sheets ثم احفظه."; return false; }
+  msg.dataset.force = force ? "1" : ""; let all = true;
+  for (const l of d.links) {
+    const id = gsId(l);
+    const ok = await importBuffer(async () => {
+      const r = await fetch("/clinic/api/sheet?id=" + id); const ct = r.headers.get("content-type") || "";
+      if (!r.ok || ct.includes("json")) { const j = await r.json().catch(() => ({})); throw new Error(j.error || "HTTP " + r.status); }
+      return r.arrayBuffer();
+    }, "sheet.xlsx", msg);
+    all = all && ok; if (!ok) break;
+  }
+  if (all) { await fetch("/clinic/api/sheet?action=synced", { method: "POST" }); const t = msg.textContent; await gsLoad(); msg.textContent = t + " · " + msg.textContent; }
+  return all;
+}
+$("gsSave").onclick = async () => {
+  const links = $("gsLinks").value.split(/\s+/).filter(Boolean);
+  const r = await (await fetch("/clinic/api/sheet?action=links", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ links }) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
+  $("gsMsg").className = "note" + (r.ok ? "" : " warn"); $("gsMsg").textContent = r.ok ? "تم حفظ الروابط ✔" : r.error; if (r.ok) gsLoad();
+};
+$("gsSync").onclick = async () => { $("gsSync").disabled = true; if (await gsSync(true)) loadFin(); $("gsSync").disabled = false; };
 async function loadFin() {
-  $("fin").hidden = false; $("title").textContent = "الحسابات"; $("note").textContent = ""; $("count").textContent = "";
+  $("fin").hidden = false; if (!finBooted) { finBooted = true; gsAuto(); } $("title").textContent = "الحسابات"; $("note").textContent = ""; $("count").textContent = "";
   $("list").innerHTML = `<div class="spin"></div>`;
   try {
     const res = await fetch(`/clinic/api/finance?year=${finYear}`, { cache: "no-store" }); const d = await res.json();
