@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, X, Send, Calendar, Phone, MapPin } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { GOOGLE_DIRECTIONS_URL, WHATSAPP_NUMBER } from "@/config/clinic";
-import { findTopic, type AssistantAction } from "@/lib/assistant";
+import { findTopic, topicById, CHIP_TOPIC, SYMPTOM_CHIPS, type AssistantAction, type Topic } from "@/lib/assistant";
 import { track } from "@/lib/track";
 
 interface Message {
@@ -20,7 +20,7 @@ interface ChatBotProps {
 }
 
 // Questions offered as one-tap chips. Each chip's text is also matched by findTopic.
-const QUICK_KEYS = ["chat.quickSameDay", "chat.quickPrices", "chat.quickServices", "chat.quickHours", "chat.quickLocation", "chat.quickBooking"];
+const QUICK_KEYS = ["chat.quickCheck", "chat.quickSameDay", "chat.quickPrices", "chat.quickServices", "chat.quickHours", "chat.quickLocation", "chat.quickBooking"];
 
 // After answering a topic, suggest a few related questions (FAQ question keys).
 const FOLLOW_UPS: Record<string, string[]> = {
@@ -39,6 +39,19 @@ const FOLLOW_UPS: Record<string, string[]> = {
   braces: ["chat.quickPrices", "chat.quickBooking"],
   children: ["chat.quickSameDay", "faq.q16"],
   cleaning: ["faq.q10", "chat.quickBooking"],
+  checker: SYMPTOM_CHIPS.map((c) => `sym.c.${c}`),
+  toothache: ["sym.c.toothCold", "sym.c.toothNight", "sym.c.toothBite"],
+  toothCold: ["chat.quickSameDay", "chat.quickCheck"],
+  toothNight: ["chat.quickSameDay", "chat.quickCheck"],
+  toothBite: ["chat.quickSameDay", "chat.quickCheck"],
+  swelling: ["chat.quickLocation", "chat.quickCheck"],
+  gums: ["chat.quickSameDay", "chat.quickCheck"],
+  sensitivity: ["chat.quickSameDay", "chat.quickCheck"],
+  broken: ["chat.quickSameDay", "chat.quickLocation"],
+  loose: ["chat.quickSameDay", "chat.quickCheck"],
+  breath: ["chat.quickSameDay", "chat.quickCheck"],
+  afterExt: ["chat.quickSameDay", "chat.quickLocation"],
+  jaw: ["chat.quickSameDay", "chat.quickCheck"],
 };
 
 // A friendly tooth with a face: blinks and waves so the helper looks alive.
@@ -90,8 +103,8 @@ const ChatBot = ({ onBookingClick }: ChatBotProps) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, typing]);
 
-  const answer = (question: string): Message => {
-    const topic = findTopic(question);
+  const answer = (question: string, forced?: Topic): Message => {
+    const topic = forced ?? findTopic(question);
     track("chat_question", topic?.id ?? "not_understood");
     if (!topic) {
       return { id: Date.now() + 1, text: t("chat.fallback"), isBot: true, actions: ["whatsapp", "call"], suggestions: QUICK_KEYS.slice(0, 4) };
@@ -106,14 +119,15 @@ const ChatBot = ({ onBookingClick }: ChatBotProps) => {
     };
   };
 
-  const handleSend = (text: string = input) => {
+  const handleSend = (text: string = input, chipKey?: string) => {
     const q = text.trim();
+    const forced = chipKey && CHIP_TOPIC[chipKey] ? topicById(CHIP_TOPIC[chipKey]) : undefined;
     if (!q || typing) return;
     setMessages((prev) => [...prev, { id: Date.now(), text: q, isBot: false }]);
     setInput("");
     setTyping(true);
     setTimeout(() => {
-      setMessages((prev) => [...prev, answer(q)]);
+      setMessages((prev) => [...prev, answer(q, forced)]);
       setTyping(false);
     }, 500);
   };
@@ -256,11 +270,11 @@ const ChatBot = ({ onBookingClick }: ChatBotProps) => {
             {!typing && last?.isBot && last.suggestions && last.suggestions.length > 0 && (
               <div className="px-4 pb-2">
                 {messages.length > 1 && <p className="text-[11px] text-muted-foreground mb-1.5">{t("chat.more")}</p>}
-                <div className="flex flex-wrap gap-1.5 max-h-[84px] overflow-y-auto">
+                <div className="flex flex-wrap gap-1.5 max-h-[132px] overflow-y-auto">
                   {last.suggestions.map((key) => (
                     <button
                       key={key}
-                      onClick={() => handleSend(t(key))}
+                      onClick={() => handleSend(t(key), key)}
                       className="px-3 py-1.5 text-xs rounded-full border border-primary/30 text-primary hover:bg-primary/10 transition-colors"
                     >
                       {t(key)}

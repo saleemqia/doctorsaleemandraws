@@ -35,9 +35,9 @@ export const TOPICS: Topic[] = [
   {
     id: "sameDay",
     answerKey: "faq.a14",
-    keywords: ["same day", "same-day", "today", "tonight", "now", "urgent", "emergency", "pain", "hurt", "toothache", "swelling", "broken",
-      "اليوم", "الان", "هسه", "طوارئ", "طارئ", "عاجل", "مستعجل", "الم", "وجع", "يوجع", "ينبض", "ورم", "انكسر", "مكسور",
-      "ئەڤرو", "ئیرو", "نوکە", "ئێستا", "ئیش", "ژان", "دئێشیت", "بلەز", "شکەستی"],
+    keywords: ["same day", "same-day", "today", "tonight", "now", "urgent", "emergency",
+      "اليوم", "الان", "هسه", "طوارئ", "طارئ", "عاجل", "مستعجل",
+      "ئەڤرو", "ئیرو", "نوکە", "ئێستا", "بلەز"],
     actions: ["call", "whatsapp", "book"],
   },
   {
@@ -163,7 +163,49 @@ export const TOPICS: Topic[] = [
   },
 ];
 
+
+// ---- symptom helper: says what a problem usually means and that we can fix it (the doctor confirms after an exam) ----
+const SYMPTOM_ACTIONS: AssistantAction[] = ["book", "call", "whatsapp"];
+export const SYMPTOM_CHIPS = ["toothache", "swelling", "gums", "sensitivity", "broken", "loose", "breath", "afterExt", "jaw"];
+export const SYMPTOM_TOPICS: Topic[] = [
+  { id: "checker", answerKey: "sym.checker", actions: [],
+    keywords: ["diagnose", "diagnosis", "check my", "my problem", "what is wrong", "what's wrong", "symptom", "problem with my", "i have a problem",
+      "تشخيص", "مشكلتي", "عندي مشكله", "اعراض", "افحص", "شنو مشكلتي", "کێشەیا من", "کێشە", "بپشکنە", "نەخۆشی"] },
+  { id: "toothache", answerKey: "sym.a.toothache", actions: SYMPTOM_ACTIONS,
+    keywords: ["toothache", "tooth pain", "tooth hurts", "teeth hurt", "pain", "hurts",
+      "وجع", "الم", "يوجع", "يؤلم", "يعورني", "ينبض", "ئیش", "ئێش", "ژان", "دئێشیت"] },
+  { id: "toothCold", answerKey: "sym.a.toothCold", actions: SYMPTOM_ACTIONS, keywords: ["hurts briefly with cold or sweets"] },
+  { id: "toothNight", answerKey: "sym.a.toothNight", actions: SYMPTOM_ACTIONS, keywords: ["constant throbbing", "throbbing", "pulsing", "night pain", "ألم ليلي", "نبض"] },
+  { id: "toothBite", answerKey: "sym.a.toothBite", actions: SYMPTOM_ACTIONS, keywords: ["hurts when i bite", "pain when biting", "pain when chewing", "عند العض", "عند المضغ", "دەمێ کەمە"] },
+  { id: "swelling", answerKey: "sym.a.swelling", actions: ["call", "book", "whatsapp"],
+    keywords: ["swelling", "swollen", "abscess", "pus", "puffy face", "ورم", "منتفخ", "خراج", "صديد", "انتفاخ الوجه", "ئاوسان", "ئاوساییە", "ئاوسا", "زراڤ"] },
+  { id: "gums", answerKey: "sym.a.gums", actions: SYMPTOM_ACTIONS,
+    keywords: ["bleeding gums", "gums bleed", "gum bleeding", "gum disease", "gingivitis", "red gums", "swollen gums", "نزيف اللثه", "نزيف لثه", "لثتي تنزف", "تنزف", "ينزف", "نزيف", "التهاب اللثه", "خوین", "خوینهاتن"] },
+  { id: "sensitivity", answerKey: "sym.a.sensitivity", actions: SYMPTOM_ACTIONS,
+    keywords: ["sensitive", "sensitivity", "cold water", "hot and cold", "hurts with cold", "حساسيه", "حساس", "بارد", "ساخن", "هەستیار", "هەستیاری", "سار"] },
+  { id: "broken", answerKey: "sym.a.broken", actions: SYMPTOM_ACTIONS,
+    keywords: ["broken", "chipped", "cracked", "fractured", "broke", "tooth fell", "انكسر", "مكسور", "كسر", "تكسر", "متشقق", "شرخ", "شکەستی", "شکەستن", "شکەست"] },
+  { id: "loose", answerKey: "sym.a.loose", actions: SYMPTOM_ACTIONS,
+    keywords: ["loose", "wobbly", "wobbling", "moving tooth", "tooth moves", "falling out", "متحرك", "يتحرك", "يهتز", "رخو", "لەرزۆک", "دلەرزیت", "دلڕێت"] },
+  { id: "breath", answerKey: "sym.a.breath", actions: SYMPTOM_ACTIONS,
+    keywords: ["bad breath", "halitosis", "smelly", "mouth smell", "breath smell", "رائحه الفم", "رائحه فم", "رايحه", "بخر", "ريحه الفم", "بۆن", "بۆنا دەمی"] },
+  { id: "afterExt", answerKey: "sym.a.afterExt", actions: SYMPTOM_ACTIONS,
+    keywords: ["pain after extraction", "after extraction", "after the extraction", "bleeding after extraction", "ألم بعد القلع", "ألم بعد الخلع", "dry socket", "bleeding after", "after tooth removal", "بعد القلع", "بعد الخلع", "نزيف بعد", "پشتی هەلکێشانێ", "پشتی هەلکێشان"] },
+  { id: "jaw", answerKey: "sym.a.jaw", actions: SYMPTOM_ACTIONS,
+    keywords: ["jaw", "clicking", "grinding", "clenching", "tmj", "bruxism", "الفك", "فكي", "طقطقه", "صريف", "جز الاسنان", "چەناگە", "قرچاندن"] },
+];
+TOPICS.unshift(...SYMPTOM_TOPICS);
+
+// One-tap chips that go straight to a topic (no keyword guessing). Key = translation key of the chip.
+export const CHIP_TOPIC: Record<string, string> = {
+  "chat.quickCheck": "checker",
+  ...Object.fromEntries(SYMPTOM_CHIPS.map((c) => [`sym.c.${c}`, c])),
+  "sym.c.toothCold": "toothCold", "sym.c.toothNight": "toothNight", "sym.c.toothBite": "toothBite",
+};
+
 const PRIORITY = new Set(["prices"]);
+
+export const topicById = (id: string): Topic | undefined => TOPICS.find((t) => t.id === id);
 
 const NORMALIZED = TOPICS.map((topic) => ({ topic, words: topic.keywords.map(normalize) }));
 
