@@ -9,7 +9,7 @@ interface Env {
 
 const EVENTS = new Set([
   "page_view", "call", "whatsapp", "book_open", "book_submit",
-  "directions", "map", "instagram", "review", "chat_open", "chat_question",
+  "directions", "map", "instagram", "review", "chat_open", "chat_question", "smile_preview",
 ]);
 
 const clean = (v: unknown, max = 40): string | null =>

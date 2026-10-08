@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Home, Stethoscope, UserRound, Building2, Images, Instagram, MessageSquareQuote,
-  HelpCircle, ScanLine, Compass, CalendarClock, MapPin, List, X, Mountain } from "lucide-react";
+  HelpCircle, ScanLine, Compass, CalendarClock, MapPin, List, X, Mountain, Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 type L = "en" | "ar" | "ku";
@@ -14,6 +14,7 @@ const SECTIONS: { id: string; icon: typeof Home; label: Record<L, string> }[] = 
   { id: "about", icon: UserRound, label: { en: "The doctor", ar: "عن الطبيب", ku: "دەربارەی دکتۆری" } },
   { id: "clinic", icon: Building2, label: { en: "Our clinic", ar: "العيادة", ku: "کلینیک" } },
   { id: "technology", icon: ScanLine, label: { en: "3D technology", ar: "التقنيات الرقمية", ku: "تەکنەلۆژیا ٣D" } },
+  { id: "smile", icon: Sparkles, label: { en: "Smile preview", ar: "معاينة الابتسامة", ku: "پێشبینیا بزەیێ" } },
   { id: "gallery", icon: Images, label: { en: "Before & after", ar: "المعرض", ku: "پێشانگە" } },
   { id: "instagram", icon: Instagram, label: { en: "Instagram", ar: "إنستغرام", ku: "ئینستاگرام" } },
   { id: "testimonials", icon: MessageSquareQuote, label: { en: "Reviews", ar: "آراء المرضى", ku: "بۆچوونێن نەخۆشان" } },

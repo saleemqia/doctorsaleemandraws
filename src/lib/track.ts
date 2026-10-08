@@ -4,7 +4,7 @@
 
 type EventName =
   | "page_view" | "call" | "whatsapp" | "book_open" | "book_submit"
-  | "directions" | "map" | "instagram" | "review" | "chat_open" | "chat_question";
+  | "directions" | "map" | "instagram" | "review" | "chat_open" | "chat_question" | "smile_preview";
 
 const isLocal = () => /^(localhost|127\.|\[::1\])/.test(location.hostname);
 const device = () => (window.matchMedia("(max-width: 767px)").matches ? "mobile" : "desktop");

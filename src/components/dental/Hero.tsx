@@ -16,6 +16,7 @@ const WA = "M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.7
 // Colourful "doors" into the rest of the site: the first screen shows a visitor everything there is to explore.
 const DOORS = [
   { key: "services", href: "#services", icon: Stethoscope, tint: "from-[hsl(187_70%_48%)] to-[hsl(202_87%_40%)]", text: "text-white" },
+  { key: "smile", href: "#smile", icon: Sparkles, tint: "from-[hsl(41_100%_62%)] to-[hsl(340_90%_70%)]", text: "text-[hsl(var(--ink))]" },
   { key: "gallery", href: "#gallery", icon: Images, tint: "from-[hsl(41_100%_66%)] to-[hsl(30_100%_62%)]", text: "text-[hsl(var(--ink))]" },
   { key: "testimonials", href: "#testimonials", icon: MessageSquareHeart, tint: "from-[hsl(12_100%_72%)] to-[hsl(340_90%_68%)]", text: "text-white" },
   { key: "kids", href: "/kids", icon: Baby, tint: "from-[hsl(160_60%_62%)] to-[hsl(187_70%_48%)]", text: "text-[hsl(var(--ink))]" },
@@ -137,7 +138,7 @@ const Hero = ({ onBookingClick }: HeroProps) => {
         </div>
 
         {/* Doors into the rest of the site */}
-        <nav aria-label="Explore" className="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:mt-20 lg:grid-cols-6">
+        <nav aria-label="Explore" className="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:mt-20 lg:grid-cols-7">
           {DOORS.map((d, i) => (
             <motion.a
               key={d.key}

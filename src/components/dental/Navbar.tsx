@@ -12,6 +12,7 @@ const navLinks: { key: string; href: string; mobileOnly?: boolean }[] = [
   { key: "home", href: "#home" },
   { key: "services", href: "#services" },
   { key: "about", href: "#about" },
+  { key: "smile", href: "#smile" },
   { key: "gallery", href: "#gallery" },
   { key: "testimonials", href: "#testimonials" },
   { key: "treatments", href: "/treatments" },

@@ -22,6 +22,7 @@ import ScrollToTop from "@/components/dental/ScrollToTop";
 import MobileActionBar from "@/components/dental/MobileActionBar";
 import WelcomeScreen from "@/components/dental/WelcomeScreen";
 import Marquee from "@/components/dental/Marquee";
+import SmilePreview from "@/components/dental/SmilePreview";
 import Reveal from "@/components/dental/Reveal";
 
 const WELCOME_KEY = "diamond-welcome-shown";
@@ -71,6 +72,7 @@ const Index = () => {
         <Reveal threshold={0.04}><About /></Reveal>
         <Reveal threshold={0.04}><ClinicTour /></Reveal>
         <Reveal threshold={0.04}><DigitalDentistry /></Reveal>
+        <Reveal threshold={0.04}><SmilePreview onBookingClick={openBooking("smile")} /></Reveal>
         <Reveal threshold={0.04}><Gallery /></Reveal>
         <Reveal threshold={0.04}><InstagramFeed /></Reveal>
         <Reveal threshold={0.04}><Testimonials /></Reveal>
