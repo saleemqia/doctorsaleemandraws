@@ -107,7 +107,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .mc{border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column}.mc a{color:var(--navy)}.mc small{color:var(--muted)}
 .okS{color:#1a7f37;font-size:12px}.warnS{color:#b45309;font-size:12px}
 .ef{display:grid;gap:8px;padding:10px}.ef label{display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:3px}.ef input,.ef textarea{padding:9px;border:1px solid var(--line);border-radius:8px;font:inherit;color:var(--navy)}.ef .wide{grid-column:1/-1}.ef .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.tw{overflow-x:auto}.vt.ed input{width:100%;min-width:70px;padding:6px;border:1px solid var(--line);border-radius:6px;font:inherit;margin:1px 0}
+.tw{overflow-x:auto;direction:ltr}.vt.ed input{width:100%;min-width:70px;padding:6px;border:1px solid var(--line);border-radius:6px;font:inherit;margin:1px 0}
 .savebar{display:flex;gap:8px;align-items:center;padding:10px;position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line)}
 @media (max-width:480px){.two{grid-template-columns:1fr}}
 
@@ -161,6 +161,20 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .bc .tpl{font-size:13px}.bc .warn{background:#FFF7E6;border:1px solid #F3D9A4;border-radius:10px;padding:8px 10px;font-size:13px;margin:8px 0}
 .bl{margin-top:10px}.bl .it{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:8px 4px;border-bottom:1px solid var(--line);align-items:center}.bl .it.done{opacity:.5}
 .bl .it small{color:var(--muted)}.bl .it .go{display:flex;gap:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+.kpi{background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 2px 10px #13285C0d;border-top:4px solid var(--blue)}
+.kpi small{display:block;color:var(--muted);font-size:12px}.kpi b{display:block;font-size:20px;direction:ltr;text-align:start;margin-top:2px}
+.kpi.g{border-top-color:var(--green)}.kpi.r{border-top-color:var(--red)}.kpi.y{border-top-color:var(--gold)}
+.cbox{background:#fff;border-radius:14px;padding:12px;margin:12px 0;box-shadow:0 2px 10px #13285C0d}
+.cbox h3{margin:0 0 8px;font-size:15px}.cbox svg{width:100%;height:auto;display:block;direction:ltr}
+.leg{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:4px}.leg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
+.ftab{width:100%;border-collapse:collapse;font-size:13px;direction:ltr}.ftab th,.ftab td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:end;white-space:nowrap}.ftab th:first-child,.ftab td:first-child{text-align:start}
+.ftab th{color:var(--muted);font-weight:600}.ftab tfoot td{font-weight:800;border-top:2px solid var(--navy)}.ftab .neg{color:var(--red)}.ftab .pos{color:var(--green)}
+.tw{overflow-x:auto;direction:ltr}
+.xf{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;align-items:end}.xf label{font-size:12px;color:var(--muted);display:grid;gap:3px}
+.xf input,.xf select{border:1px solid var(--line);border-radius:10px;padding:8px;font:inherit;color:var(--navy);min-width:0}
+.xrow{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.xrow small{color:var(--muted)}.xrow b{direction:ltr}
+.xrow button{border:0;background:none;color:var(--red);cursor:pointer;font-size:16px}
 </style>
 </head>
 <body>
@@ -180,6 +194,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     <button data-r="past">الشهر الماضي</button>
     <button data-r="archive">🔎 الأرشيف</button>
     <button data-r="patients">👤 المرضى</button>
+    <button data-r="fin">💰 الحسابات</button>
     <input type="date" id="pick" aria-label="اختر يومًا">
   </nav>
   <div class="bar">
@@ -199,6 +214,14 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
       <p>اختر ملف الحسابات الشهري (مثل DentalFinicial2026.xlsx). كل صفحة شهر تُربط بالمرضى بالاسم وبيوم الزيارة. إعادة رفع الملف تُحدّث الأشهر ولا تكرّرها.</p>
       <input type="file" id="finFile" accept=".xlsx,.xls">
       <p class="note" id="finMsg"></p>
+    </details>
+  </div>
+  <div id="fin" hidden>
+    <div class="chips" id="finYears"></div>
+    <details class="imp"><summary>📥 تحديث الحسابات من ملف Excel</summary>
+      <p>بعد تعديل ملف الحسابات (مثل DentalFinicial2026.xlsx) اختره هنا: تتحدّث الدفعات في بطاقات المرضى والمصاريف والرسوم البيانية معًا، وإعادة الرفع لا تكرّر شيئًا. ما تكتبه بيدك هنا كمصروف يبقى محفوظًا.</p>
+      <input type="file" id="finFile2" accept=".xlsx,.xls">
+      <p class="note" id="finMsg2"></p>
     </details>
   </div>
   <div id="arch" hidden>
@@ -445,14 +468,19 @@ function sheetRows(XLSX, ws, title, fileYear) {
   const col = (re, not) => h.findIndex((c) => re.test(c) && !(not && not.test(c)));
   const cName = col(/name|اسم/), cDate = col(/date|تاريخ/), cWork = col(/work|treatment|علاج|عمل/), cNotes = col(/note|ملاحظ/), cPhone = col(/phone|هاتف/), cLab = col(/lab/);
   const cPaid = col(/paid|done|مدفوع|واصل/, /usd|\$/), cPaidU = col(/(paid|done)[\s\S]*(usd|\$)/), cDue = col(/due|left|متبقي|باقي/, /usd|\$/), cDueU = col(/(due|left)[\s\S]*(usd|\$)/);
-  const out = [];
+  const out = [], extra = [];
+  const ymS = `${year}-${String(month).padStart(2, "0")}`;
+  // Money that is in the sheet's income total but is not a patient visit (monthly exam fees, a sold chair, a row with no usable date…).
+  const other = (i, name, r) => { let [a, b] = money(r[cPaid]); if (cPaidU >= 0 && r[cPaidU] != null && r[cPaidU] !== "") { const [x, y] = money(r[cPaidU]); b = (b || 0) + (y ?? x ?? 0); }
+    if (a || b) extra.push({ src: `${ymS}#${i + 1}`, label: name, day: ymS + "-01", iqd: a || null, usd: b || null }); };
   for (let i = hi + 1; i < grid.length; i++) {
     const r = grid[i] || []; const name = String(r[cName] ?? "").trim();
     if (/^total/i.test(name)) break;
-    if (!name || EXPENSE.test(name)) continue;
+    if (!name) continue;
+    if (EXPENSE.test(name)) { other(i, name, r); continue; }
     let work = r[cWork], dt = r[cDate];
     if (looksDate(work) && !looksDate(dt)) [work, dt] = [dt, work];   // some sheets have the two columns swapped
-    const day = cellDay(dt, year, month); if (!day) continue;
+    const day = cellDay(dt, year, month); if (!day) { other(i, name, r); continue; }
     let [pi, pu] = money(r[cPaid]), [di, du] = money(r[cDue]);
     if (cPaidU >= 0 && r[cPaidU] != null && r[cPaidU] !== "") { const [a, b] = money(r[cPaidU]); pu = (pu || 0) + (b ?? a ?? 0); }
     if (cDueU >= 0 && r[cDueU] != null && r[cDueU] !== "") { const [a, b] = money(r[cDueU]); du = (du || 0) + (b ?? a ?? 0); }
@@ -460,27 +488,78 @@ function sheetRows(XLSX, ws, title, fileYear) {
     out.push({ src: `${year}-${String(month).padStart(2, "0")}#${i + 1}`, name, day, paid_iqd: pi, paid_usd: pu, due_iqd: di, due_usd: du,
       work: String(work ?? "").trim(), notes: [cLab >= 0 ? r[cLab] : null, cNotes >= 0 ? r[cNotes] : null].filter(Boolean).join(" ").trim(), phone: phone.length >= 10 ? phone : "" });
   }
-  return { sheet: `${year}-${String(month).padStart(2, "0")}`, rows: out };
+  return { sheet: ymS, rows: out, extra };
 }
-$("finFile").onchange = async (e) => {
-  const file = e.target.files[0]; if (!file) return;
-  const msg = $("finMsg"); msg.className = "note"; msg.textContent = "جارٍ قراءة الملف…";
+/* Expenses section of a month sheet: a "Category | Date | Amount (IQD) | Amount (USD) | Description | Receipt" table. */
+const CAT_AR = { "electric bill": "كهرباء", electricity: "كهرباء", rent: "إيجار", "assistant salary": "راتب المساعدة", "dental materials purchase": "مواد طبية", "lab payments": "المختبر",
+  internet: "إنترنت", others: "أخرى", other: "أخرى", "other expenses": "أخرى" };
+// Month sheets spell the same category differently (Internet / انترنت / إنترنت; others / أخرى / مصاريف اخرى): fold them into one name.
+const catName = (c) => {
+  const t = String(c).trim(), k = t.toLowerCase().replace(/\s+/g, " ");
+  if (CAT_AR[k]) return CAT_AR[k];
+  const a = t.replace(/[أإآ]/g, "ا");
+  if (/^انترنت/.test(a)) return "إنترنت";
+  if (/^(مصاريف )?اخر[ىي]$/.test(a) || /^مصاريف اخر/.test(a)) return "أخرى";
+  const x = k.match(/^extra\s*(\d+)$/); if (x) return "إضافي " + x[1];
+  return t;
+};
+function expenseRows(XLSX, ws, title, fileYear) {
+  const grid = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: null });
+  const month = MONTH_EN[String(title).trim().toLowerCase().slice(0, 3)]; if (!month) return null;
+  const yearM = (String(title) + " " + String(grid[0]?.[0] ?? "")).match(/20\d\d/); const year = yearM ? +yearM[0] : fileYear; if (!year) return null;
+  const hi = grid.findIndex((r) => r && /^category$|^الفئة$|^النوع$/i.test(String(r[0] ?? "").trim()) && r.some((c) => /amount|مبلغ/i.test(String(c ?? ""))));
+  if (hi < 0) return null;
+  const h = grid[hi].map((c) => String(c ?? "").toLowerCase());
+  const col = (re) => h.findIndex((c) => re.test(c));
+  const cDate = col(/date|تاريخ/), cI = col(/amount[\s\S]*iqd/), cU = col(/amount[\s\S]*(usd|\$)/), cDesc = col(/desc|وصف|ملاحظ/), cRec = col(/receipt|وصل/);
+  const ym = `${year}-${String(month).padStart(2, "0")}`; const out = [];
+  for (let i = hi + 1; i < grid.length; i++) {
+    const r = grid[i] || []; const cat = String(r[0] ?? "").trim();
+    if (/^total|^المجموع/i.test(cat)) break;
+    if (!cat) continue;
+    const a = money(cI >= 0 ? r[cI] : null), b = money(cU >= 0 ? r[cU] : null);
+    const iqd = a[0] ?? 0, usd = (b[1] ?? b[0] ?? 0) + (a[1] ?? 0);
+    if (!iqd && !usd) continue;
+    const day = (cDate >= 0 && r[cDate] != null && cellDay(r[cDate], year, month)) || ym + "-01";
+    out.push({ src: `${ym}#${i + 1}`, category: catName(cat), day, iqd: iqd || null, usd: usd || null,
+      desc: cDesc >= 0 ? String(r[cDesc] ?? "") : "", receipt: cRec >= 0 ? String(r[cRec] ?? "") : "" });
+  }
+  return { sheet: ym, rows: out };
+}
+async function importWorkbook(file, msg) {
+  msg.className = "note"; msg.textContent = "جارٍ قراءة الملف…";
   try {
     const XLSX = await loadXlsx();
     const wb = XLSX.read(await file.arrayBuffer());
     const fy = (file.name.match(/20\d\d/) || [])[0];
-    let tot = { saved: 0, exact: 0, near: 0, fresh: 0, months: 0 };
+    const postJson = async (url, body) => {
+      const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const r = await res.json().catch(() => ({ ok: false, error: "HTTP " + res.status })); if (!r.ok) throw new Error(r.error || "HTTP " + res.status); return r;
+    };
+    let tot = { saved: 0, exact: 0, near: 0, fresh: 0, months: 0, exp: 0 };
     for (const name of wb.SheetNames) {
       const part = sheetRows(XLSX, wb.Sheets[name], name, fy ? +fy : 0);
-      if (!part || !part.rows.length) continue;
-      msg.textContent = `جارٍ حفظ ${name}…`;
-      const res = await fetch("/clinic/api/payments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(part) });
-      const r = await res.json(); if (!r.ok) throw new Error(r.error || "HTTP " + res.status);
-      tot.saved += r.saved; tot.exact += r.exact; tot.near += r.near; tot.fresh += r.fresh; tot.months++;
+      if (part && part.rows.length) {
+        msg.textContent = `جارٍ حفظ ${name}…`;
+        const r = await postJson("/clinic/api/payments", { sheet: part.sheet, rows: part.rows });
+        tot.saved += r.saved; tot.exact += r.exact; tot.near += r.near; tot.fresh += r.fresh; tot.months++;
+      }
+      if (part) await postJson("/clinic/api/finance?action=other", { sheet: part.sheet, rows: part.extra });
+      const ex = expenseRows(XLSX, wb.Sheets[name], name, fy ? +fy : 0);
+      if (ex) { const r = await postJson("/clinic/api/finance?action=expenses", ex); tot.exp += r.saved; }
     }
-    msg.textContent = `تم ✔ ${tot.months} شهرًا، ${tot.saved} سجلًا: ${tot.exact} طابق الاسم، ${tot.near} طابق بيوم الزيارة، ${tot.fresh} مريضًا جديدًا (بطاقة جديدة).`;
-    patients();
-  } catch (err) { msg.className = "note warn"; msg.textContent = "تعذّر الاستيراد: " + (err?.message || "لم يتم تحميل قارئ ملفات Excel، تحقق من الإنترنت ثم أعد المحاولة"); }
+    msg.textContent = `تم ✔ ${tot.months} شهرًا، ${tot.saved} دفعة (${tot.exact} طابق الاسم، ${tot.near} طابق بيوم الزيارة، ${tot.fresh} مريض جديد) و${tot.exp} مصروفًا.`;
+    return true;
+  } catch (err) { msg.className = "note warn"; msg.textContent = "تعذّر الاستيراد: " + (err?.message || "لم يتم تحميل قارئ ملفات Excel، تحقق من الإنترنت ثم أعد المحاولة"); return false; }
+}
+$("finFile").onchange = async (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  if (await importWorkbook(file, $("finMsg"))) patients();
+  e.target.value = "";
+};
+$("finFile2").onchange = async (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  if (await importWorkbook(file, $("finMsg2"))) loadFin();
   e.target.value = "";
 };
 
@@ -1019,10 +1098,91 @@ async function mergeFromCard(p) {
   } catch { $("sugg").innerHTML = ""; }
 }
 
+
+/* ---- finance dashboard: income, expenses, net, outstanding ---- */
+const MN_AR = ["كانون الثاني", "شباط", "آذار", "نيسان", "أيار", "حزيران", "تموز", "آب", "أيلول", "تشرين الأول", "تشرين الثاني", "كانون الأول"];
+const MN_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const PAL = ["#1F6FD1", "#C29A4A", "#1E9E5A", "#C2413A", "#7A5AF8", "#0EA5B7", "#E67E22", "#8A94A8"];
+let finYear = "", finCur = "iqd";
+const fm = (n, c) => (c === "usd" ? "$" : "") + Math.round(n).toLocaleString("en-US") + (c === "usd" ? "" : "");
+const short = (n) => { const a = Math.abs(n); return (n < 0 ? "-" : "") + (a >= 1e6 ? (a / 1e6).toFixed(a >= 1e7 ? 0 : 1) + "M" : a >= 1e3 ? Math.round(a / 1e3) + "k" : Math.round(a)); };
+function niceMax(v) { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= v) return m * p; return 10 * p; }
+function barChart(series, labels, colors) {      // series: arrays of numbers (may be negative); grouped bars
+  const W = 720, H = 260, L = 46, B = 28, T = 10, n = labels.length, g = series.length;
+  const all = series.flat(), hi = niceMax(Math.max(0, ...all)), lo = Math.min(0, ...all) < 0 ? -niceMax(-Math.min(...all)) : 0;
+  const y = (v) => T + (H - T - B) * (1 - (v - lo) / (hi - lo)); const cw = (W - L) / n, bw = Math.min(22, (cw - 6) / g);
+  let o = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  for (let i = 0; i <= 4; i++) { const v = lo + ((hi - lo) * i) / 4; o += `<line x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#E2E9F4"/><text x="${L - 6}" y="${y(v) + 4}" font-size="11" fill="#5B6B8C" text-anchor="end">${short(v)}</text>`; }
+  labels.forEach((lb, i) => {
+    const x0 = L + i * cw + (cw - bw * g) / 2;
+    series.forEach((sr, k) => { const v = sr[i]; if (!v) return; const yy = y(Math.max(v, 0)), hh = Math.abs(y(v) - y(0));
+      o += `<rect x="${x0 + k * bw}" y="${yy}" width="${bw - 2}" height="${Math.max(hh, 1)}" rx="3" fill="${colors[k]}"><title>${lb}: ${fm(v, finCur)}</title></rect>`; });
+    o += `<text x="${L + i * cw + cw / 2}" y="${H - 8}" font-size="11" fill="#5B6B8C" text-anchor="middle">${lb}</text>`;
+  });
+  return o + `<line x1="${L}" x2="${W}" y1="${y(0)}" y2="${y(0)}" stroke="#13285C" stroke-width="1"/></svg>`;
+}
+function donut(items) {                          // items: [{label, v}] → ring + legend
+  const tot = items.reduce((t, i) => t + i.v, 0); if (!tot) return `<p class="note">لا توجد مصاريف في هذه السنة.</p>`;
+  const R = 70, C = 2 * Math.PI * R; let acc = 0;
+  const arcs = items.map((it, i) => { const f = it.v / tot; const d = `<circle r="${R}" cx="90" cy="90" fill="none" stroke="${PAL[i % PAL.length]}" stroke-width="30" stroke-dasharray="${f * C} ${C}" stroke-dashoffset="${-acc * C}" transform="rotate(-90 90 90)"><title>${esc(it.label)}: ${fm(it.v, finCur)}</title></circle>`; acc += f; return d; }).join("");
+  return `<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center"><svg viewBox="0 0 180 180" style="width:170px;direction:ltr">${arcs}<text x="90" y="86" text-anchor="middle" font-size="11" fill="#5B6B8C">المصاريف</text><text x="90" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="#13285C">${short(tot)}</text></svg>
+    <div style="min-width:180px;flex:1">${items.map((it, i) => `<div class="xrow" style="padding:5px 0"><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;background:${PAL[i % PAL.length]};margin-inline-end:7px"></i>${esc(it.label)} <small>${Math.round((it.v / tot) * 100)}%</small></span><b>${fm(it.v, finCur)}</b></div>`).join("")}</div></div>`;
+}
+async function loadFin() {
+  $("fin").hidden = false; $("title").textContent = "الحسابات"; $("note").textContent = ""; $("count").textContent = "";
+  $("list").innerHTML = `<div class="spin"></div>`;
+  try {
+    const res = await fetch(`/clinic/api/finance?year=${finYear}`, { cache: "no-store" }); const d = await res.json();
+    if (!d.ok) throw new Error(d.error); finYear = d.year;
+    $("finYears").innerHTML = (d.years.length ? d.years : [d.year]).map((y) => `<button class="${y === d.year ? "on" : ""}" data-y="${y}">${y}</button>`).join("") +
+      `<button class="${finCur === "iqd" ? "on" : ""}" data-c="iqd" style="margin-inline-start:auto">دينار</button><button class="${finCur === "usd" ? "on" : ""}" data-c="usd">دولار $</button>`;
+    renderFin(d);
+  } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر تحميل الحسابات: ${esc(e.message || e)}</div>`; }
+}
+function renderFin(d) {
+  const c = finCur, inc = d.months.map((m) => m["inc_" + c] + m["oth_" + c]), exp = d.months.map((m) => m["exp_" + c]), due = d.months.map((m) => m["due_" + c]);
+  const net = inc.map((v, i) => v - exp[i]); const sum = (a) => a.reduce((t, v) => t + v, 0);
+  const active = d.months.map((m, i) => (m.visits || exp[i] ? i : -1)).filter((i) => i >= 0);
+  const best = active.length ? active.reduce((a, b) => (net[b] > net[a] ? b : a)) : -1, worst = active.length ? active.reduce((a, b) => (net[b] < net[a] ? b : a)) : -1;
+  const catList = Object.entries(d.cats).map(([k, v]) => ({ label: k, v: sum(v[c]) })).filter((x) => x.v > 0).sort((a, b) => b.v - a.v);
+  const kp = (cls, t, v) => `<div class="kpi ${cls}"><small>${t}</small><b>${fm(v, c)}</b></div>`;
+  const rowsT = d.months.map((m, i) => `<tr><td>${MN_EN[i]}</td><td>${fm(inc[i], c)}</td><td>${fm(exp[i], c)}</td><td class="${net[i] < 0 ? "neg" : "pos"}">${fm(net[i], c)}</td><td>${fm(due[i], c)}</td></tr>`).join("");
+  const cats = Object.keys(d.cats);
+  $("list").innerHTML = `
+    <div class="kpis">${kp("g", "إجمالي الدخل", sum(inc))}${kp("r", "إجمالي المصاريف", sum(exp))}${kp("", "الصافي", sum(net))}${kp("y", "المتبقي على المرضى", sum(due))}</div>
+    ${sum(d.months.map((m) => m["oth_" + c])) ? `<p class="note">الدخل يشمل ${fm(sum(d.months.map((m) => m["oth_" + c])), c)} من إيرادات غير مرتبطة بزيارة مريض (مثل أجور الفحص الشهرية أو بيع معدّات)، كما في ملف Excel.</p>` : ""}
+    ${best >= 0 ? `<p class="note">⭐ أفضل شهر: <b>${MN_AR[best]}</b> (${fm(net[best], c)}) · ⚠️ أضعف شهر: <b>${MN_AR[worst]}</b> (${fm(net[worst], c)})</p>` : `<div class="empty">لا توجد بيانات لسنة ${d.year}. ارفع ملف الحسابات من الأعلى.</div>`}
+    <div class="cbox"><h3>الدخل والمصاريف كل شهر</h3>${barChart([inc, exp], MN_EN, ["#1E9E5A", "#C2413A"])}<div class="leg"><span><i style="background:#1E9E5A"></i>الدخل</span><span><i style="background:#C2413A"></i>المصاريف</span></div></div>
+    <div class="cbox"><h3>صافي الدخل كل شهر</h3>${barChart([net], MN_EN, ["#1F6FD1"])}</div>
+    <div class="cbox"><h3>المتبقي (الديون على المرضى) كل شهر</h3>${barChart([due], MN_EN, ["#C29A4A"])}</div>
+    <div class="cbox"><h3>توزيع المصاريف حسب النوع</h3>${donut(catList)}</div>
+    <div class="cbox"><h3>الملخص الشهري</h3><div class="tw"><table class="ftab"><thead><tr><th>Month</th><th>Income</th><th>Expenses</th><th>Net</th><th>Outstanding</th></tr></thead><tbody>${rowsT}</tbody>
+      <tfoot><tr><td>Total</td><td>${fm(sum(inc), c)}</td><td>${fm(sum(exp), c)}</td><td>${fm(sum(net), c)}</td><td>${fm(sum(due), c)}</td></tr></tfoot></table></div></div>
+    ${cats.length ? `<div class="cbox"><h3>المصاريف حسب النوع والشهر</h3><div class="tw"><table class="ftab"><thead><tr><th>Category</th>${MN_EN.map((m) => `<th>${m}</th>`).join("")}<th>Total</th></tr></thead><tbody>${cats.map((k) => `<tr><td>${esc(k)}</td>${d.cats[k][c].map((v) => `<td>${v ? Math.round(v).toLocaleString("en-US") : ""}</td>`).join("")}<td><b>${Math.round(sum(d.cats[k][c])).toLocaleString("en-US")}</b></td></tr>`).join("")}</tbody></table></div></div>` : ""}
+    <div class="cbox"><h3>➕ إضافة مصروف</h3>
+      <form id="xForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${new Date().toISOString().slice(0, 10)}"></label>
+        <label>النوع<input name="category" list="xcats" required placeholder="كهرباء، مختبر…"><datalist id="xcats">${["كهرباء", "إيجار", "راتب المساعدة", "مواد طبية", "المختبر", "إنترنت", "أخرى", ...cats].map((k) => `<option value="${esc(k)}">`).join("")}</datalist></label>
+        <label>بالدينار<input name="iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>بالدولار<input name="usd" type="number" inputmode="decimal" min="0" step="any"></label>
+        <label>وصف<input name="desc"></label><button class="btn pri">حفظ</button></form><p class="note" id="xMsg"></p></div>
+    <div class="cbox"><h3>سجل المصاريف (${d.expenses.length})</h3>${d.expenses.length ? d.expenses.map((x) => `<div class="xrow"><div>${esc(x.category)} <small>· ${esc(x.day)}${x.description ? " · " + esc(x.description) : ""}${x.manual ? " · يدوي" : ""}</small></div><span><b>${x.amount_iqd ? fm(x.amount_iqd, "iqd") : ""}${x.amount_iqd && x.amount_usd ? " + " : ""}${x.amount_usd ? fm(x.amount_usd, "usd") : ""}</b> <button data-del="${x.id}" title="حذف">✕</button></span></div>`).join("") : `<p class="note">لا توجد مصاريف مسجّلة.</p>`}</div>`;
+}
+$("finYears").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; if (b.dataset.y) finYear = b.dataset.y; if (b.dataset.c) finCur = b.dataset.c; loadFin(); });
+$("list").addEventListener("submit", async (e) => {
+  if (e.target.id !== "xForm") return; e.preventDefault();
+  const f = Object.fromEntries(new FormData(e.target)); const m = $("xMsg"); m.className = "note"; m.textContent = "جارٍ الحفظ…";
+  const r = await (await fetch("/clinic/api/finance?action=add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
+  if (r.ok) { finYear = f.day.slice(0, 4); loadFin(); } else { m.className = "note warn"; m.textContent = r.error || "تعذّر الحفظ"; }
+});
+$("list").addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-del]"); if (!b || !confirm("حذف هذا المصروف؟")) return;
+  await fetch("/clinic/api/finance?action=del", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: +b.dataset.del }) }); loadFin();
+});
+
 async function load(r = current) {
   current = r;
   const isPats = r === "patients";
-  $("pats").hidden = !isPats;
+  $("pats").hidden = !isPats; $("fin").hidden = r !== "fin";
+  if (r === "fin") { $("arch").hidden = true; $("dnav").hidden = true; $("list").classList.add("noDim"); loadFin(); return; }
   if (isPats) { $("arch").hidden = true; $("dnav").hidden = true; patients(); return; }
   const isArch = r === "archive";
   $("arch").hidden = !isArch; $("list").classList.toggle("noDim", isArch || r === "past");
@@ -1060,8 +1220,8 @@ function stepDay(n) {
 }
 $("prevDay").onclick = () => stepDay(-1);
 $("nextDay").onclick = () => stepDay(1);
-document.addEventListener("visibilitychange", () => { if (!document.hidden && !["archive","patients","card","dups","bc"].includes(current)) load(); });
-setInterval(() => { if (!document.hidden && !["archive","patients","card","dups","bc"].includes(current)) load(); }, 5 * 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && !["archive","patients","card","dups","bc","fin"].includes(current)) load(); });
+setInterval(() => { if (!document.hidden && !["archive","patients","card","dups","bc","fin"].includes(current)) load(); }, 5 * 60000);
 const deep = location.hash.match(/card=(\d+)/);
 if (deep) {
   document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x.dataset.r === "patients"));

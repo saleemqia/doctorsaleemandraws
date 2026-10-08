@@ -303,7 +303,7 @@ export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExc
 /** One-time schema upgrades, remembered in clinic_settings 'schema_v'. */
 export async function ensureSchema(env: Env) {
   const v = (await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = 'schema_v'").first<{ value: string }>())?.value;
-  if (v === "6") return;
+  if (v === "7") return;
   for (const sql of [
     "ALTER TABLE patients ADD COLUMN visits INTEGER DEFAULT 0",
     "ALTER TABLE patients ADD COLUMN first_day TEXT",
@@ -335,8 +335,15 @@ export async function ensureSchema(env: Env) {
     "ALTER TABLE patients ADD COLUMN no_msg INTEGER DEFAULT 0",
     "CREATE TABLE IF NOT EXISTS msg_log (id INTEGER PRIMARY KEY, no INTEGER, sent_at TEXT DEFAULT (datetime('now')), campaign TEXT)",
     "CREATE INDEX IF NOT EXISTS msg_log_no ON msg_log(no)",
+    // v7: clinic expenses. src 'x:…' = imported from the accounts workbook (replaced on re-import), 'm:…' = typed in by the owner (never touched by an import).
+    `CREATE TABLE IF NOT EXISTS expenses (id INTEGER PRIMARY KEY, src TEXT UNIQUE, sheet TEXT, category TEXT, day TEXT,
+       amount_iqd REAL, amount_usd REAL, description TEXT, receipt TEXT)`,
+    "CREATE INDEX IF NOT EXISTS expenses_sheet ON expenses(sheet)",
+    // income that is in the workbook's totals but is not a patient visit (monthly exam fees, a sold chair, a row with no date)
+    `CREATE TABLE IF NOT EXISTS other_income (id INTEGER PRIMARY KEY, src TEXT UNIQUE, sheet TEXT, label TEXT, day TEXT, amount_iqd REAL, amount_usd REAL)`,
+    "CREATE INDEX IF NOT EXISTS other_income_sheet ON other_income(sheet)",
   ]) { try { await env.DB.prepare(sql).run(); } catch { /* already there */ } }
-  await setSetting(env, "schema_v", "6");
+  await setSetting(env, "schema_v", "7");
   await setSetting(env, "stats_dirty", "1");
 }
 
