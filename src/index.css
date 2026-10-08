@@ -160,6 +160,13 @@
   .marquee-track { display: flex; width: max-content; animation: marquee 48s linear infinite; }
   .marquee:hover .marquee-track { animation-play-state: paused; }
   @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+  @keyframes tooth-bob { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-3px) rotate(4deg); } }
+  .tooth-bob { animation: tooth-bob 2.4s ease-in-out infinite; }
+  @keyframes tooth-blink { 0%,92%,100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+  .tooth-eyes { animation: tooth-blink 4s infinite; }
+  @keyframes tooth-spark { 0%,100% { opacity: 1; } 50% { opacity: .2; } }
+  .tooth-spark { animation: tooth-spark 1.2s infinite; }
+  @media (prefers-reduced-motion: reduce) { .tooth-bob, .tooth-eyes, .tooth-spark { animation: none; } }
   @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
   .animate-bob { animation: bob 3.2s ease-in-out infinite; }
   @media (prefers-reduced-motion: reduce) { .animate-bob { animation: none; } }
