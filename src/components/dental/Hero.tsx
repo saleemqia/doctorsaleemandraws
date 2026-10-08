@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Calendar, Phone, Clock, MapPin, GraduationCap, Sparkles, Images, MessageSquareHeart, Baby, Stethoscope, Mail, Play, Star, ChevronDown } from "lucide-react";
+import { Calendar, Phone, Clock, MapPin, GraduationCap, Sparkles, Images, MessageSquareHeart, Baby, Stethoscope, Mail, Play, Star, ChevronDown, Link2 } from "lucide-react";
 import { PHONES, GOOGLE_MAPS_URL } from "@/config/clinic";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { pathFor, type SitePage } from "@/config/seo";
@@ -22,6 +22,19 @@ const DOORS = [
   { key: "treatments", href: "/treatments", icon: Play, tint: "from-[hsl(262_80%_72%)] to-[hsl(222_85%_62%)]", text: "text-white" },
   { key: "contact", href: "#contact", icon: Mail, tint: "from-[hsl(202_87%_34%)] to-[hsl(202_80%_20%)]", text: "text-white" },
 ] as const;
+
+// Every public link of the clinic, one tap from the first screen (the full list is on /links).
+const SOCIALS = [
+  { label: "Instagram", href: "https://www.instagram.com/dr.saleemandraws/" },
+  { label: "Facebook", href: "https://www.facebook.com/doctor.saleem.diamond.dental.duhok" },
+  { label: "TikTok", href: "https://www.tiktok.com/@salandhana" },
+  { label: "Snapchat", href: "https://www.snapchat.com/add/doctor.saleem" },
+  { label: "Telegram", href: "https://t.me/CHercules130" },
+  { label: "YouTube", href: "https://youtu.be/edq1-loT6As" },
+  { label: "LinkedIn", href: "https://iq.linkedin.com/in/saleem-andraws-hana-71a71377" },
+  { label: "Google Maps", href: GOOGLE_MAPS_URL },
+  { label: "Email", href: "mailto:dr.saleemo@gmail.com" },
+];
 
 const Hero = ({ onBookingClick }: HeroProps) => {
   const { t, language } = useLanguage();
@@ -78,6 +91,18 @@ const Hero = ({ onBookingClick }: HeroProps) => {
                     <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-current"><path d={WA} /></svg>
                   </a>
                 </div>
+              ))}
+            </div>
+
+            <div className="mt-4 flex max-w-xl flex-wrap items-center gap-2" aria-label={t("nav.links")}>
+              <a href="/links" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm transition-transform hover:-translate-y-0.5">
+                <Link2 className="h-4 w-4" />{t("nav.links")}
+              </a>
+              {SOCIALS.map((l) => (
+                <a key={l.label} href={l.href} target={l.href.startsWith("mailto:") ? undefined : "_blank"} rel="noopener noreferrer"
+                  className="rounded-full border border-border bg-white px-3 py-1.5 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-primary hover:text-primary">
+                  {l.label}
+                </a>
               ))}
             </div>
 

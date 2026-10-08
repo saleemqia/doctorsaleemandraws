@@ -1,4 +1,4 @@
-import { Phone, Calendar, MessageCircle } from "lucide-react";
+import { Phone, Calendar, MessageCircle, Link2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { WHATSAPP_NUMBER } from "@/config/clinic";
 
@@ -33,6 +33,10 @@ const MobileActionBar = ({ onBookingClick }: MobileActionBarProps) => {
         >
           <MessageCircle className="w-5 h-5 text-[#25D366]" />
           {t("mobile.whatsapp")}
+        </a>
+        <a href="/links" className={`${item} text-foreground`}>
+          <Link2 className="w-5 h-5 text-primary" />
+          {t("nav.links")}
         </a>
         <button type="button" onClick={onBookingClick} className={`${item} bg-gradient-primary text-primary-foreground`}>
           <Calendar className="w-5 h-5" />
