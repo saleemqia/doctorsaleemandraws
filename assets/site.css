@@ -2,28 +2,28 @@
    One calm column. Sticky header (brand, language switch, page tabs) → page content → footer with emergency notice.
    A floating WhatsApp button stays on every page. Teal = trust, coral = warmth, sun/lavender = play. */
 :root{
-  --bg:#FBF8F3; --surface:#FFFFFF; --ink:#1F2E2C; --muted:#5D6B68; --line:#E7E1D6;
-  --teal:#2F6F6A; --teal-soft:#E4F0EE; --coral:#C8664A; --coral-soft:#FBEAE4;
-  --sun:#C9951F; --sun-soft:#FBF2DC; --lav:#6E62A6; --lav-soft:#EEEBF7;
-  --warn:#9E2B25; --warn-soft:#FBE9E7; --ok:#2E7D4F; --ok-soft:#E3F3E8;
+  --bg:#F6F4EF; --surface:#FFFFFF; --ink:#26322F; --muted:#66726F; --line:#E4E0D8;
+  --teal:#4A726E; --teal-soft:#E8EFED; --coral:#A9776A; --coral-soft:#F3EAE6;
+  --sun:#9E8A5A; --sun-soft:#F3EEE1; --lav:#7B769E; --lav-soft:#ECEAF2;
+  --warn:#8E4741; --warn-soft:#F4E8E6; --ok:#4D7F61; --ok-soft:#E6F0E9;
   --on-accent:#FFFFFF;
-  --shadow:0 1px 2px rgba(31,46,44,.05),0 8px 24px rgba(31,46,44,.06);
+  --shadow:0 1px 2px rgba(38,50,47,.04),0 8px 24px rgba(38,50,47,.05);
   --f-ar:'Vazirmatn',Tahoma,sans-serif;
   --f-en-body:'Nunito Sans','Segoe UI',sans-serif;
   --f-en-head:'Fraunces',Georgia,serif;
   --radius:18px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#111816; --surface:#18221F; --ink:#E9EFEC; --muted:#A3B3AE; --line:#2A3833;
-  --teal:#7CC3BB; --teal-soft:#1D332F; --coral:#F0A189; --coral-soft:#3A2520;
-  --sun:#F0CB6E; --sun-soft:#352D17; --lav:#B4A9E6; --lav-soft:#27233A;
-  --warn:#F2A39C; --warn-soft:#3A1C1A; --ok:#86D3A3; --ok-soft:#1B3325;
+  --bg:#141A19; --surface:#1B2321; --ink:#E4EAE7; --muted:#9CABA6; --line:#2B3633;
+  --teal:#86AEA8; --teal-soft:#1F2F2C; --coral:#D2A598; --coral-soft:#302622;
+  --sun:#D5C28A; --sun-soft:#302B1C; --lav:#ABA5CF; --lav-soft:#26243A;
+  --warn:#E0A09A; --warn-soft:#37201E; --ok:#8CC2A0; --ok-soft:#1D3024;
   --on-accent:#0E1A17; --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#111816; --surface:#18221F; --ink:#E9EFEC; --muted:#A3B3AE; --line:#2A3833;
-  --teal:#7CC3BB; --teal-soft:#1D332F; --coral:#F0A189; --coral-soft:#3A2520;
-  --sun:#F0CB6E; --sun-soft:#352D17; --lav:#B4A9E6; --lav-soft:#27233A;
-  --warn:#F2A39C; --warn-soft:#3A1C1A; --ok:#86D3A3; --ok-soft:#1B3325;
+  --bg:#141A19; --surface:#1B2321; --ink:#E4EAE7; --muted:#9CABA6; --line:#2B3633;
+  --teal:#86AEA8; --teal-soft:#1F2F2C; --coral:#D2A598; --coral-soft:#302622;
+  --sun:#D5C28A; --sun-soft:#302B1C; --lav:#ABA5CF; --lav-soft:#26243A;
+  --warn:#E0A09A; --warn-soft:#37201E; --ok:#8CC2A0; --ok-soft:#1D3024;
   --on-accent:#0E1A17; --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -165,7 +165,7 @@ footer.site{border-top:1px solid var(--line);padding-block:28px 100px;font-size:
 .foot-links{display:flex;flex-wrap:wrap;gap:12px}
 
 /* floating whatsapp */
-.fab{position:fixed;inset-inline-end:16px;bottom:16px;z-index:30;display:flex;align-items:center;gap:8px;background:#25D366;color:#073B1E;font-weight:800;text-decoration:none;padding:12px 18px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.18);min-height:52px}
+.fab{position:fixed;inset-inline-end:16px;bottom:16px;z-index:30;display:flex;align-items:center;gap:8px;background:#5FAE88;color:#0B2A1B;font-weight:800;text-decoration:none;padding:12px 18px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.18);min-height:52px}
 .fab svg{width:24px;height:24px}
 
 /* ===== play page ===== */
@@ -281,3 +281,60 @@ html[dir="rtl"] .stat b{direction:ltr;text-align:right;unicode-bidi:isolate}
   .stat b{font-size:19px}
   .stat span{font-size:11.5px;line-height:1.45;display:block}
 }
+
+/* ===== guides & articles ===== */
+.art-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+.art-card{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;transition:transform .15s,border-color .15s}
+.art-card:hover{transform:translateY(-2px);border-color:var(--teal)}
+.art-card h3{font-size:18px;margin:2px 0 0}
+.art-card p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.6}
+.art-min{margin-top:auto;padding-top:8px;font-size:13px;color:var(--muted)}
+.art-tag{display:inline-block;align-self:flex-start;font-size:12.5px;font-weight:700;color:var(--teal);background:var(--teal-soft);padding:2px 11px;border-radius:999px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.chips button{border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:14px;padding:6px 14px;border-radius:999px;cursor:pointer;min-height:36px}
+.chips button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--on-accent)}
+.article{max-width:760px}
+.article .back{display:inline-block;margin-top:22px;font-size:14px;text-decoration:none}
+.article h1{font-size:clamp(26px,4.6vw,38px);margin-top:10px}
+.prose{margin-top:20px;font-size:17px}
+.prose h3{font-size:20px;margin:1.4em 0 .4em}
+.prose h3:first-child{margin-top:0}
+.prose ul,.prose ol{padding-inline-start:1.3em;margin:.4em 0 1em}
+.prose li{margin-bottom:.4em}
+.small-note{font-size:13px;color:var(--muted)}
+.tel-link{font-weight:700;text-decoration:none;unicode-bidi:plaintext}
+@media (max-width:820px){.art-grid{grid-template-columns:1fr}}
+
+/* ===== home: services, signs, faq, contact ===== */
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.svc{padding:20px}
+.svc .e{font-size:26px;line-height:1;margin-bottom:8px;display:block}
+.svc h3{font-size:17px;margin-bottom:.3em}
+.svc p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.65}
+.signs .card h3{font-size:18px}
+.signs ul{margin:.3em 0 0;padding-inline-start:1.2em}
+.signs li{margin-bottom:.35em;font-size:15px}
+.faq{margin-top:20px;display:grid;gap:10px}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:2px 16px}
+.faq summary{cursor:pointer;font-weight:700;padding:12px 0;list-style-position:inside}
+.faq details[open] summary{color:var(--teal)}
+.faq details p{margin:0 0 14px;color:var(--muted)}
+.contact-card{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px;text-align:start}
+.contact-card .card{display:flex;flex-direction:column;gap:6px}
+.contact-card .big{font-size:26px;font-weight:800;direction:ltr;unicode-bidi:plaintext;text-align:start}
+.about .portrait.photo{padding:0;border:0;overflow:hidden;background:none}
+.about .portrait.photo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:var(--radius)}
+@media (max-width:820px){.svc-grid{grid-template-columns:1fr 1fr}.contact-card{grid-template-columns:1fr}}
+@media (max-width:520px){.svc-grid{grid-template-columns:1fr}}
+
+/* ===== portrait + phone ===== */
+.hero-photo{margin:0;justify-self:center;width:100%;max-width:340px;aspect-ratio:4/5;border-radius:36px 36px 120px 36px;overflow:hidden;box-shadow:0 18px 50px rgba(74,114,110,.18);border:6px solid var(--surface);background:var(--teal-soft)}
+html[dir="ltr"] .hero-photo{border-radius:36px 36px 36px 120px}
+.hero-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.head-right{display:flex;align-items:center;gap:8px}
+.head-tel{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--on-accent);background:var(--teal);font-weight:700;font-size:14px;padding:6px 13px;border-radius:999px;min-height:34px;white-space:nowrap}
+.head-tel svg{width:16px;height:16px;flex:none}
+.tel-btn .tel-num{unicode-bidi:plaintext}
+@media (max-width:520px){.head-tel .tel-num{display:none}.head-tel{padding:0;width:34px;justify-content:center}}
+@media (max-width:820px){.hero-photo{max-width:260px}}
+@media (max-width:520px){.brand-name{white-space:nowrap;font-size:16px}.brand-sub{display:none}}
