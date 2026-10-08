@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Calendar, Globe, ChevronDown, Instagram } from "lucide-react";
@@ -35,6 +35,16 @@ interface NavbarProps {
 const Navbar = ({ onBookingClick }: NavbarProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const { language, setLanguage, t, dir } = useLanguage();
 
   const currentLang = languages.find((l) => l.code === language);
@@ -215,6 +225,10 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+      {/* Reading progress */}
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-[-1px] h-[2px] bg-transparent">
+        <div className="h-full bg-[hsl(var(--gold))]" style={{ transform: `scaleX(${progress})`, transformOrigin: dir === "rtl" ? "right" : "left" }} />
       </div>
     </header>
   );

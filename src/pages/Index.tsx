@@ -21,6 +21,7 @@ import ChatBot from "@/components/dental/ChatBot";
 import ScrollToTop from "@/components/dental/ScrollToTop";
 import MobileActionBar from "@/components/dental/MobileActionBar";
 import WelcomeScreen from "@/components/dental/WelcomeScreen";
+import Reveal from "@/components/dental/Reveal";
 
 const WELCOME_KEY = "diamond-welcome-shown";
 
@@ -64,18 +65,18 @@ const Index = () => {
       <Navbar onBookingClick={openBooking("navbar")} />
       <main>
         <Hero onBookingClick={openBooking("home")} />
-        <Services />
-        <About />
-        <ClinicTour />
-        <DigitalDentistry />
-        <Gallery />
-        <InstagramFeed />
-        <Testimonials />
-        <FAQ />
-        <ExploreMore />
-        <WeeklyHours />
-        <DuhokBand />
-        <Contact onBookingClick={openBooking("contact")} />
+        <Services onBookingClick={openBooking("services")} />
+        <Reveal threshold={0.04}><About /></Reveal>
+        <Reveal threshold={0.04}><ClinicTour /></Reveal>
+        <Reveal threshold={0.04}><DigitalDentistry /></Reveal>
+        <Reveal threshold={0.04}><Gallery /></Reveal>
+        <Reveal threshold={0.04}><InstagramFeed /></Reveal>
+        <Reveal threshold={0.04}><Testimonials /></Reveal>
+        <Reveal threshold={0.04}><FAQ /></Reveal>
+        <Reveal threshold={0.04}><ExploreMore /></Reveal>
+        <Reveal threshold={0.04}><WeeklyHours /></Reveal>
+        <Reveal threshold={0.04}><DuhokBand /></Reveal>
+        <Reveal threshold={0.04}><Contact onBookingClick={openBooking("contact")} /></Reveal>
       </main>
       <Footer />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />

@@ -154,6 +154,10 @@
   .text-gradient { font-style: italic; font-weight: 500; }
   [dir="rtl"] .text-gradient { font-style: normal; font-weight: 700; }
 
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.7,.2,1) var(--reveal-delay, 0ms), transform .7s cubic-bezier(.2,.7,.2,1) var(--reveal-delay, 0ms); }
+  .reveal-in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
   /* Film-mount corner ticks: the frame of a radiograph on a light-box. */
   .film { position: relative; }
   .film::before, .film::after { content: ""; position: absolute; width: 18px; height: 18px; pointer-events: none; border-color: hsl(var(--gold)); }

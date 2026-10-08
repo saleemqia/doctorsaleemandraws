@@ -21,7 +21,7 @@ const Hero = ({ onBookingClick }: HeroProps) => {
       <img src={radiograph} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover opacity-[0.28] mix-blend-screen" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_40%,transparent_0%,hsl(var(--ink))_75%)]" aria-hidden="true" />
 
-      <div className="container relative z-10 pb-10 pt-8 sm:pt-12 lg:pb-14">
+      <div className="container relative z-10 lg:px-14 pb-10 pt-8 sm:pt-12 lg:pb-14">
         <div className="film border-gold/30 border-y border-s border-e px-5 py-8 sm:px-10 sm:py-12 lg:px-14 lg:py-16 [border-color:hsl(var(--gold)/0.28)]">
           <div className="grid items-center gap-10 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
             <div>

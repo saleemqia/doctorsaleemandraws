@@ -1,3 +1,9 @@
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Plus, Calendar, MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PHONES } from "@/config/clinic";
+import Reveal from "@/components/dental/Reveal";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 // Import service images
@@ -10,47 +16,60 @@ import oralRadiologyImg from "@/assets/services/oral-radiology.jpg";
 import dentalCleaningImg from "@/assets/services/dental-cleaning.jpg";
 import pediatricDentistryImg from "@/assets/services/pediatric-dentistry.jpg";
 
-const Services = () => {
+interface ServicesProps {
+  onBookingClick: () => void;
+}
+
+const Services = ({ onBookingClick }: ServicesProps) => {
   const { t } = useLanguage();
+  const [open, setOpen] = useState<number | null>(0);
 
   const services = [
     {
       image: teethWhiteningImg,
+      faq: "faq.a10",
       titleKey: "services.teethWhitening",
       descKey: "services.teethWhiteningDesc",
     },
     {
       image: dentalImplantsImg,
+      faq: "faq.a8",
       titleKey: "services.dentalImplants",
       descKey: "services.dentalImplantsDesc",
     },
     {
       image: cosmeticDentistryImg,
+      faq: "faq.a9",
       titleKey: "services.cosmeticDentistry",
       descKey: "services.cosmeticDentistryDesc",
     },
     {
       image: rootCanalImg,
+      faq: "faq.a11",
       titleKey: "services.rootCanal",
       descKey: "services.rootCanalDesc",
     },
     {
       image: orthodonticsImg,
+      faq: "faq.a17",
       titleKey: "services.orthodontics",
       descKey: "services.orthodonticsDesc",
     },
     {
       image: oralRadiologyImg,
+      faq: "faq.a4",
       titleKey: "services.oralRadiology",
       descKey: "services.oralRadiologyDesc",
     },
     {
       image: dentalCleaningImg,
+      faq: "faq.a16",
       titleKey: "services.dentalCleaning",
       descKey: "services.dentalCleaningDesc",
     },
     {
       image: pediatricDentistryImg,
+      faq: "faq.a6",
       titleKey: "services.pediatricDentistry",
       descKey: "services.pediatricDentistryDesc",
     },
@@ -58,7 +77,7 @@ const Services = () => {
 
   return (
     <section id="services" className="relative bg-background py-16 md:py-24 lg:py-28">
-      <div className="container px-4 sm:px-6">
+      <div className="container px-4 sm:px-6 lg:px-14">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-20">
           {/* Heading stays in view while the list scrolls */}
           <div className="lg:sticky lg:top-28 lg:self-start">
@@ -83,17 +102,72 @@ const Services = () => {
           </div>
 
           <ul className="border-t border-border">
-            {services.map((service) => (
-              <li key={service.titleKey} className="group grid grid-cols-[5.5rem_1fr] items-center gap-4 border-b border-border py-5 transition-colors hover:bg-card sm:grid-cols-[8rem_1fr] sm:gap-6 sm:px-3">
-                <div className="film aspect-[4/3] overflow-hidden rounded-[0.25rem] bg-secondary">
-                  <img src={service.image} alt={t(service.titleKey)} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="mb-1 text-lg font-semibold leading-snug sm:text-xl">{t(service.titleKey)}</h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground sm:text-[15px]">{t(service.descKey)}</p>
-                </div>
-              </li>
-            ))}
+            {services.map((service, i) => {
+              const isOpen = open === i;
+              const title = t(service.titleKey);
+              const q = service.faq.replace("faq.a", "faq.q");
+              return (
+                <li key={service.titleKey} className="border-b border-border">
+                  <Reveal delay={i * 50}>
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={`svc-${i}`}
+                      onClick={() => setOpen(isOpen ? null : i)}
+                      className="group grid w-full grid-cols-[5.5rem_1fr_auto] items-center gap-4 py-5 text-start transition-colors hover:bg-card sm:grid-cols-[8rem_1fr_auto] sm:gap-6 sm:px-3"
+                    >
+                      <span className="film block aspect-[4/3] overflow-hidden rounded-[0.25rem] bg-secondary">
+                        <img src={service.image} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="mb-1 block font-display text-lg font-semibold leading-snug sm:text-xl">{title}</span>
+                        <span className="block text-sm leading-relaxed text-muted-foreground sm:text-[15px]">{t(service.descKey)}</span>
+                      </span>
+                      <span className={`flex h-9 w-9 items-center justify-center rounded-full border border-border text-[hsl(var(--gold))] transition-all duration-300 group-hover:border-[hsl(var(--gold))] ${isOpen ? "rotate-45 bg-[hsl(var(--ink))] text-white" : ""}`} aria-hidden="true">
+                        <Plus className="h-4 w-4" />
+                      </span>
+                    </button>
+                  </Reveal>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        id={`svc-${i}`}
+                        role="region"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.35, ease: [0.2, 0.7, 0.2, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="grid gap-5 pb-7 pt-1 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] sm:px-3">
+                          <div className="film overflow-hidden rounded-[0.3rem] bg-secondary">
+                            <img src={service.image} alt={title} className="aspect-[16/10] w-full object-cover" />
+                          </div>
+                          <div className="flex flex-col justify-between gap-4">
+                            <div>
+                              <h4 className="mb-2 text-base font-semibold">{t(q)}</h4>
+                              <p className="leading-relaxed text-muted-foreground">{t(service.faq)}</p>
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                              <Button onClick={onBookingClick} className="gap-2 bg-[hsl(40_48%_62%)] text-[hsl(var(--ink))] hover:bg-[hsl(40_52%_70%)]">
+                                <Calendar className="h-4 w-4" />
+                                {t("nav.bookAppointment")}
+                              </Button>
+                              <Button asChild variant="outline" className="gap-2">
+                                <a href={`https://wa.me/${PHONES[0].whatsapp}?text=${encodeURIComponent(`${t("nav.bookAppointment")}: ${title}`)}`} target="_blank" rel="noopener noreferrer">
+                                  <MessageCircle className="h-4 w-4" />
+                                  WhatsApp
+                                </a>
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
