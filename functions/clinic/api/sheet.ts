@@ -20,9 +20,14 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     }
     const id = u.searchParams.get("id") || "";
     if (!ID.test(id)) return json({ ok: false, error: "bad id" }, 400);
-    const r = await fetch(`https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`, { redirect: "follow" });
-    const type = r.headers.get("content-type") || "";
-    if (!r.ok || /text\/html/i.test(type)) return json({ ok: false, error: "تعذّر تحميل الجدول. تأكد أن المشاركة: «أي شخص لديه الرابط — مشاهد»." }, 502);
+    // A native Google Sheet exports through the Sheets URL; an Excel file kept in Drive (the link shows "rtpof=true") downloads through Drive.
+    const tryUrls = [`https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`, `https://drive.google.com/uc?export=download&confirm=t&id=${id}`];
+    let r: Response | null = null;
+    for (const u of tryUrls) {
+      const x = await fetch(u, { redirect: "follow" });
+      if (x.ok && !/text\/html/i.test(x.headers.get("content-type") || "")) { r = x; break; }
+    }
+    if (!r) return json({ ok: false, error: "تعذّر تحميل الجدول. تأكد أن المشاركة: «أي شخص لديه الرابط — مشاهد»." }, 502);
     const buf = await r.arrayBuffer();
     if (buf.byteLength > 15 * 1024 * 1024) return json({ ok: false, error: "الملف كبير جدًا" }, 413);
     return new Response(buf, { headers: { "Content-Type": "application/octet-stream", "Cache-Control": "no-store" } });
