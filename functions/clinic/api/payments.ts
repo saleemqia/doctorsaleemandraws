@@ -40,7 +40,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       return { ...r, k, how };
     });
 
-    const stmts = [env.DB.prepare("DELETE FROM payments WHERE sheet = ?").bind(sheet)];
+    const stmts = [env.DB.prepare("DELETE FROM payments WHERE sheet = ? AND src NOT LIKE 'm:%'").bind(sheet)];
     for (const r of out) stmts.push(env.DB.prepare(
       `INSERT OR REPLACE INTO payments (src, sheet, patient_key, name, day, paid_iqd, paid_usd, due_iqd, due_usd, work, notes, phone, matched)
        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,

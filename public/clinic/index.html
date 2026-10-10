@@ -175,6 +175,13 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .xf input,.xf select{border:1px solid var(--line);border-radius:10px;padding:8px;font:inherit;color:var(--navy);min-width:0}
 .xrow{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.xrow small{color:var(--muted)}.xrow b{direction:ltr}
 .xrow button{border:0;background:none;color:var(--red);cursor:pointer;font-size:16px}
+.gsfiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
+.gsf{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px #13285C14;border:1px solid var(--line)}
+.gsf .th{position:relative;aspect-ratio:16/10;background:linear-gradient(135deg,#E6F6EC,#CFEBD9);display:grid;place-items:center;overflow:hidden}
+.gsf .th b{font-size:44px;color:#1E7A46;direction:ltr;letter-spacing:1px}.gsf .th small{position:absolute;bottom:8px;inset-inline:0;text-align:center;color:#2E6B49;font-size:12px}
+.gsf .th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left}
+.gsf .in{padding:10px 12px}.gsf h4{margin:0 0 8px;font-size:16px}.gsf .row{display:flex;gap:6px;flex-wrap:wrap}
+.gsf iframe{width:100%;height:70vh;border:0;border-top:1px solid var(--line);display:block}
 </style>
 </head>
 <body>
@@ -218,8 +225,9 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   </div>
   <div id="fin" hidden>
     <div class="chips" id="finYears"></div>
-    <details class="imp" id="gsBox" open><summary>🔗 ربط جداول Google Sheets (تحديث تلقائي)</summary>
-      <p>ارفع ملفات الحسابات إلى Google Drive وافتحها كـ Google Sheets، ثم اجعل المشاركة «أي شخص لديه الرابط — مشاهد» والصق الرابط هنا (رابط لكل ملف: 2025 و2026). ما تعدّله في الجدول يظهر هنا في الحسابات وبطاقات المرضى عند الضغط على «مزامنة»، وتتم المزامنة تلقائيًا عند فتح هذا التبويب إذا مرّت أكثر من ساعتين.</p>
+    <div id="gsFiles" class="gsfiles"></div>
+    <details class="imp" id="gsBox"><summary>🔗 ربط جداول Google Sheets (إضافة أو تغيير الروابط)</summary>
+      <p>اكتب السنة قبل كل رابط ليظهر اسم الملف («حسابات 2026»)، سطر لكل ملف، مثال: <bdi dir="ltr">2026 | https://docs.google.com/…</bdi>. ارفع ملفات الحسابات إلى Google Drive وافتحها كـ Google Sheets، ثم اجعل المشاركة «أي شخص لديه الرابط — مشاهد» والصق الرابط هنا (رابط لكل ملف: 2025 و2026). ما تعدّله في الجدول يظهر هنا في الحسابات وبطاقات المرضى عند الضغط على «مزامنة»، وتتم المزامنة تلقائيًا عند فتح هذا التبويب إذا مرّت أكثر من ساعتين.</p>
       <textarea id="gsLinks" rows="3" dir="ltr" placeholder="https://docs.google.com/spreadsheets/d/…/edit" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:8px;font:inherit"></textarea>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button class="btn" id="gsSave" type="button">💾 حفظ الروابط</button><button class="btn pri" id="gsSync" type="button">🔄 مزامنة الآن</button><span id="gsOpen"></span></div>
       <p class="note" id="gsMsg"></p>
@@ -1118,7 +1126,7 @@ async function mergeFromCard(p) {
 const MN_AR = ["كانون الثاني", "شباط", "آذار", "نيسان", "أيار", "حزيران", "تموز", "آب", "أيلول", "تشرين الأول", "تشرين الثاني", "كانون الأول"];
 const MN_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const PAL = ["#1F6FD1", "#C29A4A", "#1E9E5A", "#C2413A", "#7A5AF8", "#0EA5B7", "#E67E22", "#8A94A8"];
-let finYear = "", finCur = "iqd", finBooted = false;
+let finYear = "", finCur = "iqd", finBooted = false, qeMode = "pay", qeDay = new Date().toISOString().slice(0, 10);
 async function gsAuto() {      // opening the tab pulls fresh numbers when the last sync is over 2 hours old
   const d = await gsLoad(); if (!d || !d.links.length) return;
   if (d.synced_at && Date.now() - Date.parse(d.synced_at) < 2 * 3600 * 1000) return;
@@ -1151,11 +1159,27 @@ function donut(items) {                          // items: [{label, v}] → ring
 
 /* ---- Google Sheets link: pull the latest accounts from the owner's online sheets ---- */
 const gsId = (u) => (String(u).match(/\/spreadsheets\/d\/(?:e\/)?([A-Za-z0-9_-]{20,})/) || [])[1] || "";
+const gsTitle = (l) => (l.label ? `حسابات ${l.label}` : "ملف الحسابات");
+function gsRender(links) {
+  $("gsFiles").innerHTML = links.map((l, i) => `<div class="gsf" data-i="${i}"><div class="th"><b>${esc(l.label || "XLSX")}</b><small>Google Sheets</small>
+      <img src="https://drive.google.com/thumbnail?id=${esc(l.id)}&sz=w480" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></div>
+    <div class="in"><h4>📊 ${esc(gsTitle(l))}</h4><div class="row"><a class="btn pri" href="${esc(l.url)}" target="_blank" rel="noopener">📄 فتح الملف</a><button class="btn" type="button" data-embed="${i}">👁 عرض هنا</button></div></div></div>`).join("");
+}
+$("gsFiles").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-embed]"); if (!b) return;
+  const card = b.closest(".gsf"), old = card.querySelector("iframe");
+  if (old) { old.remove(); b.textContent = "👁 عرض هنا"; return; }
+  const id = (gsLinks[+b.dataset.embed] || {}).id; if (!id) return;
+  const f = document.createElement("iframe"); f.src = `https://docs.google.com/spreadsheets/d/${id}/preview`; f.loading = "lazy"; f.referrerPolicy = "no-referrer"; f.title = "Google Sheets";
+  card.appendChild(f); b.textContent = "✖ إخفاء العرض";
+});
+let gsLinks = [];
 async function gsLoad() {
   try {
     const d = await (await fetch("/clinic/api/sheet?action=links", { cache: "no-store" })).json(); if (!d.ok) return null;
-    if (document.activeElement !== $("gsLinks")) $("gsLinks").value = d.links.join("\n");
-    $("gsOpen").innerHTML = d.links.map((l, i) => `<a class="btn" href="${esc(l)}" target="_blank" rel="noopener">📄 فتح الجدول ${d.links.length > 1 ? i + 1 : ""}</a>`).join("");
+    gsLinks = d.links; gsRender(d.links);
+    if (document.activeElement !== $("gsLinks")) $("gsLinks").value = d.links.map((l) => (l.label ? l.label + " | " : "") + l.url).join("\n");
+    $("gsOpen").innerHTML = "";
     if (d.synced_at) $("gsMsg").textContent = "آخر مزامنة: " + new Date(d.synced_at).toLocaleString("ar-IQ", { dateStyle: "medium", timeStyle: "short" });
     return d;
   } catch { return null; }
@@ -1164,10 +1188,9 @@ async function gsSync(force) {
   const msg = $("gsMsg"), d = await gsLoad(); if (!d || !d.links.length) { msg.textContent = "ألصق رابط Google Sheets ثم احفظه."; return false; }
   msg.dataset.force = force ? "1" : ""; let all = true;
   for (const l of d.links) {
-    const id = gsId(l);
     const ok = await importBuffer(async () => {
-      const r = await fetch("/clinic/api/sheet?id=" + id); const ct = r.headers.get("content-type") || "";
-      if (!r.ok || ct.includes("json")) { const j = await r.json().catch(() => ({})); throw new Error(j.error || "HTTP " + r.status); }
+      const r = await fetch("/clinic/api/sheet?id=" + l.id); const ct = r.headers.get("content-type") || "";
+      if (!r.ok || ct.includes("json")) { const j = await r.json().catch(() => ({})); throw new Error(`${gsTitle(l)}: ${j.error || "HTTP " + r.status}`); }
       return r.arrayBuffer();
     }, "sheet.xlsx", msg);
     all = all && ok; if (!ok) break;
@@ -1176,13 +1199,13 @@ async function gsSync(force) {
   return all;
 }
 $("gsSave").onclick = async () => {
-  const links = $("gsLinks").value.split(/\s+/).filter(Boolean);
+  const links = $("gsLinks").value.split(/\n+/).map((x) => x.trim()).filter(Boolean);
   const r = await (await fetch("/clinic/api/sheet?action=links", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ links }) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
   $("gsMsg").className = "note" + (r.ok ? "" : " warn"); $("gsMsg").textContent = r.ok ? "تم حفظ الروابط ✔" : r.error; if (r.ok) gsLoad();
 };
 $("gsSync").onclick = async () => { $("gsSync").disabled = true; if (await gsSync(true)) loadFin(); $("gsSync").disabled = false; };
 async function loadFin() {
-  $("fin").hidden = false; if (!finBooted) { finBooted = true; gsAuto(); } $("title").textContent = "الحسابات"; $("note").textContent = ""; $("count").textContent = "";
+  $("fin").hidden = false; if (!finBooted) { finBooted = true; gsAuto(); } else gsLoad(); $("title").textContent = "الحسابات"; $("note").textContent = ""; $("count").textContent = "";
   $("list").innerHTML = `<div class="spin"></div>`;
   try {
     const res = await fetch(`/clinic/api/finance?year=${finYear}`, { cache: "no-store" }); const d = await res.json();
@@ -1205,6 +1228,20 @@ function renderFin(d) {
     <div class="kpis">${kp("g", "إجمالي الدخل", sum(inc))}${kp("r", "إجمالي المصاريف", sum(exp))}${kp("", "الصافي", sum(net))}${kp("y", "المتبقي على المرضى", sum(due))}</div>
     ${sum(d.months.map((m) => m["oth_" + c])) ? `<p class="note">الدخل يشمل ${fm(sum(d.months.map((m) => m["oth_" + c])), c)} من إيرادات غير مرتبطة بزيارة مريض (مثل أجور الفحص الشهرية أو بيع معدّات)، كما في ملف Excel.</p>` : ""}
     ${best >= 0 ? `<p class="note">⭐ أفضل شهر: <b>${MN_AR[best]}</b> (${fm(net[best], c)}) · ⚠️ أضعف شهر: <b>${MN_AR[worst]}</b> (${fm(net[worst], c)})</p>` : `<div class="empty">لا توجد بيانات لسنة ${d.year}. ارفع ملف الحسابات من الأعلى.</div>`}
+    <div class="cbox qe"><h3>➕ إدخال سريع</h3>
+      <div class="chips" id="qeTabs"><button class="${qeMode === "pay" ? "on" : ""}" data-m="pay" type="button">💵 دفعة مريض</button><button class="${qeMode === "exp" ? "on" : ""}" data-m="exp" type="button">📉 مصروف</button></div>
+      ${qeMode === "pay" ? `<form id="pForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
+        <label>اسم المريض<input name="name" list="pnames" required autocomplete="off" placeholder="ابدأ بكتابة الاسم"><datalist id="pnames"></datalist></label>
+        <label>المدفوع (دينار)<input name="paid_iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>المدفوع ($)<input name="paid_usd" type="number" inputmode="decimal" min="0" step="any"></label>
+        <label>المتبقي (دينار)<input name="due_iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>المتبقي ($)<input name="due_usd" type="number" inputmode="decimal" min="0" step="any"></label>
+        <label>العمل المنجز<input name="work" placeholder="حشوة، تنظيف…"></label><label>ملاحظات<input name="notes"></label><button class="btn pri">حفظ الدفعة</button></form>
+        <p class="note" id="qMsg">تظهر الدفعة فورًا في بطاقة المريض والرسوم البيانية. هذه الدفعات تبقى محفوظة ولا يمحوها تحديث الجدول، فلا تكتب نفس الدفعة في الجدول أيضًا.</p>`
+      : `<form id="xForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
+        <label>النوع<input name="category" list="xcats" required placeholder="كهرباء، مختبر…"><datalist id="xcats">${["كهرباء", "إيجار", "راتب المساعدة", "مواد طبية", "المختبر", "إنترنت", "أخرى", ...cats].map((k) => `<option value="${esc(k)}">`).join("")}</datalist></label>
+        <label>بالدينار<input name="iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>بالدولار<input name="usd" type="number" inputmode="decimal" min="0" step="any"></label>
+        <label>وصف<input name="desc"></label><button class="btn pri">حفظ المصروف</button></form><p class="note" id="xMsg"></p>`}
+      ${d.pays.length && qeMode === "pay" ? `<details style="margin-top:6px"><summary class="note">آخر الدفعات المدخلة هنا (${d.pays.length})</summary>${d.pays.map((x) => `<div class="xrow"><div>${esc(x.name)} <small>· ${esc(x.day)}${x.work ? " · " + esc(x.work) : ""}</small></div><span><b>${[x.paid_iqd ? fm(x.paid_iqd, "iqd") : "", x.paid_usd ? fm(x.paid_usd, "usd") : ""].filter(Boolean).join(" + ") || "—"}</b> <button data-pdel="${x.id}" title="حذف">✕</button></span></div>`).join("")}</details>` : ""}
+    </div>
     <div class="cbox"><h3>الدخل والمصاريف كل شهر</h3>${barChart([inc, exp], MN_EN, ["#1E9E5A", "#C2413A"])}<div class="leg"><span><i style="background:#1E9E5A"></i>الدخل</span><span><i style="background:#C2413A"></i>المصاريف</span></div></div>
     <div class="cbox"><h3>صافي الدخل كل شهر</h3>${barChart([net], MN_EN, ["#1F6FD1"])}</div>
     <div class="cbox"><h3>المتبقي (الديون على المرضى) كل شهر</h3>${barChart([due], MN_EN, ["#C29A4A"])}</div>
@@ -1212,19 +1249,26 @@ function renderFin(d) {
     <div class="cbox"><h3>الملخص الشهري</h3><div class="tw"><table class="ftab"><thead><tr><th>Month</th><th>Income</th><th>Expenses</th><th>Net</th><th>Outstanding</th></tr></thead><tbody>${rowsT}</tbody>
       <tfoot><tr><td>Total</td><td>${fm(sum(inc), c)}</td><td>${fm(sum(exp), c)}</td><td>${fm(sum(net), c)}</td><td>${fm(sum(due), c)}</td></tr></tfoot></table></div></div>
     ${cats.length ? `<div class="cbox"><h3>المصاريف حسب النوع والشهر</h3><div class="tw"><table class="ftab"><thead><tr><th>Category</th>${MN_EN.map((m) => `<th>${m}</th>`).join("")}<th>Total</th></tr></thead><tbody>${cats.map((k) => `<tr><td>${esc(k)}</td>${d.cats[k][c].map((v) => `<td>${v ? Math.round(v).toLocaleString("en-US") : ""}</td>`).join("")}<td><b>${Math.round(sum(d.cats[k][c])).toLocaleString("en-US")}</b></td></tr>`).join("")}</tbody></table></div></div>` : ""}
-    <div class="cbox"><h3>➕ إضافة مصروف</h3>
-      <form id="xForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${new Date().toISOString().slice(0, 10)}"></label>
-        <label>النوع<input name="category" list="xcats" required placeholder="كهرباء، مختبر…"><datalist id="xcats">${["كهرباء", "إيجار", "راتب المساعدة", "مواد طبية", "المختبر", "إنترنت", "أخرى", ...cats].map((k) => `<option value="${esc(k)}">`).join("")}</datalist></label>
-        <label>بالدينار<input name="iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>بالدولار<input name="usd" type="number" inputmode="decimal" min="0" step="any"></label>
-        <label>وصف<input name="desc"></label><button class="btn pri">حفظ</button></form><p class="note" id="xMsg"></p></div>
     <div class="cbox"><h3>سجل المصاريف (${d.expenses.length})</h3>${d.expenses.length ? d.expenses.map((x) => `<div class="xrow"><div>${esc(x.category)} <small>· ${esc(x.day)}${x.description ? " · " + esc(x.description) : ""}${x.manual ? " · يدوي" : ""}</small></div><span><b>${x.amount_iqd ? fm(x.amount_iqd, "iqd") : ""}${x.amount_iqd && x.amount_usd ? " + " : ""}${x.amount_usd ? fm(x.amount_usd, "usd") : ""}</b> <button data-del="${x.id}" title="حذف">✕</button></span></div>`).join("") : `<p class="note">لا توجد مصاريف مسجّلة.</p>`}</div>`;
 }
 $("finYears").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; if (b.dataset.y) finYear = b.dataset.y; if (b.dataset.c) finCur = b.dataset.c; loadFin(); });
 $("list").addEventListener("submit", async (e) => {
-  if (e.target.id !== "xForm") return; e.preventDefault();
-  const f = Object.fromEntries(new FormData(e.target)); const m = $("xMsg"); m.className = "note"; m.textContent = "جارٍ الحفظ…";
-  const r = await (await fetch("/clinic/api/finance?action=add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
-  if (r.ok) { finYear = f.day.slice(0, 4); loadFin(); } else { m.className = "note warn"; m.textContent = r.error || "تعذّر الحفظ"; }
+  const isPay = e.target.id === "pForm"; if (!isPay && e.target.id !== "xForm") return; e.preventDefault();
+  const f = Object.fromEntries(new FormData(e.target)); const m = $(isPay ? "qMsg" : "xMsg"); m.className = "note"; m.textContent = "جارٍ الحفظ…";
+  const r = await (await fetch("/clinic/api/finance?action=" + (isPay ? "pay" : "add"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
+  if (r.ok) { qeDay = f.day; finYear = f.day.slice(0, 4); await loadFin(); const n = $(isPay ? "qMsg" : "xMsg"); if (n) { n.className = "note"; n.textContent = "✔ تم الحفظ" + (r.newCard ? " (بطاقة مريض جديدة)" : ""); } $("list").querySelector(isPay ? "#pForm [name=name]" : "#xForm [name=category]")?.focus(); }
+  else { m.className = "note warn"; m.textContent = r.error || "تعذّر الحفظ"; }
+});
+let nameT;
+$("list").addEventListener("input", (e) => {          // suggest patient names while typing
+  if (e.target.name !== "name" || e.target.form?.id !== "pForm") return;
+  clearTimeout(nameT); const v = e.target.value.trim(); if (v.length < 2) return;
+  nameT = setTimeout(async () => { try { const r = await (await fetch("/clinic/api/finance?names=" + encodeURIComponent(v))).json(); const dl = $("pnames"); if (dl && r.ok) dl.innerHTML = r.names.map((n) => `<option value="${esc(n)}">`).join(""); } catch { /* offline */ } }, 250);
+});
+$("list").addEventListener("click", async (e) => {
+  const t = e.target.closest("#qeTabs button"); if (t) { qeMode = t.dataset.m; loadFin(); return; }
+  const b = e.target.closest("[data-pdel]"); if (!b || !confirm("حذف هذه الدفعة؟")) return;
+  await fetch("/clinic/api/finance?action=paydel", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: +b.dataset.pdel }) }); loadFin();
 });
 $("list").addEventListener("click", async (e) => {
   const b = e.target.closest("[data-del]"); if (!b || !confirm("حذف هذا المصروف؟")) return;

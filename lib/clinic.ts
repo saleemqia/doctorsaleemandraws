@@ -318,6 +318,7 @@ export async function ensureSchema(env: Env) {
     "CREATE INDEX IF NOT EXISTS payments_key ON payments(patient_key)",
     "CREATE INDEX IF NOT EXISTS payments_sheet ON payments(sheet)",
     // v4: owner's edits on cards. They are kept apart from calendar/Excel data, so a re-sync or re-import never undoes them.
+    "ALTER TABLE patients ADD COLUMN merged_into TEXT",
     "ALTER TABLE patients ADD COLUMN display_name TEXT",
     "ALTER TABLE patients ADD COLUMN phone_override TEXT",
     "ALTER TABLE patients ADD COLUMN edited_at TEXT",
