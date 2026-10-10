@@ -44,6 +44,10 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     const { results: pays } = await env.DB.prepare(
       "SELECT id, name, day, paid_iqd, paid_usd, due_iqd, due_usd, work FROM payments WHERE src LIKE 'm:%' ORDER BY id DESC LIMIT 25",
     ).all();
+    const { results: works } = await env.DB.prepare(
+      `SELECT CAST(substr(sheet,6,2) AS INTEGER) AS m, trim(work) AS w, count(*) AS n, coalesce(sum(paid_iqd),0) AS iqd, coalesce(sum(paid_usd),0) AS usd
+       FROM payments WHERE sheet LIKE ? AND trim(coalesce(work,'')) <> '' GROUP BY m, trim(work) ORDER BY iqd DESC LIMIT 400`,
+    ).bind(like).all();
     const months = Array.from({ length: 12 }, (_, i) => {
       const a = inc.find((r) => r.m === i + 1);
       const e = exp.filter((r) => r.m === i + 1);
@@ -59,7 +63,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       const c = (cats[r.category] ||= { iqd: Array(12).fill(0), usd: Array(12).fill(0) });
       c.iqd[r.m - 1] += r.iqd; c.usd[r.m - 1] += r.usd;
     }
-    return json({ ok: true, year, years, months, cats, expenses: list, pays });
+    return json({ ok: true, year, years, months, cats, expenses: list, pays, works });
   } catch (e) { return json({ ok: false, error: String((e as Error)?.message || e) }, 500); }
 };
 

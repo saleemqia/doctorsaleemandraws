@@ -5,6 +5,7 @@ import Hero from "@/components/dental/Hero";
 import Services from "@/components/dental/Services";
 import About from "@/components/dental/About";
 import Gallery from "@/components/dental/Gallery";
+import BeforeAfter from "@/components/dental/BeforeAfter";
 import InstagramFeed from "@/components/dental/InstagramFeed";
 import Testimonials from "@/components/dental/Testimonials";
 import FAQ from "@/components/dental/FAQ";
@@ -73,6 +74,7 @@ const Index = () => {
         <Reveal threshold={0.04}><ClinicTour /></Reveal>
         <Reveal threshold={0.04}><DigitalDentistry /></Reveal>
         <Reveal threshold={0.04}><SmilePreview onBookingClick={openBooking("smile")} /></Reveal>
+        <Reveal threshold={0.04}><BeforeAfter onBookingClick={openBooking("before_after")} /></Reveal>
         <Reveal threshold={0.04}><Gallery /></Reveal>
         <Reveal threshold={0.04}><InstagramFeed /></Reveal>
         <Reveal threshold={0.04}><Testimonials /></Reveal>

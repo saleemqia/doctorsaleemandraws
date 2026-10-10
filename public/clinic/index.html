@@ -182,6 +182,13 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .gsf .th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left}
 .gsf .in{padding:10px 12px}.gsf h4{margin:0 0 8px;font-size:16px}.gsf .row{display:flex;gap:6px;flex-wrap:wrap}
 .gsf iframe{width:100%;height:70vh;border:0;border-top:1px solid var(--line);display:block}
+.bdg{background:#dc2626;color:#fff;border-radius:99px;padding:0 7px;font-size:12px;margin-inline-start:4px}
+.rem{display:grid;gap:10px}.rem h3{margin:14px 4px 4px;font-size:15px}
+.rc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.rc.due{border:2px solid #16a34a;background:#f0fdf4}.rc.sent{opacity:.6}
+.rc b{font-size:16px}.rc small{display:block;color:var(--muted)}
+.rc .go{background:#16a34a;color:#fff;border:0;border-radius:10px;padding:9px 14px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.rc .go.alt{background:#2563eb}.rc .go[disabled]{background:#9ca3af}
 </style>
 </head>
 <body>
@@ -201,6 +208,8 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     <button data-r="past">الشهر الماضي</button>
     <button data-r="archive">🔎 الأرشيف</button>
     <button data-r="patients">👤 المرضى</button>
+    <button data-r="remind">⏰ تذكيرات <span id="remBadge" class="bdg" hidden></span></button>
+    <button data-r="reqs">📥 طلبات الحجز <span id="reqBadge" class="bdg" hidden></span></button>
     <button data-r="fin">💰 الحسابات</button>
     <input type="date" id="pick" aria-label="اختر يومًا">
   </nav>
@@ -1215,6 +1224,24 @@ async function loadFin() {
     renderFin(d);
   } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر تحميل الحسابات: ${esc(e.message || e)}</div>`; }
 }
+function monthlySummary(d, c, inc, exp, net) {
+  const act = d.months.map((m, i) => (m.visits || exp[i] ? i : -1)).filter((i) => i >= 0); if (!act.length) return "";
+  const i = act[act.length - 1], p = i > 0 ? i - 1 : -1;
+  const pct = (a, b) => b ? Math.round(((a - b) / Math.abs(b)) * 100) : null;
+  const arrow = (a, b, goodUp = true) => { const v = p < 0 ? null : pct(a, b); if (v === null) return `<small>—</small>`; const up = v >= 0, good = up === goodUp; return `<small style="color:${v === 0 ? "var(--muted)" : good ? "#16a34a" : "#dc2626"}">${up ? "▲" : "▼"} ${Math.abs(v)}%</small>`; };
+  const row = (t, a, b, goodUp, money = true) => `<tr><td>${t}</td><td>${money ? fm(a, c) : a}</td><td>${p < 0 ? "—" : money ? fm(b, c) : b}</td><td>${arrow(a, b, goodUp)}</td></tr>`;
+  const vi = d.months[i].visits, vp = p < 0 ? 0 : d.months[p].visits;
+  const cat = (m) => Object.entries(d.cats).map(([k, v]) => ({ k, v: v[c][m] })).filter((x) => x.v > 0).sort((a, b) => b.v - a.v);
+  const cn = cat(i), cp = p < 0 ? [] : cat(p);
+  const jumps = cn.map((x) => { const o = (cp.find((y) => y.k === x.k) || { v: 0 }).v; return { ...x, o }; }).filter((x) => x.o > 0 && x.v > x.o * 1.3 && x.v - x.o > (c === "iqd" ? 100000 : 100)).slice(0, 3);
+  const wk = (d.works || []).filter((w) => w.m === i + 1 && w[c] > 0).map((w) => ({ w: w.w, v: w[c], n: w.n })).sort((a, b) => b.v - a.v).slice(0, 5);
+  return `<div class="cbox"><h3>📅 ملخص ${MN_AR[i]} ${p >= 0 ? "مقارنةً بـ" + MN_AR[p] : ""}</h3>
+    <table class="vt"><tr><th></th><th>${MN_AR[i]}</th><th>${p >= 0 ? MN_AR[p] : ""}</th><th></th></tr>
+    ${row("الدخل", inc[i], p < 0 ? 0 : inc[p], true)}${row("المصاريف", exp[i], p < 0 ? 0 : exp[p], false)}${row("الصافي", net[i], p < 0 ? 0 : net[p], true)}${row("عدد الدفعات", vi, vp, true, false)}</table>
+    ${cn.length ? `<p class="note">أكبر مصروف: <b>${esc(cn[0].k)}</b> (${fm(cn[0].v, c)})</p>` : ""}
+    ${jumps.length ? `<p class="note warn">⚠️ ارتفع مصروف: ${jumps.map((x) => `<b>${esc(x.k)}</b> (${fm(x.o, c)} ← ${fm(x.v, c)})`).join("، ")}</p>` : ""}
+    ${wk.length ? `<p class="note">الأعلى دخلًا حسب خانة «العمل»:</p><ol style="margin:0;padding-inline-start:20px">${wk.map((x) => `<li>${esc(x.w)} · ${fm(x.v, c)} (${x.n})</li>`).join("")}</ol>` : ""}</div>`;
+}
 function renderFin(d) {
   const c = finCur, inc = d.months.map((m) => m["inc_" + c] + m["oth_" + c]), exp = d.months.map((m) => m["exp_" + c]), due = d.months.map((m) => m["due_" + c]);
   const net = inc.map((v, i) => v - exp[i]); const sum = (a) => a.reduce((t, v) => t + v, 0);
@@ -1228,6 +1255,7 @@ function renderFin(d) {
     <div class="kpis">${kp("g", "إجمالي الدخل", sum(inc))}${kp("r", "إجمالي المصاريف", sum(exp))}${kp("", "الصافي", sum(net))}${kp("y", "المتبقي على المرضى", sum(due))}</div>
     ${sum(d.months.map((m) => m["oth_" + c])) ? `<p class="note">الدخل يشمل ${fm(sum(d.months.map((m) => m["oth_" + c])), c)} من إيرادات غير مرتبطة بزيارة مريض (مثل أجور الفحص الشهرية أو بيع معدّات)، كما في ملف Excel.</p>` : ""}
     ${best >= 0 ? `<p class="note">⭐ أفضل شهر: <b>${MN_AR[best]}</b> (${fm(net[best], c)}) · ⚠️ أضعف شهر: <b>${MN_AR[worst]}</b> (${fm(net[worst], c)})</p>` : `<div class="empty">لا توجد بيانات لسنة ${d.year}. ارفع ملف الحسابات من الأعلى.</div>`}
+    ${monthlySummary(d, c, inc, exp, net)}
     <div class="cbox qe"><h3>➕ إدخال سريع</h3>
       <div class="chips" id="qeTabs"><button class="${qeMode === "pay" ? "on" : ""}" data-m="pay" type="button">💵 دفعة مريض</button><button class="${qeMode === "exp" ? "on" : ""}" data-m="exp" type="button">📉 مصروف</button></div>
       ${qeMode === "pay" ? `<form id="pForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
@@ -1275,10 +1303,87 @@ $("list").addEventListener("click", async (e) => {
   await fetch("/clinic/api/finance?action=del", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: +b.dataset.del }) }); loadFin();
 });
 
+
+/* ---------- reminders (2 hours before) and review requests ---------- */
+const REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJHQVly9aNCEARjys3d6OhFLI";
+const REM_BEFORE_MS = 2 * 3600000;
+let remAppts = [], remAt = 0;
+const lsGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+async function remFetch(force) {
+  if (!force && Date.now() - remAt < 4 * 60000) return;
+  try {
+    const r = await fetch(`/clinic/api/day?from=${today}&days=2`, { credentials: "same-origin", cache: "no-store" });
+    if (!r.ok) return; const d = await r.json(); if (d.today) today = d.today;
+    remAppts = (d.appts || []).filter((a) => !a.allDay && a.start).map((a) => ({ ...a, day: a.day || local(a.start).toISOString().slice(0, 10) })); remAt = Date.now();
+  } catch {}
+}
+const remDue = () => { const n = Date.now(); return remAppts.filter((a) => a.phone && Date.parse(a.start) > n && Date.parse(a.start) - n <= REM_BEFORE_MS && !lsGet("rem:" + a.uid)); };
+function remBadge() {
+  const n = remDue().length, b = $("remBadge"); b.hidden = !n; b.textContent = n;
+  document.title = (n ? `(${n}) ` : "") + document.title.replace(/^\(\d+\)\s*/, "");
+}
+function remText(a) { return waText(a).replace("نذكّركم بموعدكم", "نذكّركم بموعدكم القريب"); }
+function renderRemind() {
+  const n = Date.now(); const up = remAppts.filter((a) => Date.parse(a.start) > n).sort((a, b) => a.start.localeCompare(b.start));
+  const card = (a) => {
+    const diff = Date.parse(a.start) - n, due = diff <= REM_BEFORE_MS, sent = lsGet("rem:" + a.uid);
+    const mins = Math.round(diff / 60000), left = mins >= 60 ? `${Math.floor(mins / 60)} س ${mins % 60} د` : `${mins} د`;
+    const when = `${a.day === today || local(a.start).toISOString().slice(0, 10) === today ? "اليوم" : "غدًا"} ${ampm(a.start)}`;
+    const wa = a.phone ? `https://wa.me/${intl(a.phone)}?text=${encodeURIComponent(remText(a))}` : "";
+    const act = !a.phone ? `<span style="color:var(--muted)">لا يوجد رقم</span>`
+      : sent ? `<span>✔ أُرسل</span>` : due ? `<a class="go" data-rem="${esc(a.uid)}" target="_blank" rel="noopener" href="${wa}">📲 أرسل التذكير</a>`
+      : `<button class="go" disabled>بعد ${Math.max(0, Math.round((diff - REM_BEFORE_MS) / 60000))} د</button>`;
+    return `<div class="rc ${due && !sent && a.phone ? "due" : ""} ${sent ? "sent" : ""}"><div><b>${esc(a.title) || "بدون اسم"}</b><small>${when} · بعد ${left}${a.treatment ? " · " + esc(a.treatment) : ""}</small></div>${act}</div>`;
+  };
+  const done = remAppts.filter((a) => a.phone && Date.parse(a.end) < n && local(a.start).toISOString().slice(0, 10) === today);
+  const rv = (a) => { const sent = lsGet("rev:" + a.uid); const first = String(a.title).split(/\s+/)[0];
+    const t = `مرحبًا ${first}، شكرًا لزيارتكم ${CLINIC}. يسعدنا رأيكم، ويساعدنا تقييمكم على Google كثيرًا:\n${REVIEW_URL}`;
+    return `<div class="rc ${sent ? "sent" : ""}"><div><b>${esc(a.title)}</b><small>انتهى ${ampm(a.end)}</small></div>${sent ? "<span>✔ أُرسل</span>" : `<a class="go alt" data-rev="${esc(a.uid)}" target="_blank" rel="noopener" href="https://wa.me/${intl(a.phone)}?text=${encodeURIComponent(t)}">⭐ اطلب تقييمًا</a>`}</div>`; };
+  $("title").textContent = "التذكيرات"; $("count").textContent = remDue().length + " جاهز الآن";
+  $("note").className = "note"; $("note").textContent = "يظهر زر الإرسال أخضر قبل الموعد بساعتين. اضغطه فيُفتح واتساب بالرسالة جاهزة، ثم اضغط إرسال.";
+  $("list").innerHTML = `<div class="rem">${up.length ? up.map(card).join("") : `<div class="empty">لا مواعيد قادمة اليوم أو غدًا 🌿</div>`}${done.length ? `<h3>⭐ بعد الزيارة · طلب تقييم Google</h3>` + done.map(rv).join("") : ""}</div>`;
+}
+document.addEventListener("click", (e) => {
+  const a = e.target.closest("[data-rem],[data-rev]"); if (!a) return;
+  lsSet((a.dataset.rem ? "rem:" : "rev:") + (a.dataset.rem || a.dataset.rev), "1");
+  setTimeout(() => { remBadge(); if (current === "remind") renderRemind(); }, 400);
+});
+setInterval(async () => { await remFetch(); remBadge(); if (current === "remind" && !document.hidden) renderRemind(); }, 60000);
+
+
+/* ---------- booking requests from the website ---------- */
+async function reqCount() {
+  try { const d = await (await fetch("/clinic/api/requests", { credentials: "same-origin", cache: "no-store" })).json();
+    const b = $("reqBadge"); b.hidden = !d.new; b.textContent = d.new; } catch {}
+}
+async function loadReqs() {
+  $("title").textContent = "طلبات الحجز من الموقع"; $("note").className = "note"; $("note").textContent = "كل طلب يرسله الزائر من نموذج الحجز يظهر هنا. اتصل أو راسله على واتساب ثم اضغط «تمت المتابعة».";
+  $("list").innerHTML = `<div class="spin"></div>`;
+  let d; try { d = await (await fetch("/clinic/api/requests", { credentials: "same-origin", cache: "no-store" })).json(); } catch { d = null; }
+  if (!d || !d.ok) { $("list").innerHTML = `<div class="empty">تعذّر التحميل</div>`; return; }
+  $("count").textContent = d.new + " جديد"; const b = $("reqBadge"); b.hidden = !d.new; b.textContent = d.new;
+  if (!d.items.length) { $("list").innerHTML = `<div class="empty">لا طلبات بعد 🌿</div>`; return; }
+  $("list").innerHTML = `<div class="rem">` + d.items.map((r) => {
+    const t = `مرحبًا ${String(r.name).split(/\s+/)[0]}، وصلنا طلب حجزكم في ${CLINIC}${r.pref_date ? " ليوم " + r.pref_date : ""}${r.pref_time ? " الساعة " + r.pref_time : ""}. نؤكد لكم الموعد بإذن الله.`;
+    const when = new Date(r.created_at.replace(" ", "T") + "Z").toLocaleString("ar-IQ", { dateStyle: "short", timeStyle: "short", timeZone: "Asia/Baghdad" });
+    return `<div class="rc ${r.status === "new" ? "due" : "sent"}"><div><b>${esc(r.name)}</b><small>${esc(r.service)}${r.pref_date ? " · " + esc(r.pref_date) : ""}${r.pref_time ? " " + esc(r.pref_time) : ""}</small>${r.notes ? `<small>${esc(r.notes)}</small>` : ""}<small>${when} · <bdi dir="ltr">${esc(r.phone)}</bdi></small></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap"><a class="go" href="tel:${esc(r.phone)}">📞</a><a class="go alt" target="_blank" rel="noopener" href="https://wa.me/${intl(String(r.phone).replace(/\s/g, ""))}?text=${encodeURIComponent(t)}">واتساب</a>
+      <button class="go" style="background:#6b7280" data-rq="${r.id}" data-st="${r.status === "new" ? "done" : "new"}">${r.status === "new" ? "✔ تمت المتابعة" : "↩ إعادة"}</button><button class="go" style="background:#dc2626" data-rqdel="${r.id}">🗑</button></div></div>`;
+  }).join("") + `</div>`;
+}
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-rq],[data-rqdel]"); if (!b) return;
+  if (b.dataset.rqdel && !confirm("حذف هذا الطلب نهائيًا؟")) return;
+  await fetch("/clinic/api/requests", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b.dataset.rqdel ? { id: +b.dataset.rqdel, del: true } : { id: +b.dataset.rq, status: b.dataset.st }) });
+  loadReqs();
+});
 async function load(r = current) {
   current = r;
   const isPats = r === "patients";
   $("pats").hidden = !isPats; $("fin").hidden = r !== "fin";
+  if (r === "remind") { $("arch").hidden = true; $("dnav").hidden = true; $("list").classList.add("noDim"); $("list").innerHTML = `<div class="spin"></div>`; await remFetch(true); remBadge(); renderRemind(); return; }
+  if (r === "reqs") { $("arch").hidden = true; $("dnav").hidden = true; $("list").classList.add("noDim"); loadReqs(); return; }
   if (r === "fin") { $("arch").hidden = true; $("dnav").hidden = true; $("list").classList.add("noDim"); loadFin(); return; }
   if (isPats) { $("arch").hidden = true; $("dnav").hidden = true; patients(); return; }
   const isArch = r === "archive";
@@ -1317,13 +1422,13 @@ function stepDay(n) {
 }
 $("prevDay").onclick = () => stepDay(-1);
 $("nextDay").onclick = () => stepDay(1);
-document.addEventListener("visibilitychange", () => { if (!document.hidden && !["archive","patients","card","dups","bc","fin"].includes(current)) load(); });
-setInterval(() => { if (!document.hidden && !["archive","patients","card","dups","bc","fin"].includes(current)) load(); }, 5 * 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && !["archive","patients","card","dups","bc","fin","remind","reqs"].includes(current)) load(); });
+setInterval(() => { if (!document.hidden && !["archive","patients","card","dups","bc","fin","remind","reqs"].includes(current)) load(); }, 5 * 60000);
 const deep = location.hash.match(/card=(\d+)/);
 if (deep) {
   document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x.dataset.r === "patients"));
   current = "patients"; $("pats").hidden = false; $("dnav").hidden = true; openCard(+deep[1]);
-} else load("today");
+} else { load("today"); remFetch(true).then(remBadge); reqCount(); }
 </script>
 </body>
 </html>

@@ -74,6 +74,14 @@ Thank you!`;
     const opened = window.open(whatsappUrl, "_blank");
     if (opened) opened.opener = null;
 
+    // Also keep a copy where the clinic reads it every day (/clinic → طلبات الحجز).
+    fetch("/api/booking", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: formData.name, phone: formData.phone, service: formData.service, date: formData.date, time: formData.time, notes: formData.notes }),
+      keepalive: true,
+    }).catch(() => {});
+
     // Save the request for the clinic's admin page. WhatsApp already carries the
     // booking, so a failed save never loses the patient's request.
     supabase
