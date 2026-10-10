@@ -19,6 +19,7 @@ header h1{font-size:19px;margin:0}
 header small{opacity:.85}
 header a.out{margin-inline-start:auto;color:#fff;opacity:.8;font-size:13px;text-decoration:none;border:1px solid #ffffff55;border-radius:8px;padding:6px 10px}
 main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
+.seg{display:flex;gap:8px;margin-bottom:10px}.seg button{flex:1;border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:14px;padding:12px;font:inherit;font-weight:800;font-size:16px;cursor:pointer}.seg button.on{background:var(--navy);color:#fff}.tabs [hidden]{display:none!important}
 .tabs{display:flex;gap:6px;background:var(--card);border-radius:14px;padding:6px;box-shadow:0 4px 18px #13285C14;overflow-x:auto}
 .tabs button{flex:1;min-width:max-content;border:0;background:none;padding:10px 12px;border-radius:10px;font:inherit;font-weight:600;color:var(--muted);cursor:pointer}
 .tabs button.on{background:var(--navy);color:#fff}
@@ -198,20 +199,21 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   <a class="out" href="/" target="_blank" rel="noopener" title="يفتح في تبويب جديد، أغلقه لتعود إلى هنا" style="margin-inline-end:6px">🏠 الصفحة الرئيسية</a><a class="out" href="/clinic/logout" style="margin-inline-start:0">خروج</a>
 </div></header>
 <main>
+  <div class="seg" id="seg"><button data-g="a" class="on">📅 المواعيد</button><button data-g="f">💰 المالية والمرضى</button></div>
   <nav class="tabs" id="tabs">
-    <button data-r="today" class="on">اليوم</button>
-    <button data-r="tomorrow">غدًا</button>
-    <button data-r="fin">💰 الحسابات</button>
-    <button data-r="patients">👤 المرضى</button>
-    <button data-r="remind">⏰ تذكيرات <span id="remBadge" class="bdg" hidden></span></button>
-    <button data-r="reqs">📥 طلبات الحجز <span id="reqBadge" class="bdg" hidden></span></button>
-    <button data-r="yesterday">أمس</button>
-    <button data-r="week">7 أيام</button>
-    <button data-r="month">30 يومًا</button>
-    <button data-r="lastweek">الأسبوع الماضي</button>
-    <button data-r="past">الشهر الماضي</button>
-    <button data-r="archive">🔎 الأرشيف</button>
-    <input type="date" id="pick" aria-label="اختر يومًا">
+    <button data-g="a" data-r="today" class="on">اليوم</button>
+    <button data-g="a" data-r="tomorrow">غدًا</button>
+    <button data-g="a" data-r="remind">⏰ تذكيرات <span id="remBadge" class="bdg" hidden></span></button>
+    <button data-g="a" data-r="reqs">📥 طلبات الحجز <span id="reqBadge" class="bdg" hidden></span></button>
+    <button data-g="a" data-r="yesterday">أمس</button>
+    <button data-g="a" data-r="week">7 أيام</button>
+    <button data-g="a" data-r="month">30 يومًا</button>
+    <button data-g="a" data-r="lastweek">الأسبوع الماضي</button>
+    <button data-g="a" data-r="past">الشهر الماضي</button>
+    <button data-g="a" data-r="archive">🔎 الأرشيف</button>
+    <button data-g="f" data-r="fin" hidden>💰 الحسابات</button>
+    <button data-g="f" data-r="patients" hidden>👤 المرضى</button>
+    <input type="date" id="pick" data-g="a" aria-label="اختر يومًا">
   </nav>
   <div class="bar">
     <span class="dnav" id="dnav"><button class="btn" data-step="y-1" title="قبل سنة">« سنة</button><button class="btn" data-step="m-1" title="قبل شهر">‹ شهر</button><button class="btn" data-step="d-1" id="prevDay" title="اليوم السابق">→ يوم</button><button class="btn" id="goToday" title="العودة إلى اليوم">اليوم</button><button class="btn" data-step="d+1" id="nextDay" title="اليوم التالي">يوم ←</button><button class="btn" data-step="m+1" title="بعد شهر">شهر ›</button><button class="btn" data-step="y+1" title="بعد سنة">سنة »</button></span>
@@ -1402,6 +1404,15 @@ async function load(r = current) {
   } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر التحميل، تحقّق من الإنترنت ثم اضغط تحديث.</div>`; }
 }
 
+
+let curGroup = "a";
+function setGroup(g, go = true) {
+  curGroup = g;
+  document.querySelectorAll("#seg button").forEach((x) => x.classList.toggle("on", x.dataset.g === g));
+  document.querySelectorAll("#tabs [data-g]").forEach((x) => { x.hidden = x.dataset.g !== g; });
+  if (go) { const first = document.querySelector(`#tabs button[data-g="${g}"]`); document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x === first)); $("pick").value = ""; load(first.dataset.r); }
+}
+$("seg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && b.dataset.g !== curGroup) setGroup(b.dataset.g); });
 $("tabs").addEventListener("click", (e) => {
   const b = e.target.closest("button"); if (!b) return;
   document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x === b));
@@ -1436,8 +1447,8 @@ setInterval(() => { if (!document.hidden && !["archive","patients","card","dups"
 const deep = location.hash.match(/card=(\d+)/);
 if (deep) {
   document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x.dataset.r === "patients"));
-  current = "patients"; $("pats").hidden = false; $("dnav").hidden = true; openCard(+deep[1]);
-} else { load("today"); remFetch(true).then(remBadge); reqCount(); }
+  setGroup("f", false); current = "patients"; $("pats").hidden = false; $("dnav").hidden = true; openCard(+deep[1]);
+} else { setGroup("a", false); load("today"); remFetch(true).then(remBadge); reqCount(); }
 </script>
 </body>
 </html>
