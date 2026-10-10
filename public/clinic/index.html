@@ -71,7 +71,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .r b{font-size:16px}.r .t{color:var(--blue);font-weight:700;font-size:13px;direction:ltr;text-align:left}
 .r .p{grid-column:1/-1;font-size:13px;color:var(--muted)}.r .p a{color:var(--navy);direction:ltr;unicode-bidi:isolate;text-decoration:none;font-weight:600}
 .dh{background:var(--sky);color:var(--navy);font-weight:700;font-size:13px;padding:6px 12px}
-.dnav{display:flex;gap:6px;width:100%}.dnav .btn{flex:1;justify-content:center}.dnav[hidden]{display:none}
+.dnav{display:flex;gap:5px;width:100%;flex-wrap:wrap}.dnav .btn{flex:1;min-width:0;padding-inline:6px;justify-content:center;white-space:nowrap}#goToday{background:var(--navy);color:#fff}.dnav[hidden]{display:none}
 .pl{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}
 .pl:hover{background:#F7FAFE}.pl:last-child{border-bottom:0}
 .pno{font-weight:800;color:var(--gold);font-size:13px;direction:ltr}
@@ -199,22 +199,22 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 </div></header>
 <main>
   <nav class="tabs" id="tabs">
-    <button data-r="yesterday">أمس</button>
     <button data-r="today" class="on">اليوم</button>
     <button data-r="tomorrow">غدًا</button>
+    <button data-r="fin">💰 الحسابات</button>
+    <button data-r="patients">👤 المرضى</button>
+    <button data-r="remind">⏰ تذكيرات <span id="remBadge" class="bdg" hidden></span></button>
+    <button data-r="reqs">📥 طلبات الحجز <span id="reqBadge" class="bdg" hidden></span></button>
+    <button data-r="yesterday">أمس</button>
     <button data-r="week">7 أيام</button>
     <button data-r="month">30 يومًا</button>
     <button data-r="lastweek">الأسبوع الماضي</button>
     <button data-r="past">الشهر الماضي</button>
     <button data-r="archive">🔎 الأرشيف</button>
-    <button data-r="patients">👤 المرضى</button>
-    <button data-r="remind">⏰ تذكيرات <span id="remBadge" class="bdg" hidden></span></button>
-    <button data-r="reqs">📥 طلبات الحجز <span id="reqBadge" class="bdg" hidden></span></button>
-    <button data-r="fin">💰 الحسابات</button>
     <input type="date" id="pick" aria-label="اختر يومًا">
   </nav>
   <div class="bar">
-    <span class="dnav" id="dnav"><button class="btn" id="prevDay" title="اليوم السابق">→ السابق</button><button class="btn" id="nextDay" title="اليوم التالي">التالي ←</button></span>
+    <span class="dnav" id="dnav"><button class="btn" data-step="y-1" title="قبل سنة">« سنة</button><button class="btn" data-step="m-1" title="قبل شهر">‹ شهر</button><button class="btn" data-step="d-1" id="prevDay" title="اليوم السابق">→ يوم</button><button class="btn" id="goToday" title="العودة إلى اليوم">اليوم</button><button class="btn" data-step="d+1" id="nextDay" title="اليوم التالي">يوم ←</button><button class="btn" data-step="m+1" title="بعد شهر">شهر ›</button><button class="btn" data-step="y+1" title="بعد سنة">سنة »</button></span>
     <h2 id="title">اليوم</h2><span class="count" id="count">…</span>
     <div class="tools">
       <button class="btn" id="refresh" title="تحديث">↻ تحديث</button>
@@ -1413,15 +1413,24 @@ $("pick").addEventListener("change", (e) => {
   load(e.target.value);
 });
 $("refresh").onclick = () => load(current === "card" || current === "dups" ? "patients" : current);
-function stepDay(n) {
-  const d = addDays(curFrom || today, n);
+function shiftDate(d, unit, n) {
+  const [y, m, dd] = d.split("-").map(Number);
+  if (unit === "d") return addDays(d, n);
+  const t = unit === "y" ? new Date(Date.UTC(y + n, m - 1, 1)) : new Date(Date.UTC(y, m - 1 + n, 1));
+  const last = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + 1, 0)).getUTCDate();
+  t.setUTCDate(Math.min(dd, last)); return t.toISOString().slice(0, 10);
+}
+function gotoDay(d) {
   const tab = d === today ? "today" : d === addDays(today, -1) ? "yesterday" : d === addDays(today, 1) ? "tomorrow" : "";
   document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x.dataset.r === tab));
   $("pick").value = tab ? "" : d;
   load(tab || d);
 }
-$("prevDay").onclick = () => stepDay(-1);
-$("nextDay").onclick = () => stepDay(1);
+$("dnav").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.id === "goToday") return gotoDay(today);
+  const m = /^([dmy])([+-]\d+)$/.exec(b.dataset.step || ""); if (m) gotoDay(shiftDate(curFrom || today, m[1], +m[2]));
+});
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !["archive","patients","card","dups","bc","fin","remind","reqs"].includes(current)) load(); });
 setInterval(() => { if (!document.hidden && !["archive","patients","card","dups","bc","fin","remind","reqs"].includes(current)) load(); }, 5 * 60000);
 const deep = location.hash.match(/card=(\d+)/);
