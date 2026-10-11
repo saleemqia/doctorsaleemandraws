@@ -92,7 +92,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .vt tr:nth-child(even) td{background:#FAFCFF}
 @media print{.pcard{box-shadow:none}.pf,.noprint{display:none!important}.vt th{position:static}}
 @media (max-width:480px){.tabs{flex-wrap:wrap}.tabs input{max-width:none;flex-basis:100%}}
-@media print{header,.tabs,.tools,.wa2{display:none}main{margin:0}.appt{box-shadow:none;border:1px solid #ccc;break-inside:avoid}}
+@media print{header,.tabs,.seg,.dnav,.bar,#note,.tools,.wa2{display:none!important}main{margin:0}.appt{box-shadow:none;border:1px solid #ccc;break-inside:avoid}}
 
 .pl.sel{background:#E8F0FD}.pl .ck{font-size:18px;color:var(--navy)}
 .tbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 8px}.btn.on{background:var(--navy);color:#fff}
@@ -113,11 +113,12 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 @media (max-width:480px){.two{grid-template-columns:1fr}}
 
 .sumbox{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}.sumbox div{background:#F2F6FC;border:1px solid var(--line);border-radius:10px;padding:8px 10px}.sumbox small{display:block;color:var(--muted);font-size:12px}.sumbox b{font-size:15px;color:var(--navy)}.sumbox .wide{grid-column:span 2}
-.printhead{display:none}
+.printhead{display:none}.lh{display:none}.lhc{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:12px;color:#33405e;margin-top:4px}
+@media print{.lh{display:block;border-bottom:3px solid #13285C;padding:0 0 8px;margin:0 0 12px}.lh h1{margin:0;font-size:22px;color:#13285C}.lh .ld{font-size:12px;color:#33405e}.lh .lt{display:flex;justify-content:space-between;margin-top:6px;font-weight:700}body.printcard .lh,body.previewing .lh{display:none!important}.printhead .lhc{display:flex}}
 @media (max-width:480px){.sumbox{grid-template-columns:1fr 1fr}}
 @media print{
   body.printcard header,body.printcard .tabs,body.printcard .bar,body.printcard #pats,body.printcard #note,body.printcard #pickBar,body.printcard #toast{display:none!important}
-  body.printcard{background:#fff}.printhead{display:flex;justify-content:space-between;border-bottom:2px solid #13285C;padding:0 0 8px;margin:0 0 10px;font-size:14px}
+  body.printcard{background:#fff}.printhead{display:flex;flex-wrap:wrap;justify-content:space-between;border-bottom:2px solid #13285C;padding:0 0 8px;margin:0 0 10px;font-size:14px}
   .pcard .phead{background:#fff!important;color:#000!important;border-bottom:1px solid #999}.pcard .phead *{color:#000!important}
   .vt{width:100%;border-collapse:collapse;font-size:12px}.vt th,.vt td{border:1px solid #999;padding:4px 6px}.vt tr{break-inside:avoid}
   .sumbox div{background:#fff;border:1px solid #999}
@@ -215,6 +216,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     <button data-g="f" data-r="patients" hidden>👤 المرضى</button>
     <input type="date" id="pick" data-g="a" aria-label="اختر يومًا">
   </nav>
+  <div class="lh" id="lh"></div>
   <div class="bar">
     <span class="dnav" id="dnav"><button class="btn" data-step="y-1" title="قبل سنة">« سنة</button><button class="btn" data-step="m-1" title="قبل شهر">‹ شهر</button><button class="btn" data-step="d-1" id="prevDay" title="اليوم السابق">→ يوم</button><button class="btn" id="goToday" title="العودة إلى اليوم">اليوم</button><button class="btn" data-step="d+1" id="nextDay" title="اليوم التالي">يوم ←</button><button class="btn" data-step="m+1" title="بعد شهر">شهر ›</button><button class="btn" data-step="y+1" title="بعد سنة">سنة »</button></span>
     <h2 id="title">اليوم</h2><span class="count" id="count">…</span>
@@ -274,6 +276,8 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 </main>
 <script>
 const CLINIC = "عيادة الدكتور سليم أندراوس", CLINIC_PHONE = "0750 781 6500";
+const LH = { name: "عيادة د. سليم أندراوس لطب الأسنان", doc: "د. سليم أندراوس · بكالوريوس طب وجراحة الفم والأسنان · ماجستير الأشعة الفموية والوجهية", addr: "دهوك - كي ار او - بناية جرزات شيركو، الطابق الأول", phones: "0750 781 6500 · 0778 166 5000", mail: "dr.saleemo@gmail.com", web: "www.doctorsaleem.com" };
+const lhContact = () => `<span>📍 ${LH.addr}</span><span>📞 <bdi dir="ltr">${LH.phones}</bdi></span><span>✉ <bdi dir="ltr">${LH.mail}</bdi></span><span>🌐 <bdi dir="ltr">${LH.web}</bdi></span>`;
 const WD = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -952,7 +956,7 @@ function sheetHTML(o) {
     + (o.money ? `<td>${x.hasMoney ? amt(x.paid_iqd, x.paid_usd) : "—"}</td><td>${x.hasMoney ? amt(x.due_iqd, x.due_usd) : "—"}</td>` : "") + `</tr>`).join("");
   const qr = o.qr ? ($("qr")?.innerHTML || "") : "";
   const imgs = o.imgs ? cardFiles : [];
-  return `<div class="rp-top"><div><h1>عيادة د. سليم أندراوس لطب الأسنان</h1><small>دهوك · قاضي محمد · تقرير مريض</small></div><div style="text-align:left"><small>تاريخ التقرير</small><b dir="ltr">${today}</b></div></div>
+  return `<div class="rp-top"><div><h1>عيادة د. سليم أندراوس لطب الأسنان</h1><small>${LH.doc}</small><small>تقرير مريض</small><div class="lhc" style="display:flex;flex-wrap:wrap;gap:2px 12px;font-size:11px;color:#33405e;margin-top:4px">${lhContact()}</div></div><div style="text-align:left"><small>تاريخ التقرير</small><b dir="ltr">${today}</b></div></div>
     <div class="rp-pt"><div><p class="rp-name">${esc(p.name)}</p><div class="rp-grid">
       <div><span>رقم البطاقة: </span>DSA-P-${p.no}${p.card_no ? " · ورقية " + esc(p.card_no) : ""}</div><div><span>الهاتف: </span><bdi dir="ltr">${esc(p.phones.join(" · ")) || "—"}</bdi></div>
       <div><span>أول زيارة: </span>${vdays[0] || "—"}</div><div><span>آخر زيارة: </span>${vdays[vdays.length - 1] || "—"}</div>
@@ -961,7 +965,7 @@ function sheetHTML(o) {
     <div class="rp-sum"><div><small>عدد الزيارات</small><b>${nVisits}</b></div>${money ? `<div><small>مجموع المدفوع</small><b>${paidAll}</b></div><div><small>المتبقي</small><b>${dueAll}</b></div>` : ""}</div>
     <h3>الزيارات${o.money ? " والحسابات" : ""}</h3><table><thead><tr><th>#</th><th>التاريخ</th><th>نوع العمل</th>${o.money ? "<th>المدفوع</th><th>المتبقي</th>" : ""}</tr></thead><tbody>${rows}</tbody></table>
     ${imgs.length ? `<h3>الأشعة وصور الحالة</h3><div class="rp-img">${imgs.map((f) => `<figure><img src="/clinic/api/files?id=${f.id}" alt=""><figcaption><b>${esc(f.title || (f.kind === "xray" ? "أشعة" : "صورة حالة"))}</b> · ${esc(f.taken || String(f.created_at).slice(0, 10))}</figcaption></figure>`).join("")}</div>` : ""}
-    <div class="rp-foot"><span>عيادة د. سليم أندراوس — دهوك</span><span>DSA-P-${p.no}</span></div>`;
+    <div class="rp-foot"><span>${LH.name} — ${LH.addr} — <bdi dir="ltr">${LH.phones}</bdi></span><span>DSA-P-${p.no}</span></div>`;
 }
 const rpOpts = () => ({ money: $("rpMoney").checked, imgs: $("rpImgs").checked, notes: $("rpNotes").checked, qr: $("rpQr").checked });
 function fitSheet() { const w = $("rpScroll").clientWidth - 16; $("rpZoom").style.zoom = Math.min(1, w / 794); }
@@ -1027,7 +1031,7 @@ function renderCard(editing) {
         <label class="wide">ملاحظات / الحالة الطبية<textarea id="eNotes" rows="2">${esc(p.notes || "")}</textarea></label></div>
         <p class="note">الاسم الأصلي من التقويم: ${esc(p.auto_name)}${p.auto_phones.length ? " · الهواتف من التقويم: " + esc(p.auto_phones.join("، ")) : ""}. اترك الحقل فارغًا للرجوع إليه.</p>`
     : (p.notes || p.card_no ? `<p class="note" style="color:var(--navy)">${p.notes ? "📝 " + esc(p.notes) : ""}</p>` : "");
-  $("list").innerHTML = `<div class="pcard"><div class="printhead"><b>عيادة د. سليم أندراوس لطب الأسنان — دهوك</b><span>تقرير مريض · طُبع <bdi dir="ltr">${new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10)}</bdi></span></div><div class="phead"><div class="qr" id="qr" title="امسح للوصول إلى البطاقة"></div>
+  $("list").innerHTML = `<div class="pcard"><div class="printhead"><b>عيادة د. سليم أندراوس لطب الأسنان — دهوك</b><span>تقرير مريض · طُبع <bdi dir="ltr">${new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10)}</bdi></span><div class="lhc" style="flex-basis:100%">${lhContact()}</div></div><div class="phead"><div class="qr" id="qr" title="امسح للوصول إلى البطاقة"></div>
       <div class="no">DSA-P-${p.no}${p.card_no ? " · بطاقة ورقية " + esc(p.card_no) : ""}</div><h3>${esc(p.name)}</h3>
       <div class="meta"><span>📞 ${phones}</span><span>أول زيارة ${vdays[0] || ""}</span><span>آخر زيارة ${vdays[vdays.length - 1] || ""}</span>${p.edited_at ? `<span>✏️ آخر تعديل ${p.edited_at.slice(0, 10)}</span>` : ""}</div></div>
     <div class="pbody">
@@ -1405,6 +1409,10 @@ async function load(r = current) {
 }
 
 
+function fillLh() {
+  $("lh").innerHTML = `<h1>${LH.name}</h1><div class="ld">${LH.doc}</div><div class="lhc">${lhContact()}</div><div class="lt"><span>${esc($("title").textContent)} ${esc($("count").textContent)}</span><span>طُبع <bdi dir="ltr">${new Date(Date.now() + 180 * 60000).toISOString().slice(0, 16).replace("T", " ")}</bdi></span></div>`;
+}
+window.addEventListener("beforeprint", fillLh);
 let curGroup = "a";
 function setGroup(g, go = true) {
   curGroup = g;
