@@ -1,4 +1,5 @@
 import { SERVICES, serviceBySlug } from "./services";
+import { SOCIALS, SOCIAL_INDEX, socialBySlug, socialTitle } from "./social";
 
 // Search-engine settings for each language version of the home page.
 // Each language has its own address (/, /ar, /ku) so Google can index all three.
@@ -40,9 +41,9 @@ export const SEO: Record<SeoLanguage, { title: string; description: string; loca
 // Pages of the site. "" is the home page; the others are sub-pages, each in 3 languages:
 // /case, /ar/case, /ku/case and /kids, /ar/kids, /ku/kids.
 // "/services" lists all treatments; "/services/<slug>" is one treatment (see services.ts).
-export type BasePage = "" | "/case" | "/kids" | "/treatments" | "/infographics" | "/news" | "/services";
-export type SitePage = BasePage | `/services/${string}`;
-export const PAGES: SitePage[] = ["", "/case", "/kids", "/treatments", "/infographics", "/news", "/services", ...SERVICES.map((s) => `/services/${s.slug}` as SitePage)];
+export type BasePage = "" | "/case" | "/kids" | "/treatments" | "/infographics" | "/news" | "/services" | "/social";
+export type SitePage = BasePage | `/services/${string}` | `/social/${string}`;
+export const PAGES: SitePage[] = ["", "/case", "/kids", "/treatments", "/infographics", "/news", "/services", ...SERVICES.map((s) => `/services/${s.slug}` as SitePage), "/social", ...SOCIALS.map((s) => `/social/${s.slug}` as SitePage)];
 
 export const parsePath = (pathname: string): { lang: SeoLanguage; page: SitePage } | null => {
   let lang: SeoLanguage = "en";
@@ -70,10 +71,17 @@ type PageText = Record<SeoLanguage, { title: string; description: string }>;
 export const pageSeo = (page: Exclude<SitePage, "">): PageText => {
   const svc = page.startsWith("/services/") ? serviceBySlug(page.slice(10)) : undefined;
   if (svc) return { en: { title: svc.title.en, description: svc.description.en }, ar: { title: svc.title.ar, description: svc.description.ar }, ku: { title: svc.title.ku, description: svc.description.ku } };
+  const so = page.startsWith("/social/") ? socialBySlug(page.slice(8)) : undefined;
+  if (so) { const t = socialTitle(so); return { en: { title: t.en, description: so.text.en }, ar: { title: t.ar, description: so.text.ar }, ku: { title: t.ku, description: so.text.ku } }; }
   return PAGE_SEO[page as Exclude<BasePage, "">];
 };
 
 export const PAGE_SEO: Record<Exclude<BasePage, "">, PageText> = {
+  "/social": {
+    en: { title: SOCIAL_INDEX.title.en, description: SOCIAL_INDEX.description.en },
+    ar: { title: SOCIAL_INDEX.title.ar, description: SOCIAL_INDEX.description.ar },
+    ku: { title: SOCIAL_INDEX.title.ku, description: SOCIAL_INDEX.description.ku },
+  },
   "/services": {
     en: { title: "Dental Services in Duhok: Implants, Veneers, Braces, Root Canal | Dr. Saleem Andraws", description: "All treatments at Dr. Saleem Andraws Dental Clinic in Duhok: dental implants, veneers and Hollywood smile, whitening, root canal and fillings, zircon and E-max crowns, bridges and dentures, braces, cleaning and extraction." },
     ar: { title: "خدمات طب الأسنان في دهوك: زراعة، فينير، تقويم، حشو عصب | د. سليم أندراوس", description: "جميع علاجات عيادة د. سليم أندراوس لطب الأسنان في دهوك: زراعة الأسنان، فينير وابتسامة هوليود، تبييض، حشو العصب والحشوات، تيجان زركون وإيماكس، جسور وطقم أسنان، تقويم، تنظيف وقلع." },

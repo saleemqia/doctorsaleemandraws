@@ -13,6 +13,7 @@ import TreatmentsPage from "./pages/TreatmentsPage";
 import InfographicsPage from "./pages/InfographicsPage";
 import NewsPage from "./pages/NewsPage";
 import { ServicesIndexPage, ServiceDetailPage } from "./pages/ServicePages";
+import { SocialIndexPage, SocialDetailPage } from "./pages/SocialPages";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
@@ -38,6 +39,8 @@ const App = () => (
                 <Route key={`${p}/news`} path={`${p}/news`} element={<NewsPage />} />,
                 <Route key={`${p}/services`} path={`${p}/services`} element={<ServicesIndexPage />} />,
                 <Route key={`${p}/services/:slug`} path={`${p}/services/:slug`} element={<ServiceDetailPage />} />,
+                <Route key={`${p}/social`} path={`${p}/social`} element={<SocialIndexPage />} />,
+                <Route key={`${p}/social/:slug`} path={`${p}/social/:slug`} element={<SocialDetailPage />} />,
                 <Route key={`${p}/infographics`} path={`${p}/infographics`} element={<InfographicsPage />} />,
               ])}
               <Route path="/login" element={<Login />} />

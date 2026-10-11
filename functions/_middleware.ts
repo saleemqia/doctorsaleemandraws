@@ -2,6 +2,7 @@
 // so Google and social networks see them without running the page's scripts (the app sets the same values again in the browser).
 import { SEO, pageSeo, pageUrl, parsePath, type BasePage, type SeoLanguage, type SitePage } from "../src/config/seo";
 import { serviceBySlug } from "../src/config/services";
+import { socialBySlug } from "../src/config/social";
 
 const NAMES: Record<BasePage, Record<SeoLanguage, string>> = {
   "": { en: "Home", ar: "الرئيسية", ku: "سەرەکی" },
@@ -11,6 +12,7 @@ const NAMES: Record<BasePage, Record<SeoLanguage, string>> = {
   "/infographics": { en: "Infographics", ar: "إنفوجرافيك", ku: "ئینفۆگرافیک" },
   "/news": { en: "Dental news", ar: "أخبار الأسنان", ku: "هەوالێن ددانان" },
   "/services": { en: "Services", ar: "الخدمات", ku: "خزمەتگوزاری" },
+  "/social": { en: "Social media", ar: "مواقع التواصل", ku: "تۆڕێن جڤاکی" },
 };
 
 const ld = (o: unknown) => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, "\\u003c")}</script>`;
@@ -20,7 +22,9 @@ const structuredData = (lang: SeoLanguage, page: SitePage) => {
   if (!page) return "";
   const svc = page.startsWith("/services/") ? serviceBySlug(page.slice(10)) : undefined;
   const trail: { name: string; item: string }[] = [{ name: NAMES[""][lang], item: pageUrl(lang, "") }];
-  if (svc) trail.push({ name: NAMES["/services"][lang], item: pageUrl(lang, "/services") }, { name: svc.name[lang], item: pageUrl(lang, page) });
+  const so = page.startsWith("/social/") ? socialBySlug(page.slice(8)) : undefined;
+  if (so) trail.push({ name: NAMES["/social"][lang], item: pageUrl(lang, "/social") }, { name: so.name, item: pageUrl(lang, page) });
+  else if (svc) trail.push({ name: NAMES["/services"][lang], item: pageUrl(lang, "/services") }, { name: svc.name[lang], item: pageUrl(lang, page) });
   else trail.push({ name: NAMES[page as BasePage][lang], item: pageUrl(lang, page) });
   let out = ld({
     "@context": "https://schema.org", "@type": "BreadcrumbList",

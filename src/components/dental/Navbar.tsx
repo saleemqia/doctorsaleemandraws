@@ -5,7 +5,6 @@ import { Menu, X, Phone, Calendar, Globe, ChevronDown, Instagram } from "lucide-
 import { useLanguage } from "@/contexts/LanguageContext";
 import clinicLogo from "@/assets/clinic-logo.png";
 import AssyrianName from "@/components/dental/AssyrianName";
-import { INSTAGRAM_URL } from "@/config/clinic";
 import { parsePath, pathFor, type SitePage } from "@/config/seo";
 
 const navLinks: { key: string; href: string; mobileOnly?: boolean }[] = [
@@ -123,7 +122,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
               </AnimatePresence>
             </div>
 
-            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
+            <a href={pathFor(language, "/social/instagram")} aria-label="Instagram" title="Instagram">
               <Button variant="ghost" size="sm" className="text-foreground/80 hover:bg-secondary hover:text-primary">
                 <Instagram className="w-4 h-4" />
               </Button>
@@ -199,10 +198,10 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
                   </a>
                 ))}
                 <div className="pt-4 border-t border-border flex flex-col gap-3">
-                  <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="w-full">
+                  <a href={pathFor(language, "/social")} className="w-full">
                     <Button variant="outline" className="w-full justify-center gap-2">
                       <Instagram className="w-4 h-4" />
-                      {t("nav.instagram")}
+                      {t("nav.social")}
                     </Button>
                   </a>
                   <a href="tel:07507816500" className="w-full">

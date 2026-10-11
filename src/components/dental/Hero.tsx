@@ -26,12 +26,13 @@ const DOORS = [
 
 // Every public link of the clinic, one tap from the first screen (the full list is on /links).
 const SOCIALS = [
-  { label: "Instagram", href: "https://www.instagram.com/dr.saleemandraws/" },
-  { label: "Facebook", href: "https://www.facebook.com/doctor.saleem.diamond.dental.duhok" },
-  { label: "TikTok", href: "https://www.tiktok.com/@salandhana" },
-  { label: "Snapchat", href: "https://www.snapchat.com/add/doctor.saleem" },
+  // Instagram, Facebook, TikTok, Snapchat and YouTube open on the site's own pages (/social/...), shown inside the page.
+  { label: "Instagram", href: "/social/instagram" },
+  { label: "Facebook", href: "/social/facebook" },
+  { label: "TikTok", href: "/social/tiktok" },
+  { label: "Snapchat", href: "/social/snapchat" },
+  { label: "YouTube", href: "/social/youtube" },
   { label: "Telegram", href: "https://t.me/CHercules130" },
-  { label: "YouTube", href: "https://youtu.be/edq1-loT6As" },
   { label: "LinkedIn", href: "https://iq.linkedin.com/in/saleem-andraws-hana-71a71377" },
   { label: "Google Maps", href: GOOGLE_MAPS_URL },
   { label: "Email", href: "mailto:dr.saleemo@gmail.com" },
@@ -100,7 +101,7 @@ const Hero = ({ onBookingClick }: HeroProps) => {
                 <Link2 className="h-4 w-4" />{t("nav.links")}
               </a>
               {SOCIALS.map((l) => (
-                <a key={l.label} href={l.href} target={l.href.startsWith("mailto:") ? undefined : "_blank"} rel="noopener noreferrer"
+                <a key={l.label} href={hrefFor(l.href)} target={l.href.startsWith("mailto:") || l.href.startsWith("/") ? undefined : "_blank"} rel="noopener noreferrer"
                   className="rounded-full border border-border bg-white px-3 py-1.5 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-primary hover:text-primary">
                   {l.label}
                 </a>

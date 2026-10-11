@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Instagram as InstagramIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { pathFor } from "@/config/seo";
 import { BEHOLD_FEED_ID, INSTAGRAM_URL, INSTAGRAM_HANDLE } from "@/config/clinic";
 
 declare global {
@@ -49,9 +50,11 @@ const useBeholdWidget = (enabled: boolean) => {
 };
 
 const InstagramFeed = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const hasFeed = BEHOLD_FEED_ID.trim().length > 0;
-  const { ref, visible } = useBeholdWidget(hasFeed);
+  const { ref, visible } = useBeholdWidget(true);
+  const user = INSTAGRAM_URL.replace(/\/+$/, "").split("/").pop();
+  const MORE = { en: "All our social media", ar: "كل حساباتنا على مواقع التواصل", ku: "هەمی تۆڕێن مە یێن جڤاکی" };
 
   return (
     <section id="instagram" className="py-20 md:py-28 bg-background relative overflow-hidden">
@@ -73,12 +76,11 @@ const InstagramFeed = () => {
           <p className="text-muted-foreground text-lg">{t("instagram.description")}</p>
         </motion.div>
 
-        {hasFeed && (
-          <div ref={ref} className="min-h-[300px] mb-10" dir="ltr">
-            {/* Behold's web component renders the live Instagram grid. */}
-            {visible && <behold-widget feed-id={BEHOLD_FEED_ID}></behold-widget>}
-          </div>
-        )}
+        <div ref={ref} className="min-h-[300px] mb-10" dir="ltr">
+          {/* Behold's web component renders the live Instagram grid; without it, Instagram's own profile embed is shown. */}
+          {visible && (hasFeed ? <behold-widget feed-id={BEHOLD_FEED_ID}></behold-widget>
+            : <iframe title={`Instagram ${INSTAGRAM_HANDLE}`} src={`https://www.instagram.com/${user}/embed/`} loading="lazy" className="mx-auto block w-full rounded-2xl border border-border bg-white" style={{ maxWidth: 540, height: 720 }} />)}
+        </div>
 
         <div className="flex justify-center">
           <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
@@ -89,6 +91,7 @@ const InstagramFeed = () => {
             </Button>
           </a>
         </div>
+        <p className="mt-4 text-center"><a href={pathFor(language, "/social")} className="font-semibold text-primary hover:underline">{MORE[language]}</a></p>
       </div>
     </section>
   );

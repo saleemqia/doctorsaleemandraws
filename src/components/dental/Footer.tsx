@@ -2,7 +2,7 @@ import { MapPin, ExternalLink, Shield, Facebook, Instagram, Star, Phone, Mail } 
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import clinicLogo from "@/assets/clinic-logo.png";
-import { GOOGLE_MAPS_URL, INSTAGRAM_URL, CLINIC_EMAIL } from "@/config/clinic";
+import { GOOGLE_MAPS_URL, CLINIC_EMAIL } from "@/config/clinic";
 import { parsePath, pathFor, type SitePage } from "@/config/seo";
 
 const Footer = () => {
@@ -23,6 +23,7 @@ const Footer = () => {
     { key: "kids", href: "/kids" },
     { key: "infographics", href: "/infographics" },
     { key: "news", href: "/news" },
+    { key: "social", href: "/social" },
     { key: "links", href: "/links" },
   ];
   const onHome = parsePath(window.location.pathname)?.page === "";
@@ -48,20 +49,16 @@ const Footer = () => {
             </p>
             <div className={`flex gap-3 ${dir === "rtl" ? "" : ""}`}>
               <a 
-                href="https://www.facebook.com/doctor.saleem.diamond.dental.duhok/" 
+                href={pathFor(language, "/social/facebook")}
                 aria-label="Facebook"
-                target="_blank" 
-                rel="noopener noreferrer"
                 className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-white/25 transition-colors"
               >
                 <Facebook className="w-4 h-4" />
               </a>
               <a 
-                href={INSTAGRAM_URL}
+                href={pathFor(language, "/social/instagram")}
                 aria-label="Instagram"
                 title="Instagram"
-                target="_blank" 
-                rel="noopener noreferrer"
                 className="flex items-center justify-center w-10 h-10 rounded-lg bg-background/10 hover:bg-white/25 transition-colors"
               >
                 <Instagram className="w-4 h-4" />
