@@ -1,7 +1,7 @@
 // Guards everything under /clinic: only browsers holding a valid clinic key cookie get in.
 // /clinic/login?k=KEY checks the key (only its SHA-256 hash is stored in D1), sets the cookie,
 // and redirects to /clinic/ so the key does not stay in the address bar or history.
-import { COOKIE, Env, cookieValue, keyValid } from "../../lib/clinic";
+import { COOKIE, Env, cookieValue, keyValid, needsPin, pinUnlocked } from "../../lib/clinic";
 
 const PRIVATE = { "X-Robots-Tag": "noindex, nofollow", "Cache-Control": "no-store", "Referrer-Policy": "no-referrer" };
 
@@ -50,6 +50,11 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, next }) => {
     return new Response(JSON.stringify({ ok: false, error: msg }), { status: 503, headers: { "Content-Type": "application/json; charset=utf-8", ...PRIVATE } });
   }
   if (!ok) return denied();
+
+  // Accounts, statistics and patient cards also need the owner's PIN (see lib/clinic.ts needsPin).
+  if (needsPin(url, request.method) && !(await pinUnlocked(env, request))) {
+    return new Response(JSON.stringify({ ok: false, pin: true, error: "هذا القسم محمي برقم سري" }), { status: 403, headers: { "Content-Type": "application/json; charset=utf-8", ...PRIVATE } });
+  }
 
   const res = await next();
   const out = new Response(res.body, res);

@@ -191,6 +191,9 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .rc b{font-size:16px}.rc small{display:block;color:var(--muted)}
 .rc .go{background:#16a34a;color:#fff;border:0;border-radius:10px;padding:9px 14px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
 .rc .go.alt{background:#2563eb}.rc .go[disabled]{background:#9ca3af}
+  .pinbox { text-align: center; }
+  .pinf { display: flex; gap: 8px; justify-content: center; margin: 8px auto; max-width: 280px; }
+  .pinf input { flex: 1; padding: 10px; border: 1px solid var(--line); border-radius: 10px; font: inherit; text-align: center; letter-spacing: 6px; direction: ltr; }
 </style>
 </head>
 <body>
@@ -227,7 +230,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     </div>
   </div>
   <div id="pats" hidden>
-    <div class="tbar"><button class="btn" id="selMode" type="button">☑ تحديد للدمج</button><button class="btn" id="dupBtn" type="button">🧩 مكررات محتملة</button><button class="btn pri" id="msgBtn" type="button">📣 رسائل للمرضى</button><button class="btn" id="impBtn" type="button">💵 استيراد الحسابات (Excel)</button></div>
+    <div class="tbar"><button class="btn" id="selMode" type="button">☑ تحديد للدمج</button><button class="btn" id="dupBtn" type="button">🧩 مكررات محتملة</button><button class="btn pri" id="msgBtn" type="button">📣 رسائل للمرضى</button><button class="btn" id="impBtn" type="button">💵 استيراد الحسابات (Excel)</button><button class="btn" type="button" onclick="pinLock()">🔒 قفل</button></div>
     <form id="pform" class="sbox"><input id="pq" type="search" placeholder="اسم المريض أو رقم الهاتف أو رقم البطاقة" autocomplete="off"><button class="btn">بحث</button></form>
     <p class="note" id="pstats"></p>
     <details class="imp"><summary>💵 استيراد ملف الحسابات (Excel)</summary>
@@ -641,6 +644,7 @@ async function patients() {
   const get = async () => {
     const res = await fetch(`/clinic/api/patients?q=${encodeURIComponent(q)}`, { cache: "no-store" });
     const txt = await res.text(); let j; try { j = JSON.parse(txt); } catch { j = { error: `HTTP ${res.status}: ${txt.slice(0, 160)}` }; }
+    if (j.pin) throw Object.assign(new Error(j.error), { pin: true });
     if (!res.ok || j.error) throw new Error(j.error || "HTTP " + res.status);
     return j;
   };
@@ -648,7 +652,10 @@ async function patients() {
   try {
     d = await get();
     if (d.pending > 0) { await rebuildIfNeeded(d.pending); d = await get(); }
-  } catch (err) { $("list").innerHTML = `<div class="empty">تعذّر تحميل المرضى:<br><small dir="ltr">${esc(err.message)}</small></div>`; return; }
+  } catch (err) {
+    if (err.pin) { $("pats").hidden = true; $("list").innerHTML = pinBox("بطاقات المرضى ودفعاتهم"); return; }
+    $("list").innerHTML = `<div class="empty">تعذّر تحميل المرضى:<br><small dir="ltr">${esc(err.message)}</small></div>`; return;
+  }
   if (!window._am) { window._am = 1; fetch("/clinic/api/patients?action=automerge", { method: "POST" }).catch(() => {}); }
   $("pstats").textContent = `${d.total} مريضًا (بطاقة لكل مريض، مرتبة حسب آخر زيارة)` + (d.patients.length >= 100 ? " · تظهر أول 100، ابحث للوصول للباقي" : "");
   $("count").textContent = q ? d.patients.length + " نتيجة" : "";
@@ -824,6 +831,7 @@ async function openCard(no) {
   try {
     const res = await fetch(`/clinic/api/patients?no=${no}`, { cache: "no-store" });
     const txt = await res.text(); try { d = JSON.parse(txt); } catch { d = { error: `HTTP ${res.status}: ${txt.slice(0, 160)}` }; }
+    if (d.pin) { $("list").innerHTML = pinBox("بطاقة المريض"); pinAfter = () => openCard(no); return; }
     if (!res.ok || d.error) throw new Error(d.error || "HTTP " + res.status);
   } catch (err) { $("list").innerHTML = `<div class="empty">تعذّر فتح البطاقة:<br><small dir="ltr">${esc(err.message)}</small></div>`; return; }
   d.rows = d.rows || []; cardData = d; renderCard(false);
@@ -1220,13 +1228,15 @@ $("gsSave").onclick = async () => {
 };
 $("gsSync").onclick = async () => { $("gsSync").disabled = true; if (await gsSync(true)) loadFin(); $("gsSync").disabled = false; };
 async function loadFin() {
-  $("fin").hidden = false; if (!finBooted) { finBooted = true; gsAuto(); } else gsLoad(); $("title").textContent = "الحسابات"; $("note").textContent = ""; $("count").textContent = "";
+  $("fin").hidden = true; $("title").textContent = "الحسابات"; $("note").textContent = ""; $("count").textContent = "";
   $("list").innerHTML = `<div class="spin"></div>`;
   try {
     const res = await fetch(`/clinic/api/finance?year=${finYear}`, { cache: "no-store" }); const d = await res.json();
+    if (d.pin) { $("fin").hidden = true; $("title").textContent = "إدخال البيانات"; $("list").innerHTML = qeBox(null) + pinBox("الحسابات والإحصائيات وبطاقات المرضى"); qeAppts(); return; }
     if (!d.ok) throw new Error(d.error); finYear = d.year;
+    $("fin").hidden = false; if (!finBooted) { finBooted = true; gsAuto(); } else gsLoad();
     $("finYears").innerHTML = (d.years.length ? d.years : [d.year]).map((y) => `<button class="${y === d.year ? "on" : ""}" data-y="${y}">${y}</button>`).join("") +
-      `<button class="${finCur === "iqd" ? "on" : ""}" data-c="iqd" style="margin-inline-start:auto">دينار</button><button class="${finCur === "usd" ? "on" : ""}" data-c="usd">دولار $</button><button data-x="1" title="ملف Excel بنفس شكل ملف السنة">⬇ تصدير Excel</button>`;
+      `<button class="${finCur === "iqd" ? "on" : ""}" data-c="iqd" style="margin-inline-start:auto">دينار</button><button class="${finCur === "usd" ? "on" : ""}" data-c="usd">دولار $</button><button data-x="1" title="ملف Excel بنفس شكل ملف السنة">⬇ تصدير Excel</button><button data-lock="1" title="إخفاء الحسابات الآن">🔒 قفل</button>`;
     renderFin(d); qeAppts();
   } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر تحميل الحسابات: ${esc(e.message || e)}</div>`; }
 }
@@ -1248,6 +1258,25 @@ function monthlySummary(d, c, inc, exp, net) {
     ${jumps.length ? `<p class="note warn">⚠️ ارتفع مصروف: ${jumps.map((x) => `<b>${esc(x.k)}</b> (${fm(x.o, c)} ← ${fm(x.v, c)})`).join("، ")}</p>` : ""}
     ${wk.length ? `<p class="note">الأعلى دخلًا حسب خانة «العمل»:</p><ol style="margin:0;padding-inline-start:20px">${wk.map((x) => `<li>${esc(x.w)} · ${fm(x.v, c)} (${x.n})</li>`).join("")}</ol>` : ""}</div>`;
 }
+function qeBox(d) {      // the quick-entry forms; d is null while the accounts are locked (then no list of recent payments)
+  const cats = d ? Object.keys(d.cats) : [];
+  return `<div class="cbox qe"><h3>➕ إدخال سريع</h3>
+      <div class="chips" id="qeTabs"><button class="${qeMode === "pay" ? "on" : ""}" data-m="pay" type="button">💵 دفعة مريض</button><button class="${qeMode === "exp" ? "on" : ""}" data-m="exp" type="button">📉 مصروف</button><button class="${qeMode === "pt" ? "on" : ""}" data-m="pt" type="button">👤 مريض جديد</button></div>
+      ${qeMode === "pay" ? `<form id="pForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
+        <div class="qa" id="qeAppts" style="grid-column:1/-1"></div>
+        <label>اسم المريض<input name="name" list="pnames" required autocomplete="off" placeholder="ابدأ بكتابة الاسم"><datalist id="pnames"></datalist></label>
+        <label>المدفوع (دينار)<input name="paid_iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>المدفوع ($)<input name="paid_usd" type="number" inputmode="decimal" min="0" step="any"></label>
+        <label>المتبقي (دينار)<input name="due_iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>المتبقي ($)<input name="due_usd" type="number" inputmode="decimal" min="0" step="any"></label>
+        <label>العمل المنجز<input name="work" placeholder="حشوة، تنظيف…"></label><label>ملاحظات<input name="notes"></label><label>هاتف المريض (اختياري)<input name="phone" type="tel" inputmode="tel" dir="ltr"></label><button class="btn pri">حفظ الدفعة</button></form>
+        <p class="note" id="qMsg">تظهر الدفعة فورًا في بطاقة المريض والرسوم البيانية. هذه الدفعات تبقى محفوظة ولا يمحوها تحديث الجدول، فلا تكتب نفس الدفعة في الجدول أيضًا.</p>`
+      : qeMode === "pt" ? `<form id="ptForm" class="xf"><label>اسم المريض<input name="name" required autocomplete="off"></label><label>الهاتف<input name="phone" type="tel" inputmode="tel" dir="ltr" placeholder="0750…"></label><button class="btn pri">حفظ المريض</button></form><p class="note" id="ptMsg">تُنشأ بطاقة للمريض فورًا، وتظهر مواعيده من التقويم ودفعاته فيها عندما يتطابق الاسم.</p>`
+      : `<form id="xForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
+        <label>النوع<input name="category" list="xcats" required placeholder="كهرباء، مختبر…"><datalist id="xcats">${["كهرباء", "إيجار", "راتب المساعدة", "مواد طبية", "المختبر", "إنترنت", "أخرى", ...cats].map((k) => `<option value="${esc(k)}">`).join("")}</datalist></label>
+        <label>بالدينار<input name="iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>بالدولار<input name="usd" type="number" inputmode="decimal" min="0" step="any"></label>
+        <label>وصف<input name="desc"></label><button class="btn pri">حفظ المصروف</button></form><p class="note" id="xMsg"></p>`}
+      ${d && d.pays.length && qeMode === "pay" ? `<details style="margin-top:6px"><summary class="note">آخر الدفعات المدخلة هنا (${d.pays.length})</summary>${d.pays.map((x) => `<div class="xrow"><div>${esc(x.name)} <small>· ${esc(x.day)}${x.work ? " · " + esc(x.work) : ""}</small></div><span><b>${[x.paid_iqd ? fm(x.paid_iqd, "iqd") : "", x.paid_usd ? fm(x.paid_usd, "usd") : ""].filter(Boolean).join(" + ") || "—"}</b> <button data-pdel="${x.id}" title="حذف">✕</button></span></div>`).join("")}</details>` : ""}
+    </div>`;
+}
 function renderFin(d) {
   const c = finCur, inc = d.months.map((m) => m["inc_" + c] + m["oth_" + c]), exp = d.months.map((m) => m["exp_" + c]), due = d.months.map((m) => m["due_" + c]);
   const net = inc.map((v, i) => v - exp[i]); const sum = (a) => a.reduce((t, v) => t + v, 0);
@@ -1262,22 +1291,7 @@ function renderFin(d) {
     ${sum(d.months.map((m) => m["oth_" + c])) ? `<p class="note">الدخل يشمل ${fm(sum(d.months.map((m) => m["oth_" + c])), c)} من إيرادات غير مرتبطة بزيارة مريض (مثل أجور الفحص الشهرية أو بيع معدّات)، كما في ملف Excel.</p>` : ""}
     ${best >= 0 ? `<p class="note">⭐ أفضل شهر: <b>${MN_AR[best]}</b> (${fm(net[best], c)}) · ⚠️ أضعف شهر: <b>${MN_AR[worst]}</b> (${fm(net[worst], c)})</p>` : `<div class="empty">لا توجد بيانات لسنة ${d.year}. ارفع ملف الحسابات من الأعلى.</div>`}
     ${monthlySummary(d, c, inc, exp, net)}
-    <div class="cbox qe"><h3>➕ إدخال سريع</h3>
-      <div class="chips" id="qeTabs"><button class="${qeMode === "pay" ? "on" : ""}" data-m="pay" type="button">💵 دفعة مريض</button><button class="${qeMode === "exp" ? "on" : ""}" data-m="exp" type="button">📉 مصروف</button><button class="${qeMode === "pt" ? "on" : ""}" data-m="pt" type="button">👤 مريض جديد</button></div>
-      ${qeMode === "pay" ? `<form id="pForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
-        <div class="qa" id="qeAppts" style="grid-column:1/-1"></div>
-        <label>اسم المريض<input name="name" list="pnames" required autocomplete="off" placeholder="ابدأ بكتابة الاسم"><datalist id="pnames"></datalist></label>
-        <label>المدفوع (دينار)<input name="paid_iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>المدفوع ($)<input name="paid_usd" type="number" inputmode="decimal" min="0" step="any"></label>
-        <label>المتبقي (دينار)<input name="due_iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>المتبقي ($)<input name="due_usd" type="number" inputmode="decimal" min="0" step="any"></label>
-        <label>العمل المنجز<input name="work" placeholder="حشوة، تنظيف…"></label><label>ملاحظات<input name="notes"></label><label>هاتف المريض (اختياري)<input name="phone" type="tel" inputmode="tel" dir="ltr"></label><button class="btn pri">حفظ الدفعة</button></form>
-        <p class="note" id="qMsg">تظهر الدفعة فورًا في بطاقة المريض والرسوم البيانية. هذه الدفعات تبقى محفوظة ولا يمحوها تحديث الجدول، فلا تكتب نفس الدفعة في الجدول أيضًا.</p>`
-      : qeMode === "pt" ? `<form id="ptForm" class="xf"><label>اسم المريض<input name="name" required autocomplete="off"></label><label>الهاتف<input name="phone" type="tel" inputmode="tel" dir="ltr" placeholder="0750…"></label><button class="btn pri">حفظ المريض</button></form><p class="note" id="ptMsg">تُنشأ بطاقة للمريض فورًا، وتظهر مواعيده من التقويم ودفعاته فيها عندما يتطابق الاسم.</p>`
-      : `<form id="xForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
-        <label>النوع<input name="category" list="xcats" required placeholder="كهرباء، مختبر…"><datalist id="xcats">${["كهرباء", "إيجار", "راتب المساعدة", "مواد طبية", "المختبر", "إنترنت", "أخرى", ...cats].map((k) => `<option value="${esc(k)}">`).join("")}</datalist></label>
-        <label>بالدينار<input name="iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>بالدولار<input name="usd" type="number" inputmode="decimal" min="0" step="any"></label>
-        <label>وصف<input name="desc"></label><button class="btn pri">حفظ المصروف</button></form><p class="note" id="xMsg"></p>`}
-      ${d.pays.length && qeMode === "pay" ? `<details style="margin-top:6px"><summary class="note">آخر الدفعات المدخلة هنا (${d.pays.length})</summary>${d.pays.map((x) => `<div class="xrow"><div>${esc(x.name)} <small>· ${esc(x.day)}${x.work ? " · " + esc(x.work) : ""}</small></div><span><b>${[x.paid_iqd ? fm(x.paid_iqd, "iqd") : "", x.paid_usd ? fm(x.paid_usd, "usd") : ""].filter(Boolean).join(" + ") || "—"}</b> <button data-pdel="${x.id}" title="حذف">✕</button></span></div>`).join("")}</details>` : ""}
-    </div>
+    ${qeBox(d)}
     <div class="cbox"><h3>الدخل والمصاريف كل شهر</h3>${barChart([inc, exp], MN_EN, ["#1E9E5A", "#C2413A"])}<div class="leg"><span><i style="background:#1E9E5A"></i>الدخل</span><span><i style="background:#C2413A"></i>المصاريف</span></div></div>
     <div class="cbox"><h3>صافي الدخل كل شهر</h3>${barChart([net], MN_EN, ["#1F6FD1"])}</div>
     <div class="cbox"><h3>المتبقي (الديون على المرضى) كل شهر</h3>${barChart([due], MN_EN, ["#C29A4A"])}</div>
@@ -1286,6 +1300,24 @@ function renderFin(d) {
       <tfoot><tr><td>Total</td><td>${fm(sum(inc), c)}</td><td>${fm(sum(exp), c)}</td><td>${fm(sum(net), c)}</td><td>${fm(sum(due), c)}</td></tr></tfoot></table></div></div>
     ${cats.length ? `<div class="cbox"><h3>المصاريف حسب النوع والشهر</h3><div class="tw"><table class="ftab"><thead><tr><th>Category</th>${MN_EN.map((m) => `<th>${m}</th>`).join("")}<th>Total</th></tr></thead><tbody>${cats.map((k) => `<tr><td>${esc(k)}</td>${d.cats[k][c].map((v) => `<td>${v ? Math.round(v).toLocaleString("en-US") : ""}</td>`).join("")}<td><b>${Math.round(sum(d.cats[k][c])).toLocaleString("en-US")}</b></td></tr>`).join("")}</tbody></table></div></div>` : ""}
     <div class="cbox"><h3>سجل المصاريف (${d.expenses.length})</h3>${d.expenses.length ? d.expenses.map((x) => `<div class="xrow"><div>${esc(x.category)} <small>· ${esc(x.day)}${x.description ? " · " + esc(x.description) : ""}${x.manual ? " · يدوي" : ""}</small></div><span><b>${x.amount_iqd ? fm(x.amount_iqd, "iqd") : ""}${x.amount_iqd && x.amount_usd ? " + " : ""}${x.amount_usd ? fm(x.amount_usd, "usd") : ""}</b> <button data-del="${x.id}" title="حذف">✕</button></span></div>`).join("") : `<p class="note">لا توجد مصاريف مسجّلة.</p>`}</div>`;
+}
+
+/* ---------- PIN: accounts, statistics and patient cards open only with the owner's PIN (checked on the server) ---------- */
+let pinAfter = null;
+function pinBox(what) {
+  return `<div class="cbox pinbox"><h3>🔒 ${esc(what)}</h3><p class="note">هذا القسم يظهر فقط بالرقم السري، ويُقفل تلقائيًا بعد 30 دقيقة.</p>
+    <form id="pinForm" class="pinf"><input name="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" required placeholder="الرقم السري" aria-label="الرقم السري"><button class="btn pri">فتح</button></form><p class="note" id="pinMsg"></p></div>`;
+}
+document.addEventListener("submit", async (e) => {
+  if (e.target.id !== "pinForm") return; e.preventDefault();
+  const f = e.target, m = $("pinMsg"); m.className = "note"; m.textContent = "جارٍ التحقق…";
+  const r = await (await fetch("/clinic/api/pin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: f.pin.value }) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
+  if (!r.ok) { m.className = "note warn"; m.textContent = r.error || "الرقم السري غير صحيح"; f.pin.value = ""; f.pin.focus(); return; }
+  const go = pinAfter; pinAfter = null; if (go) go(); else load(current === "card" ? "patients" : current);
+});
+async function pinLock() {
+  await fetch("/clinic/api/pin?action=lock", { method: "POST" }).catch(() => {});
+  allCache = null; load(current === "card" || current === "dups" || current === "bc" ? "patients" : current);
 }
 
 /* ---------- export the year as an Excel workbook in the same layout as the 2026 file ---------- */
@@ -1357,7 +1389,7 @@ async function exportYear(btn) {
   } catch (e) { alert("تعذّر التصدير: " + (e.message || e)); }
   btn.disabled = false; btn.textContent = old;
 }
-$("finYears").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; if (b.dataset.x) return exportYear(b); if (b.dataset.y) finYear = b.dataset.y; if (b.dataset.c) finCur = b.dataset.c; loadFin(); });
+$("finYears").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; if (b.dataset.lock) return pinLock(); if (b.dataset.x) return exportYear(b); if (b.dataset.y) finYear = b.dataset.y; if (b.dataset.c) finCur = b.dataset.c; loadFin(); });
 $("list").addEventListener("submit", async (e) => {
   const isPt = e.target.id === "ptForm";
   const isPay = e.target.id === "pForm"; if (!isPay && !isPt && e.target.id !== "xForm") return; e.preventDefault();

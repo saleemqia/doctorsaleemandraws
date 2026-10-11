@@ -27,6 +27,31 @@ export async function keyValid(env: Env, key: string): Promise<boolean> {
   return !!row;
 }
 
+/* ---------- second lock: accounts, statistics and patient cards need the owner's PIN ----------
+   Only sha256("fin:" + PIN) is stored, in clinic_settings 'fin_pin'. Unlocking sets a short-lived cookie. */
+
+export const PIN_COOKIE = "clinic_fin";
+export const PIN_MINUTES = 30;
+async function pinHash(env: Env): Promise<string> {
+  return (await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = 'fin_pin'").first<{ value: string }>())?.value || "";
+}
+export const pinToken = (hash: string) => sha256("finok|" + hash);
+export async function pinCheck(env: Env, pin: string): Promise<string> {   // the cookie value, or "" if wrong
+  const h = await pinHash(env);
+  if (!h || !/^\d{4,8}$/.test(pin) || (await sha256("fin:" + pin)) !== h) return "";
+  return pinToken(h);
+}
+export async function pinUnlocked(env: Env, req: Request): Promise<boolean> {
+  const c = cookieValue(req, PIN_COOKIE); if (!c) return false;
+  const h = await pinHash(env); return !!h && c === (await pinToken(h));
+}
+/** What stays open without the PIN: the appointments, and typing in a payment, an expense or a new patient. */
+export function needsPin(url: URL, method: string): boolean {
+  const p = url.pathname.replace(/\/+$/, ""), action = url.searchParams.get("action") || "";
+  if (p === "/clinic/api/finance") return method === "GET" ? !url.searchParams.has("names") : !["pay", "add", "patient"].includes(action);
+  return ["/clinic/api/patients", "/clinic/api/files", "/clinic/api/payments", "/clinic/api/sheet"].includes(p);
+}
+
 /* ---------- dates ---------- */
 
 export const localDay = (d: Date) => new Date(d.getTime() + TZ_OFFSET_MIN * 60000).toISOString().slice(0, 10);
