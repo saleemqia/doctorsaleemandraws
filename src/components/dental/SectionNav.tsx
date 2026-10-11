@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Home, Stethoscope, UserRound, Building2, Images, Instagram, MessageSquareQuote,
-  HelpCircle, ScanLine, Compass, CalendarClock, MapPin, List, X, Mountain, Sparkles } from "lucide-react";
+  HelpCircle, ScanLine, Compass, CalendarClock, MapPin, List, X, Mountain, Sparkles, Newspaper } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 type L = "en" | "ar" | "ku";
@@ -18,6 +18,7 @@ const SECTIONS: { id: string; icon: typeof Home; label: Record<L, string> }[] = 
   { id: "gallery", icon: Images, label: { en: "Before & after", ar: "المعرض", ku: "پێشانگە" } },
   { id: "instagram", icon: Instagram, label: { en: "Instagram", ar: "إنستغرام", ku: "ئینستاگرام" } },
   { id: "testimonials", icon: MessageSquareQuote, label: { en: "Reviews", ar: "آراء المرضى", ku: "بۆچوونێن نەخۆشان" } },
+  { id: "news", icon: Newspaper, label: { en: "Dental news", ar: "أخبار الأسنان", ku: "هەوالێن ددانان" } },
   { id: "faq", icon: HelpCircle, label: { en: "Questions", ar: "الأسئلة", ku: "پسیار" } },
   { id: "more", icon: Compass, label: { en: "Explore more", ar: "المزيد", ku: "زێدەتر" } },
   { id: "hours", icon: CalendarClock, label: { en: "Opening hours", ar: "أوقات الدوام", ku: "دەمێن کاری" } },

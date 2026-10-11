@@ -9,6 +9,7 @@ import BeforeAfter from "@/components/dental/BeforeAfter";
 import InstagramFeed from "@/components/dental/InstagramFeed";
 import Testimonials from "@/components/dental/Testimonials";
 import FAQ from "@/components/dental/FAQ";
+import DentalNews from "@/components/dental/DentalNews";
 import ClinicTour from "@/components/dental/ClinicTour";
 import DigitalDentistry from "@/components/dental/DigitalDentistry";
 import WeeklyHours from "@/components/dental/WeeklyHours";
@@ -78,6 +79,7 @@ const Index = () => {
         <Reveal threshold={0.04}><Gallery /></Reveal>
         <Reveal threshold={0.04}><InstagramFeed /></Reveal>
         <Reveal threshold={0.04}><Testimonials /></Reveal>
+        <Reveal threshold={0.04}><DentalNews /></Reveal>
         <Reveal threshold={0.04}><FAQ /></Reveal>
         <Reveal threshold={0.04}><ExploreMore /></Reveal>
         <Reveal threshold={0.04}><WeeklyHours /></Reveal>
