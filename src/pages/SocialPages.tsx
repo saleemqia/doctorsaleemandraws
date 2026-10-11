@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { ChevronRight, ExternalLink, ArrowRight } from "lucide-react";
 import SubPage from "./SubPage";
@@ -38,12 +37,7 @@ const socialPath = (l: keyof L3, slug: string) => pathFor(l, `/social/${slug}` a
 const dot = (s: SocialInfo) => <span className="inline-block h-3 w-3 shrink-0 rounded-full ring-1 ring-black/10" style={{ background: s.color }} aria-hidden="true" />;
 
 // The account itself, using each network's own embed.
-const Embed = ({ s }: { s: SocialInfo }) => {
-  useEffect(() => {
-    if (s.embed !== "tiktok") return;
-    const old = document.querySelector('script[src="https://www.tiktok.com/embed.js"]'); old?.remove();
-    const js = document.createElement("script"); js.src = "https://www.tiktok.com/embed.js"; js.async = true; document.body.appendChild(js);
-  }, [s.embed]);
+const Embed = ({ s, lang }: { s: SocialInfo; lang: keyof L3 }) => {
   const frame = "mx-auto block w-full rounded-2xl border border-border bg-white";
   if (s.embed === "instagram") {
     const user = s.url.replace(/\/+$/, "").split("/").pop();
@@ -61,11 +55,18 @@ const Embed = ({ s }: { s: SocialInfo }) => {
     );
   }
   if (s.embed === "tiktok") {
-    const user = s.handle.replace("@", "");
+    // TikTok often refuses to show a whole profile on other sites, so single videos use TikTok's own player (ids in social.ts).
+    if (s.videos?.length) return (
+      <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {s.videos.map((v) => <iframe key={v} title={`TikTok ${v}`} src={`https://www.tiktok.com/player/v1/${v}?rel=0`} className="aspect-[9/16] w-full rounded-2xl border border-border bg-black" loading="lazy" allow="encrypted-media; fullscreen" allowFullScreen />)}
+      </div>
+    );
     return (
-      <blockquote className="tiktok-embed mx-auto" cite={s.url} data-unique-id={user} data-embed-type="creator" style={{ maxWidth: 780, minWidth: 288 }}>
-        <section><a target="_blank" rel="noopener noreferrer" href={s.url}>{s.handle}</a></section>
-      </blockquote>
+      <div className="mx-auto flex max-w-sm flex-col items-center rounded-3xl bg-[#111] p-8 text-center text-white">
+        <span className="text-5xl" aria-hidden="true">♪</span>
+        <b className="mt-3 text-2xl" dir="ltr">{s.handle}</b>
+        <p className="mt-2 text-sm text-white/75">{s.text[lang]}</p>
+      </div>
     );
   }
   return (
@@ -140,7 +141,7 @@ export const SocialDetailPage = () => {
             </nav>
           </section>
           <section className="container py-8">
-            <Embed key={s.slug} s={s} />
+            <Embed key={s.slug} s={s} lang={l} />
             <div className="mt-6 flex flex-col items-center gap-2 text-center">
               <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full px-6 py-2.5 font-semibold shadow-sm" style={{ background: s.color, color: s.embed === "snapchat" ? "#000" : "#fff" }}>
                 {TX.open[l]} {s.name} <ExternalLink className="h-4 w-4" />

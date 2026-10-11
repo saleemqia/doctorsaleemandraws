@@ -13,6 +13,7 @@ export interface SocialInfo {
   color: string; // brand colour for the card
   embed: "instagram" | "facebook" | "tiktok" | "youtube" | "snapchat";
   id?: string; // YouTube video id / Snapchat user name
+  videos?: string[]; // TikTok: ids of single videos to play on the page (the number at the end of a video link)
   text: L3;
 }
 
@@ -26,7 +27,7 @@ export const SOCIALS: SocialInfo[] = [
     text: T("News from the clinic, offers and dental tips on our Facebook page.", "أخبار العيادة والعروض ونصائح العناية بالأسنان على صفحتنا في فيسبوك.", "هەوالێن کلینیکێ، ئۆفەر و شیرەتێن ددانان ل سەر پەڕا مە یا فەیسبووکێ."),
   },
   {
-    slug: "tiktok", name: "TikTok", handle: "@salandhana", url: "https://www.tiktok.com/@salandhana", color: "#111111", embed: "tiktok",
+    slug: "tiktok", name: "TikTok", handle: "@salandhana", url: "https://www.tiktok.com/@salandhana", color: "#111111", embed: "tiktok", videos: [],
     text: T("Short videos from Dr. Saleem.", "فيديوهات قصيرة من د. سليم.", "ڤیدیۆیێن کورت ژ د. سەلیم."),
   },
   {
