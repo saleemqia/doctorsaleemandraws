@@ -10,7 +10,7 @@ const FEEDS = [
 ];
 
 // News-Medical and ScienceDaily also carry general medicine under their dentistry tags: keep only dental stories.
-const DENTAL = /(dent|tooth|teeth|oral|gum|gums|gingiv|periodon|enamel|jaw|maxillo|orthodon|implant|caries|cavit|mouth|endodon|root canal|saliva|molar|veneer|bruxism|fluorid|orofacial|craniofacial)/i;
+const DENTAL = /\b(dent|tooth|teeth|oral\b|gum\b|gums\b|gingiv|periodon|enamel|jaw|maxillo|orthodon|implant|caries|cavit|mouth|endodon|root canal|saliva|molar|veneer|bruxism|fluorid|orofacial|craniofacial)/i;
 
 interface Item { title: string; link: string; source: string; kind: string; date: string; excerpt: string }
 
