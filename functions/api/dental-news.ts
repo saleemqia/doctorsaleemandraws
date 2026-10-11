@@ -10,7 +10,7 @@ const FEEDS = [
 ];
 
 // News-Medical and ScienceDaily also carry general medicine under their dentistry tags: keep only dental stories.
-const DENTAL = /dent|tooth|teeth|oral|gum|gingiv|periodon|enamel|jaw|maxillo|orthodon|implant|caries|cavit|mouth|endodon|root canal|saliva|molar|crown|veneer|bruxism|fluorid|plaque|orofacial|craniofacial/i;
+const DENTAL = /(dent|tooth|teeth|oral|gum|gums|gingiv|periodon|enamel|jaw|maxillo|orthodon|implant|caries|cavit|mouth|endodon|root canal|saliva|molar|veneer|bruxism|fluorid|orofacial|craniofacial)/i;
 
 interface Item { title: string; link: string; source: string; kind: string; date: string; excerpt: string }
 
@@ -35,7 +35,7 @@ function parse(xml: string, f: (typeof FEEDS)[number]): Item[] {
 }
 
 export const onRequestGet: PagesFunction = async ({ request, waitUntil }) => {
-  const cache = (caches as unknown as { default: Cache }).default, key = new Request(new URL("/api/dental-news?v=3", request.url).toString());
+  const cache = (caches as unknown as { default: Cache }).default, key = new Request(new URL("/api/dental-news?v=4", request.url).toString());
   const hit = await cache.match(key); if (hit) return hit;
   const lists = await Promise.all(FEEDS.map(async (f) => {
     try { const r = await fetch(f.url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; doctorsaleem.com news reader)", Accept: "application/rss+xml, application/xml, text/xml, */*" }, cf: { cacheTtl: 1800 } } as RequestInit); return r.ok ? parse(await r.text(), f) : []; } catch { return []; }
