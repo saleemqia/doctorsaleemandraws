@@ -40,9 +40,14 @@ const structuredData = (lang: SeoLanguage, page: SitePage) => {
   return out;
 };
 
+// Old addresses Google still knows (e.g. /home/ from the previous site) go to the right page instead of showing a copy of it.
+const OLD: Record<string, string> = { "/home": "/", "/ar/home": "/ar", "/ku/home": "/ku", "/index.html": "/" };
+
 export const onRequest: PagesFunction = async ({ request, next }) => {
-  const res = await next();
   const url = new URL(request.url);
+  const old = OLD[url.pathname.replace(/\/+$/, "") || "/"];
+  if (old && request.method === "GET") return Response.redirect(`${url.origin}${old}`, 301);
+  const res = await next();
   const parsed = request.method === "GET" ? parsePath(url.pathname) : null;
   if (!parsed || !(res.headers.get("Content-Type") || "").includes("text/html")) return res;
 
