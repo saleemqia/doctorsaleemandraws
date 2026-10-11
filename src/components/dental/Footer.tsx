@@ -12,7 +12,7 @@ const Footer = () => {
 
   const navLinks = [
     { key: "home", href: "#home" },
-    { key: "services", href: "#services" },
+    { key: "services", href: "/services" },
     { key: "about", href: "#about" },
     { key: "gallery", href: "#gallery" },
     { key: "instagram", href: "#instagram" },

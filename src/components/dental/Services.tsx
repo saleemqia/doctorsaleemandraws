@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PHONES } from "@/config/clinic";
 import Reveal from "@/components/dental/Reveal";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { pathFor, servicePath } from "@/config/seo";
 
 // Import service images
 import teethWhiteningImg from "@/assets/services/teeth-whitening.jpg";
@@ -21,55 +22,67 @@ interface ServicesProps {
 }
 
 const Services = ({ onBookingClick }: ServicesProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const MORE = { en: "Read more about this treatment", ar: "اقرأ المزيد عن هذا العلاج", ku: "زێدەتر دەربارەی ڤێ چارەسەریێ" };
+  const ALL = { en: "All services", ar: "كل الخدمات", ku: "هەمی خزمەتگوزاری" };
   const [open, setOpen] = useState(0);
 
   const services = [
     {
       image: teethWhiteningImg,
       faq: "faq.a10",
+      slug: "teeth-whitening",
       titleKey: "services.teethWhitening",
       descKey: "services.teethWhiteningDesc",
     },
     {
       image: dentalImplantsImg,
       faq: "faq.a8",
+      slug: "dental-implants",
       titleKey: "services.dentalImplants",
       descKey: "services.dentalImplantsDesc",
     },
     {
       image: cosmeticDentistryImg,
       faq: "faq.a9",
+      slug: "veneers-hollywood-smile",
       titleKey: "services.cosmeticDentistry",
       descKey: "services.cosmeticDentistryDesc",
     },
     {
       image: rootCanalImg,
       faq: "faq.a11",
+      slug: "root-canal-fillings",
       titleKey: "services.rootCanal",
       descKey: "services.rootCanalDesc",
     },
     {
       image: orthodonticsImg,
       faq: "faq.a17",
+      slug: "orthodontics-braces",
       titleKey: "services.orthodontics",
       descKey: "services.orthodonticsDesc",
     },
     {
       image: oralRadiologyImg,
       faq: "faq.a4",
+      slug: "",
+      page: "/case",
       titleKey: "services.oralRadiology",
       descKey: "services.oralRadiologyDesc",
     },
     {
       image: dentalCleaningImg,
       faq: "faq.a16",
+      slug: "dental-cleaning",
       titleKey: "services.dentalCleaning",
       descKey: "services.dentalCleaningDesc",
     },
     {
       image: pediatricDentistryImg,
       faq: "faq.a6",
+      slug: "",
+      page: "/kids",
       titleKey: "services.pediatricDentistry",
       descKey: "services.pediatricDentistryDesc",
     },
@@ -154,6 +167,9 @@ const Services = ({ onBookingClick }: ServicesProps) => {
                       </a>
                     </Button>
                   </div>
+                  <a href={cur.slug ? servicePath(language, cur.slug) : pathFor(language, cur.page === "/case" ? "/case" : "/kids")} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                    {MORE[language]} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+                  </a>
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -162,7 +178,10 @@ const Services = ({ onBookingClick }: ServicesProps) => {
 
         {/* The names patients actually search for */}
         <div className="mt-12 rounded-3xl bg-secondary/70 p-6 md:p-8">
-          <h3 className="mb-3 text-base font-semibold">{t("services.allTitle")}</h3>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-base font-semibold">{t("services.allTitle")}</h3>
+            <a href={pathFor(language, "/services")} className="rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground">{ALL[language]}</a>
+          </div>
           <ul className="flex flex-wrap gap-2 text-sm">
             {t("services.allList").split("|").map((name) => (
               <li key={name} className="rounded-full border border-border bg-white px-3 py-1 text-foreground">{name}</li>

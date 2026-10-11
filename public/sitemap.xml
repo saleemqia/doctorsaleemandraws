@@ -147,4 +147,220 @@
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/services</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ar/services</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ku/services</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/services/dental-implants</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/dental-implants" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/dental-implants" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/dental-implants" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ar/services/dental-implants</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/dental-implants" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/dental-implants" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/dental-implants" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ku/services/dental-implants</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/dental-implants" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/dental-implants" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/dental-implants" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/services/veneers-hollywood-smile</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/veneers-hollywood-smile" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/veneers-hollywood-smile" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/veneers-hollywood-smile" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ar/services/veneers-hollywood-smile</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/veneers-hollywood-smile" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/veneers-hollywood-smile" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/veneers-hollywood-smile" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ku/services/veneers-hollywood-smile</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/veneers-hollywood-smile" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/veneers-hollywood-smile" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/veneers-hollywood-smile" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/services/teeth-whitening</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/teeth-whitening" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/teeth-whitening" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/teeth-whitening" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ar/services/teeth-whitening</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/teeth-whitening" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/teeth-whitening" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/teeth-whitening" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ku/services/teeth-whitening</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/teeth-whitening" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/teeth-whitening" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/teeth-whitening" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/services/root-canal-fillings</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/root-canal-fillings" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/root-canal-fillings" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/root-canal-fillings" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ar/services/root-canal-fillings</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/root-canal-fillings" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/root-canal-fillings" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/root-canal-fillings" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ku/services/root-canal-fillings</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/root-canal-fillings" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/root-canal-fillings" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/root-canal-fillings" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/services/crowns-bridges-dentures</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/crowns-bridges-dentures" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/crowns-bridges-dentures" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/crowns-bridges-dentures" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ar/services/crowns-bridges-dentures</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/crowns-bridges-dentures" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/crowns-bridges-dentures" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/crowns-bridges-dentures" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ku/services/crowns-bridges-dentures</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/crowns-bridges-dentures" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/crowns-bridges-dentures" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/crowns-bridges-dentures" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/services/orthodontics-braces</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/orthodontics-braces" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/orthodontics-braces" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/orthodontics-braces" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ar/services/orthodontics-braces</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/orthodontics-braces" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/orthodontics-braces" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/orthodontics-braces" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ku/services/orthodontics-braces</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/orthodontics-braces" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/orthodontics-braces" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/orthodontics-braces" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/services/dental-cleaning</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/dental-cleaning" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/dental-cleaning" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/dental-cleaning" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ar/services/dental-cleaning</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/dental-cleaning" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/dental-cleaning" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/dental-cleaning" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ku/services/dental-cleaning</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/dental-cleaning" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/dental-cleaning" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/dental-cleaning" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/services/tooth-extraction</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/tooth-extraction" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/tooth-extraction" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/tooth-extraction" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ar/services/tooth-extraction</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/tooth-extraction" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/tooth-extraction" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/tooth-extraction" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.doctorsaleem.com/ku/services/tooth-extraction</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.doctorsaleem.com/services/tooth-extraction" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.doctorsaleem.com/ar/services/tooth-extraction" />
+    <xhtml:link rel="alternate" hreflang="ku" href="https://www.doctorsaleem.com/ku/services/tooth-extraction" />
+    <lastmod>2026-10-11</lastmod>
+    <priority>0.8</priority>
+  </url>
 </urlset>

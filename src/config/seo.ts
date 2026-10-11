@@ -1,3 +1,5 @@
+import { SERVICES, serviceBySlug } from "./services";
+
 // Search-engine settings for each language version of the home page.
 // Each language has its own address (/, /ar, /ku) so Google can index all three.
 
@@ -37,8 +39,10 @@ export const SEO: Record<SeoLanguage, { title: string; description: string; loca
 
 // Pages of the site. "" is the home page; the others are sub-pages, each in 3 languages:
 // /case, /ar/case, /ku/case and /kids, /ar/kids, /ku/kids.
-export type SitePage = "" | "/case" | "/kids" | "/treatments" | "/infographics" | "/news";
-export const PAGES: SitePage[] = ["", "/case", "/kids", "/treatments", "/infographics", "/news"];
+// "/services" lists all treatments; "/services/<slug>" is one treatment (see services.ts).
+export type BasePage = "" | "/case" | "/kids" | "/treatments" | "/infographics" | "/news" | "/services";
+export type SitePage = BasePage | `/services/${string}`;
+export const PAGES: SitePage[] = ["", "/case", "/kids", "/treatments", "/infographics", "/news", "/services", ...SERVICES.map((s) => `/services/${s.slug}` as SitePage)];
 
 export const parsePath = (pathname: string): { lang: SeoLanguage; page: SitePage } | null => {
   let lang: SeoLanguage = "en";
@@ -49,6 +53,9 @@ export const parsePath = (pathname: string): { lang: SeoLanguage; page: SitePage
   return (PAGES as string[]).includes(rest) ? { lang, page: rest as SitePage } : null;
 };
 
+// Treatment page address for a language: servicePath("ar", "dental-implants") = "/ar/services/dental-implants".
+export const servicePath = (lang: SeoLanguage, slug: string) => pathFor(lang, `/services/${slug}`);
+
 // Address of a page in a language: pathFor("ar", "/case") = "/ar/case", pathFor("en", "") = "/".
 export const pathFor = (lang: SeoLanguage, page: SitePage = "") =>
   lang === "en" ? page || "/" : `/${lang}${page}`;
@@ -57,7 +64,21 @@ export const pageUrl = (lang: SeoLanguage, page: SitePage = "") => `${SITE}${pat
 
 export const languageFromPath = (pathname: string): SeoLanguage | null => parsePath(pathname)?.lang ?? null;
 
-export const PAGE_SEO: Record<"/case" | "/kids" | "/treatments" | "/infographics" | "/news", Record<SeoLanguage, { title: string; description: string }>> = {
+type PageText = Record<SeoLanguage, { title: string; description: string }>;
+
+// Title and description of any sub-page (fixed pages below, plus one per treatment from services.ts).
+export const pageSeo = (page: Exclude<SitePage, "">): PageText => {
+  const svc = page.startsWith("/services/") ? serviceBySlug(page.slice(10)) : undefined;
+  if (svc) return { en: { title: svc.title.en, description: svc.description.en }, ar: { title: svc.title.ar, description: svc.description.ar }, ku: { title: svc.title.ku, description: svc.description.ku } };
+  return PAGE_SEO[page as Exclude<BasePage, "">];
+};
+
+export const PAGE_SEO: Record<Exclude<BasePage, "">, PageText> = {
+  "/services": {
+    en: { title: "Dental Services in Duhok: Implants, Veneers, Braces, Root Canal | Dr. Saleem Andraws", description: "All treatments at Dr. Saleem Andraws Dental Clinic in Duhok: dental implants, veneers and Hollywood smile, whitening, root canal and fillings, zircon and E-max crowns, bridges and dentures, braces, cleaning and extraction." },
+    ar: { title: "خدمات طب الأسنان في دهوك: زراعة، فينير، تقويم، حشو عصب | د. سليم أندراوس", description: "جميع علاجات عيادة د. سليم أندراوس لطب الأسنان في دهوك: زراعة الأسنان، فينير وابتسامة هوليود، تبييض، حشو العصب والحشوات، تيجان زركون وإيماكس، جسور وطقم أسنان، تقويم، تنظيف وقلع." },
+    ku: { title: "خزمەتگوزاریێن ددانا ل دهوکێ: چاندن، ڤینیر، تقویم، حەشوا دەمارێ | د. سەلیم ئەندراوس", description: "هەمی چارەسەریێن کلینیکا د. سەلیم ئەندراوس ل دهوکێ: چاندنا ددانا، ڤینیر و بزەیا هۆلیوود، سپیکرن، حەشوا دەمارێ و حەشو، کراسێن زیرکۆن و ئیماکس، جسر و تەخم، تقویم، پاقژکرن و هەلکێشان." },
+  },
   "/news": {
     en: { title: "Dental News & New Techniques in Dentistry | Dr. Saleem Andraws, Duhok", description: "Daily headlines about new dental techniques, technology and research, collected from trusted dental news sites, from a dentist in Duhok." },
     ar: { title: "أخبار طب الأسنان وأحدث التقنيات | د. سليم أندراوس، دهوك", description: "عناوين يومية عن تقنيات طب الأسنان وتطوراته وأبحاثه من مواقع إخبارية موثوقة، مع عيادة د. سليم أندراوس في دهوك." },
@@ -92,7 +113,7 @@ const setMeta = (selector: string, attr: "content" | "href", value: string) => {
 
 // Keeps the browser tab title, description and canonical link in sync with the shown language.
 export const applySeo = (lang: SeoLanguage, page: SitePage = "") => {
-  const s = page ? { ...SEO[lang], ...PAGE_SEO[page][lang] } : SEO[lang];
+  const s = page ? { ...SEO[lang], ...pageSeo(page)[lang] } : SEO[lang];
   document.title = s.title;
   setMeta('meta[name="description"]', "content", s.description);
   setMeta('meta[property="og:title"]', "content", s.title);

@@ -12,6 +12,7 @@ import KidsPage from "./pages/KidsPage";
 import TreatmentsPage from "./pages/TreatmentsPage";
 import InfographicsPage from "./pages/InfographicsPage";
 import NewsPage from "./pages/NewsPage";
+import { ServicesIndexPage, ServiceDetailPage } from "./pages/ServicePages";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
@@ -35,6 +36,8 @@ const App = () => (
                 <Route key={`${p}/kids`} path={`${p}/kids`} element={<KidsPage />} />,
                 <Route key={`${p}/treatments`} path={`${p}/treatments`} element={<TreatmentsPage />} />,
                 <Route key={`${p}/news`} path={`${p}/news`} element={<NewsPage />} />,
+                <Route key={`${p}/services`} path={`${p}/services`} element={<ServicesIndexPage />} />,
+                <Route key={`${p}/services/:slug`} path={`${p}/services/:slug`} element={<ServiceDetailPage />} />,
                 <Route key={`${p}/infographics`} path={`${p}/infographics`} element={<InfographicsPage />} />,
               ])}
               <Route path="/login" element={<Login />} />
