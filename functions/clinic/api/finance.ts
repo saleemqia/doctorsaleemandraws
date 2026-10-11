@@ -38,9 +38,17 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       `SELECT CAST(substr(sheet,6,2) AS INTEGER) AS m, category, coalesce(sum(amount_iqd),0) AS iqd, coalesce(sum(amount_usd),0) AS usd
        FROM expenses WHERE sheet LIKE ? GROUP BY m, category`,
     ).bind(like).all<{ m: number; category: string; iqd: number; usd: number }>();
+    const full = url.searchParams.get("full") === "1";
     const { results: list } = await env.DB.prepare(
-      "SELECT id, sheet, category, day, amount_iqd, amount_usd, description, receipt, (src LIKE 'm:%') AS manual FROM expenses WHERE sheet LIKE ? ORDER BY day DESC, id DESC LIMIT 600",
+      `SELECT id, sheet, category, day, amount_iqd, amount_usd, description, receipt, (src LIKE 'm:%') AS manual FROM expenses WHERE sheet LIKE ? ORDER BY day DESC, id DESC LIMIT ${full ? 5000 : 600}`,
     ).bind(like).all();
+    let payrows: unknown[] = [], othrows: unknown[] = [];
+    if (full) {
+      payrows = (await env.DB.prepare(
+        "SELECT sheet, name, day, paid_iqd, paid_usd, due_iqd, due_usd, work, notes FROM payments WHERE sheet LIKE ? ORDER BY sheet, day, id LIMIT 20000",
+      ).bind(like).all()).results;
+      othrows = (await env.DB.prepare("SELECT sheet, label, day, amount_iqd, amount_usd FROM other_income WHERE sheet LIKE ? ORDER BY sheet, id").bind(like).all()).results;
+    }
     const { results: pays } = await env.DB.prepare(
       "SELECT id, name, day, paid_iqd, paid_usd, due_iqd, due_usd, work FROM payments WHERE src LIKE 'm:%' ORDER BY id DESC LIMIT 25",
     ).all();
@@ -63,9 +71,14 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       const c = (cats[r.category] ||= { iqd: Array(12).fill(0), usd: Array(12).fill(0) });
       c.iqd[r.m - 1] += r.iqd; c.usd[r.m - 1] += r.usd;
     }
-    return json({ ok: true, year, years, months, cats, expenses: list, pays, works });
+    return json({ ok: true, year, years, months, cats, expenses: list, pays, works, payrows, othrows });
   } catch (e) { return json({ ok: false, error: String((e as Error)?.message || e) }, 500); }
 };
+
+const cleanPhone = (v: unknown) => String(v || "").replace(/[٠-٩]/g, (c) => String("٠١٢٣٤٥٦٧٨٩".indexOf(c))).replace(/[^\d+]/g, "").slice(0, 16);
+// A phone typed here is kept on the card only when the card has none yet (calendar phones and the owner's edits win).
+const setPhone = (env: Env, key: string, phone: string) =>
+  env.DB.prepare("UPDATE patients SET phone_override = ?2 WHERE key = ?1 AND coalesce(phone_override, '') = '' AND coalesce(phones, '') = ''").bind(key, phone);
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   try {
@@ -111,19 +124,35 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       const name = String(body.name || "").trim().slice(0, 120), day = String(body.day || "");
       const paidI = num(body.paid_iqd), paidU = num(body.paid_usd), dueI = num(body.due_iqd), dueU = num(body.due_usd);
       const key = patientKey(name);
+      const phone = cleanPhone(body.phone);
       if (!name || key.startsWith("#") || !/^\d{4}-\d{2}-\d{2}$/.test(day)) return json({ ok: false, error: "أدخل اسم المريض والتاريخ" }, 400);
       if (![paidI, paidU, dueI, dueU].some((v) => (v || 0) !== 0)) return json({ ok: false, error: "أدخل مبلغًا مدفوعًا أو متبقيًا" }, 400);
       const known = await env.DB.prepare("SELECT key FROM patients WHERE key = ?").bind(key).first();
       const stmts = [env.DB.prepare(
         `INSERT INTO payments (src, sheet, patient_key, name, day, paid_iqd, paid_usd, due_iqd, due_usd, work, notes, phone, matched) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       ).bind("m:" + Date.now() + Math.random().toString(36).slice(2, 6), day.slice(0, 7), key, name, day, paidI, paidU, dueI, dueU,
-        String(body.work || "").slice(0, 300), String(body.notes || "").slice(0, 300), "", "manual")];
+        String(body.work || "").slice(0, 300), String(body.notes || "").slice(0, 300), phone, "manual")];
       if (!known) stmts.push(env.DB.prepare(
         "INSERT OR IGNORE INTO patients (key, no) SELECT ?1, (SELECT coalesce(max(no), 10000) + 1 FROM patients) WHERE NOT EXISTS (SELECT 1 FROM patients WHERE key = ?1)",
       ).bind(key));
+      if (phone) stmts.push(setPhone(env, key, phone));
       await env.DB.batch(stmts);
       if (!known) await setSetting(env, "stats_dirty", "1");
       return json({ ok: true, newCard: !known });
+    }
+    if (action === "patient") {                       // a new patient card without a payment
+      const name = String(body.name || "").trim().slice(0, 120), key = patientKey(name), phone = cleanPhone(body.phone);
+      if (!name || key.startsWith("#")) return json({ ok: false, error: "اكتب اسم المريض" }, 400);
+      const known = await env.DB.prepare("SELECT key, no FROM patients WHERE key = ?").bind(key).first<{ key: string; no: number }>();
+      const stmts = [env.DB.prepare(
+        "INSERT OR IGNORE INTO patients (key, no) SELECT ?1, (SELECT coalesce(max(no), 10000) + 1 FROM patients) WHERE NOT EXISTS (SELECT 1 FROM patients WHERE key = ?1)",
+      ).bind(key)];
+      if (!known) stmts.push(env.DB.prepare("UPDATE patients SET display_name = ?2 WHERE key = ?1").bind(key, name));
+      if (phone) stmts.push(setPhone(env, key, phone));
+      await env.DB.batch(stmts);
+      const row = await env.DB.prepare("SELECT no FROM patients WHERE key = ?").bind(key).first<{ no: number }>();
+      await setSetting(env, "stats_dirty", "1");
+      return json({ ok: true, newCard: !known, no: row?.no });
     }
     if (action === "paydel") {
       await env.DB.prepare("DELETE FROM payments WHERE id = ? AND src LIKE 'm:%'").bind(Number(body.id)).run();

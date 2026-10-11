@@ -1226,8 +1226,8 @@ async function loadFin() {
     const res = await fetch(`/clinic/api/finance?year=${finYear}`, { cache: "no-store" }); const d = await res.json();
     if (!d.ok) throw new Error(d.error); finYear = d.year;
     $("finYears").innerHTML = (d.years.length ? d.years : [d.year]).map((y) => `<button class="${y === d.year ? "on" : ""}" data-y="${y}">${y}</button>`).join("") +
-      `<button class="${finCur === "iqd" ? "on" : ""}" data-c="iqd" style="margin-inline-start:auto">دينار</button><button class="${finCur === "usd" ? "on" : ""}" data-c="usd">دولار $</button>`;
-    renderFin(d);
+      `<button class="${finCur === "iqd" ? "on" : ""}" data-c="iqd" style="margin-inline-start:auto">دينار</button><button class="${finCur === "usd" ? "on" : ""}" data-c="usd">دولار $</button><button data-x="1" title="ملف Excel بنفس شكل ملف السنة">⬇ تصدير Excel</button>`;
+    renderFin(d); qeAppts();
   } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر تحميل الحسابات: ${esc(e.message || e)}</div>`; }
 }
 function monthlySummary(d, c, inc, exp, net) {
@@ -1263,13 +1263,15 @@ function renderFin(d) {
     ${best >= 0 ? `<p class="note">⭐ أفضل شهر: <b>${MN_AR[best]}</b> (${fm(net[best], c)}) · ⚠️ أضعف شهر: <b>${MN_AR[worst]}</b> (${fm(net[worst], c)})</p>` : `<div class="empty">لا توجد بيانات لسنة ${d.year}. ارفع ملف الحسابات من الأعلى.</div>`}
     ${monthlySummary(d, c, inc, exp, net)}
     <div class="cbox qe"><h3>➕ إدخال سريع</h3>
-      <div class="chips" id="qeTabs"><button class="${qeMode === "pay" ? "on" : ""}" data-m="pay" type="button">💵 دفعة مريض</button><button class="${qeMode === "exp" ? "on" : ""}" data-m="exp" type="button">📉 مصروف</button></div>
+      <div class="chips" id="qeTabs"><button class="${qeMode === "pay" ? "on" : ""}" data-m="pay" type="button">💵 دفعة مريض</button><button class="${qeMode === "exp" ? "on" : ""}" data-m="exp" type="button">📉 مصروف</button><button class="${qeMode === "pt" ? "on" : ""}" data-m="pt" type="button">👤 مريض جديد</button></div>
       ${qeMode === "pay" ? `<form id="pForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
+        <div class="qa" id="qeAppts" style="grid-column:1/-1"></div>
         <label>اسم المريض<input name="name" list="pnames" required autocomplete="off" placeholder="ابدأ بكتابة الاسم"><datalist id="pnames"></datalist></label>
         <label>المدفوع (دينار)<input name="paid_iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>المدفوع ($)<input name="paid_usd" type="number" inputmode="decimal" min="0" step="any"></label>
         <label>المتبقي (دينار)<input name="due_iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>المتبقي ($)<input name="due_usd" type="number" inputmode="decimal" min="0" step="any"></label>
-        <label>العمل المنجز<input name="work" placeholder="حشوة، تنظيف…"></label><label>ملاحظات<input name="notes"></label><button class="btn pri">حفظ الدفعة</button></form>
+        <label>العمل المنجز<input name="work" placeholder="حشوة، تنظيف…"></label><label>ملاحظات<input name="notes"></label><label>هاتف المريض (اختياري)<input name="phone" type="tel" inputmode="tel" dir="ltr"></label><button class="btn pri">حفظ الدفعة</button></form>
         <p class="note" id="qMsg">تظهر الدفعة فورًا في بطاقة المريض والرسوم البيانية. هذه الدفعات تبقى محفوظة ولا يمحوها تحديث الجدول، فلا تكتب نفس الدفعة في الجدول أيضًا.</p>`
+      : qeMode === "pt" ? `<form id="ptForm" class="xf"><label>اسم المريض<input name="name" required autocomplete="off"></label><label>الهاتف<input name="phone" type="tel" inputmode="tel" dir="ltr" placeholder="0750…"></label><button class="btn pri">حفظ المريض</button></form><p class="note" id="ptMsg">تُنشأ بطاقة للمريض فورًا، وتظهر مواعيده من التقويم ودفعاته فيها عندما يتطابق الاسم.</p>`
       : `<form id="xForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
         <label>النوع<input name="category" list="xcats" required placeholder="كهرباء، مختبر…"><datalist id="xcats">${["كهرباء", "إيجار", "راتب المساعدة", "مواد طبية", "المختبر", "إنترنت", "أخرى", ...cats].map((k) => `<option value="${esc(k)}">`).join("")}</datalist></label>
         <label>بالدينار<input name="iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>بالدولار<input name="usd" type="number" inputmode="decimal" min="0" step="any"></label>
@@ -1285,14 +1287,103 @@ function renderFin(d) {
     ${cats.length ? `<div class="cbox"><h3>المصاريف حسب النوع والشهر</h3><div class="tw"><table class="ftab"><thead><tr><th>Category</th>${MN_EN.map((m) => `<th>${m}</th>`).join("")}<th>Total</th></tr></thead><tbody>${cats.map((k) => `<tr><td>${esc(k)}</td>${d.cats[k][c].map((v) => `<td>${v ? Math.round(v).toLocaleString("en-US") : ""}</td>`).join("")}<td><b>${Math.round(sum(d.cats[k][c])).toLocaleString("en-US")}</b></td></tr>`).join("")}</tbody></table></div></div>` : ""}
     <div class="cbox"><h3>سجل المصاريف (${d.expenses.length})</h3>${d.expenses.length ? d.expenses.map((x) => `<div class="xrow"><div>${esc(x.category)} <small>· ${esc(x.day)}${x.description ? " · " + esc(x.description) : ""}${x.manual ? " · يدوي" : ""}</small></div><span><b>${x.amount_iqd ? fm(x.amount_iqd, "iqd") : ""}${x.amount_iqd && x.amount_usd ? " + " : ""}${x.amount_usd ? fm(x.amount_usd, "usd") : ""}</b> <button data-del="${x.id}" title="حذف">✕</button></span></div>`).join("") : `<p class="note">لا توجد مصاريف مسجّلة.</p>`}</div>`;
 }
-$("finYears").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; if (b.dataset.y) finYear = b.dataset.y; if (b.dataset.c) finCur = b.dataset.c; loadFin(); });
+
+/* ---------- export the year as an Excel workbook in the same layout as the 2026 file ---------- */
+const MN_FULL = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+let xjsLib; const loadXjs = () => xjsLib || (xjsLib = new Promise((ok, bad) => { if (window.ExcelJS) return ok(window.ExcelJS); const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"; s.onload = () => ok(window.ExcelJS); s.onerror = () => { xjsLib = null; bad(new Error("تعذّر تحميل مكتبة Excel، تحقق من الإنترنت")); }; document.head.appendChild(s); }));
+async function exportYear(btn) {
+  const old = btn.textContent; btn.disabled = true; btn.textContent = "جارٍ التجهيز…";
+  try {
+    const [E, d] = await Promise.all([loadXjs(), fetch(`/clinic/api/finance?year=${finYear}&full=1`, { cache: "no-store" }).then((r) => r.json())]);
+    if (!d.ok) throw new Error(d.error || "تعذّر جلب البيانات");
+    const Y = d.year, NAVY = "FF13285C", LIGHT = "FFE7EEF9", LINE = { style: "thin", color: { argb: "FFB9C4D8" } }, BOX = { top: LINE, left: LINE, bottom: LINE, right: LINE };
+    const wb = new E.Workbook(); wb.creator = "Dr. Saleem Andraws Dental Clinic";
+    const dash = wb.addWorksheet("Annual Dashboard"); const info = [];
+    const head = (row, n) => { for (let c = 1; c <= n; c++) { const x = row.getCell(c); x.font = { bold: true, color: { argb: "FFFFFFFF" } }; x.fill = { type: "pattern", pattern: "solid", fgColor: { argb: NAVY } }; x.alignment = { horizontal: "center", vertical: "middle", wrapText: true }; x.border = BOX; } row.height = 32; };
+    const title = (ws, row, text, n) => { ws.mergeCells(row, 1, row, n); const c = ws.getCell(row, 1); c.value = text; c.font = { bold: true, size: 15, color: { argb: NAVY } }; };
+    const dayDate = (s) => { const [y, m, dd] = String(s).split("-").map(Number); return y ? new Date(Date.UTC(y, m - 1, dd)) : null; };
+    for (let m = 1; m <= 12; m++) {
+      const sh = `${Y}-${String(m).padStart(2, "0")}`, ws = wb.addWorksheet(MN_FULL[m - 1]); ws.views = [{ state: "frozen", ySplit: 4 }];
+      ws.columns = [{ width: 30 }, { width: 13 }, { width: 14 }, { width: 14 }, { width: 14 }, { width: 14 }, { width: 34 }, { width: 28 }];
+      title(ws, 1, `🏥  Dental Clinic  —  ${MN_FULL[m - 1]} ${Y}  —  Financial Tracker`, 8); title(ws, 3, "💰  PATIENT INCOME", 8);
+      const h = ws.getRow(4); h.values = ["Patient Name", "Date", "Payment Done\n(IQD)", "Payment Done\n(USD)", "Payment Due\n(IQD)", "Payment Due\n(USD)", "Work Done", "Notes"]; head(h, 8);
+      const rows = [...d.payrows.filter((r) => r.sheet === sh).map((r) => [r.name, r.day, r.paid_iqd, r.paid_usd, r.due_iqd, r.due_usd, r.work, r.notes]),
+        ...d.othrows.filter((r) => r.sheet === sh).map((r) => [r.label || "(إيراد آخر)", r.day, r.amount_iqd, r.amount_usd, 0, 0, "", ""])];
+      const N = Math.max(120, rows.length), T = 5 + N; let tot = [0, 0, 0, 0];
+      for (let i = 0; i < N; i++) {
+        const r = rows[i], row = ws.getRow(5 + i);
+        if (r) { row.values = [r[0] || "", r[1] ? dayDate(r[1]) : null, r[2] || 0, r[3] || 0, r[4] || 0, r[5] || 0, r[6] || "", r[7] || ""]; for (let k = 0; k < 4; k++) tot[k] += +r[2 + k] || 0; }
+        for (let c = 1; c <= 8; c++) { const x = row.getCell(c); x.border = BOX; if (c === 2) x.numFmt = "yyyy-mm-dd"; if (c >= 3 && c <= 6) x.numFmt = "#,##0"; }
+      }
+      const tr = ws.getRow(T); tr.getCell(1).value = "TOTAL INCOME";
+      ["C", "D", "E", "F"].forEach((L, k) => { tr.getCell(L).value = { formula: `SUM(${L}5:${L}${T - 1})`, result: tot[k] }; tr.getCell(L).numFmt = "#,##0"; });
+      for (let c = 1; c <= 8; c++) { const x = tr.getCell(c); x.font = { bold: true }; x.fill = { type: "pattern", pattern: "solid", fgColor: { argb: LIGHT } }; x.border = BOX; }
+      const X0 = T + 2; title(ws, X0, "📉  MONTHLY EXPENDITURES", 8);
+      const xh = ws.getRow(X0 + 1); xh.values = ["Category", "Date", "Amount\n(IQD)", "Amount\n(USD)", "Description", "Receipt #"]; head(xh, 6);
+      const ex = d.expenses.filter((r) => r.sheet === sh).sort((a, b) => String(a.day).localeCompare(b.day) || a.id - b.id), XN = Math.max(10, ex.length); let et = [0, 0];
+      for (let i = 0; i < XN; i++) {
+        const r = ex[i], row = ws.getRow(X0 + 2 + i);
+        if (r) { row.values = [r.category, dayDate(r.day), r.amount_iqd || 0, r.amount_usd || 0, r.description || "", r.receipt || ""]; et[0] += +r.amount_iqd || 0; et[1] += +r.amount_usd || 0; }
+        for (let c = 1; c <= 6; c++) { const x = row.getCell(c); x.border = BOX; if (c === 2) x.numFmt = "yyyy-mm-dd"; if (c === 3 || c === 4) x.numFmt = "#,##0"; }
+      }
+      const XT = X0 + 2 + XN, xt = ws.getRow(XT); xt.getCell(1).value = "TOTAL EXPENDITURES";
+      ["C", "D"].forEach((L, k) => { xt.getCell(L).value = { formula: `SUM(${L}${X0 + 2}:${L}${XT - 1})`, result: et[k] }; xt.getCell(L).numFmt = "#,##0"; });
+      for (let c = 1; c <= 6; c++) { const x = xt.getCell(c); x.font = { bold: true }; x.fill = { type: "pattern", pattern: "solid", fgColor: { argb: LIGHT } }; x.border = BOX; }
+      const S0 = XT + 2; title(ws, S0, "📊  FINANCIAL SUMMARY", 8);
+      const sm = ws.getRow(S0 + 1); sm.getCell(1).value = "Metric"; sm.getCell(5).value = "Amount (IQD)"; sm.getCell(7).value = "Amount (USD)"; head(sm, 8);
+      const lines = [["💵  Total Income", `C${T}`, `D${T}`, tot[0], tot[1]], ["📉  Total Expenditures", `C${XT}`, `D${XT}`, et[0], et[1]],
+        ["📈  Net Monthly Income", `C${T}-C${XT}`, `D${T}-D${XT}`, tot[0] - et[0], tot[1] - et[1]], ["⏳  Total Outstanding", `E${T}`, `F${T}`, tot[2], tot[3]]];
+      lines.forEach((l, i) => { const r = ws.getRow(S0 + 2 + i); r.getCell(1).value = l[0]; r.getCell(5).value = { formula: l[1], result: l[3] }; r.getCell(7).value = { formula: l[2], result: l[4] }; r.getCell(5).numFmt = r.getCell(7).numFmt = "#,##0"; r.font = { bold: i === 2 }; });
+      info.push({ name: MN_FULL[m - 1], T, XT, tot, et });
+    }
+    dash.columns = [{ width: 16 }, ...Array(8).fill({ width: 16 })];
+    title(dash, 1, `🏥  DENTAL CLINIC  —  ANNUAL DASHBOARD  —  ${Y}`, 9);
+    dash.getCell("A2").value = "Yearly overview — values come from the monthly sheets"; dash.getCell("A2").font = { italic: true, color: { argb: "FF5B6B85" } };
+    title(dash, 4, "📊  YEARLY INCOME & EXPENDITURE SUMMARY", 9);
+    const dh = dash.getRow(5); dh.values = ["Month", "Income\n(IQD)", "Income\n(USD)", "Expenditure\n(IQD)", "Expenditure\n(USD)", "Net Income\n(IQD)", "Net Income\n(USD)", "Outstanding\n(IQD)", "Outstanding\n(USD)"]; head(dh, 9);
+    const sum9 = Array(8).fill(0);
+    info.forEach((x, i) => {
+      const r = dash.getRow(6 + i), q = `'${x.name}'!`, v = [x.tot[0], x.tot[1], x.et[0], x.et[1], x.tot[0] - x.et[0], x.tot[1] - x.et[1], x.tot[2], x.tot[3]];
+      r.getCell(1).value = x.name;
+      const F = [`${q}C${x.T}`, `${q}D${x.T}`, `${q}C${x.XT}`, `${q}D${x.XT}`, `B${6 + i}-D${6 + i}`, `C${6 + i}-E${6 + i}`, `${q}E${x.T}`, `${q}F${x.T}`];
+      F.forEach((f, k) => { r.getCell(2 + k).value = { formula: f, result: v[k] }; r.getCell(2 + k).numFmt = "#,##0"; sum9[k] += v[k]; });
+      for (let c = 1; c <= 9; c++) r.getCell(c).border = BOX;
+    });
+    const tr = dash.getRow(18); tr.getCell(1).value = "TOTAL";
+    "BCDEFGHI".split("").forEach((L, k) => { tr.getCell(L).value = { formula: `SUM(${L}6:${L}17)`, result: sum9[k] }; tr.getCell(L).numFmt = "#,##0"; });
+    for (let c = 1; c <= 9; c++) { const x = tr.getCell(c); x.font = { bold: true }; x.fill = { type: "pattern", pattern: "solid", fgColor: { argb: LIGHT } }; x.border = BOX; }
+    const buf = await wb.xlsx.writeBuffer();
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })); a.download = `Dental-Financial-${Y}.xlsx`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+  } catch (e) { alert("تعذّر التصدير: " + (e.message || e)); }
+  btn.disabled = false; btn.textContent = old;
+}
+$("finYears").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; if (b.dataset.x) return exportYear(b); if (b.dataset.y) finYear = b.dataset.y; if (b.dataset.c) finCur = b.dataset.c; loadFin(); });
 $("list").addEventListener("submit", async (e) => {
-  const isPay = e.target.id === "pForm"; if (!isPay && e.target.id !== "xForm") return; e.preventDefault();
-  const f = Object.fromEntries(new FormData(e.target)); const m = $(isPay ? "qMsg" : "xMsg"); m.className = "note"; m.textContent = "جارٍ الحفظ…";
-  const r = await (await fetch("/clinic/api/finance?action=" + (isPay ? "pay" : "add"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
-  if (r.ok) { qeDay = f.day; finYear = f.day.slice(0, 4); await loadFin(); const n = $(isPay ? "qMsg" : "xMsg"); if (n) { n.className = "note"; n.textContent = "✔ تم الحفظ" + (r.newCard ? " (بطاقة مريض جديدة)" : ""); } $("list").querySelector(isPay ? "#pForm [name=name]" : "#xForm [name=category]")?.focus(); }
+  const isPt = e.target.id === "ptForm";
+  const isPay = e.target.id === "pForm"; if (!isPay && !isPt && e.target.id !== "xForm") return; e.preventDefault();
+  const f = Object.fromEntries(new FormData(e.target)); const m = $(isPay ? "qMsg" : isPt ? "ptMsg" : "xMsg"); m.className = "note"; m.textContent = "جارٍ الحفظ…";
+  const r = await (await fetch("/clinic/api/finance?action=" + (isPay ? "pay" : isPt ? "patient" : "add"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
+  if (r.ok && isPt) { e.target.reset(); m.className = "note"; m.innerHTML = `✔ تم الحفظ${r.newCard ? " (بطاقة جديدة)" : " (البطاقة موجودة أصلًا)"} · <a href="#card=${r.no}" onclick="setTimeout(()=>location.reload(),50)">فتح البطاقة</a>`; e.target.querySelector("[name=name]").focus(); }
+  else if (r.ok) { qeDay = f.day; finYear = f.day.slice(0, 4); await loadFin(); const n = $(isPay ? "qMsg" : "xMsg"); if (n) { n.className = "note"; n.textContent = "✔ تم الحفظ" + (r.newCard ? " (بطاقة مريض جديدة)" : ""); } $("list").querySelector(isPay ? "#pForm [name=name]" : "#xForm [name=category]")?.focus(); }
   else { m.className = "note warn"; m.textContent = r.error || "تعذّر الحفظ"; }
 });
+
+/* ---------- quick entry: pick the patient from that day's calendar ---------- */
+async function qeAppts() {
+  const box = $("qeAppts"), day = document.querySelector("#pForm [name=day]")?.value; if (!box || !day) return;
+  try {
+    const d = await (await fetch(`/clinic/api/day?from=${day}&days=1`, { credentials: "same-origin", cache: "no-store" })).json();
+    const a = (d.appts || []).filter((x) => !x.allDay && x.title);
+    box.innerHTML = a.length ? `<small class="note">مواعيد هذا اليوم (اضغط لتعبئة الاسم):</small><div class="chips">${a.map((x, i) => `<button type="button" data-qa="${i}">${esc(x.title)} · ${ampm(x.start)}</button>`).join("")}</div>` : "";
+    box._a = a;
+  } catch { box.innerHTML = ""; }
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-qa]"); if (!b) return; const a = $("qeAppts")._a?.[+b.dataset.qa]; const f = $("pForm"); if (!a || !f) return;
+  f.name.value = String(a.title).replace(/\s*[\/(].*$/, "").trim() || a.title; if (a.phone) f.phone.value = a.phone; if (a.treatment && !f.work.value) f.work.value = a.treatment;
+  (f.paid_iqd || f.name).focus();
+});
+document.addEventListener("change", (e) => { if (e.target.closest("#pForm") && e.target.name === "day") { qeDay = e.target.value; qeAppts(); } });
 let nameT;
 $("list").addEventListener("input", (e) => {          // suggest patient names while typing
   if (e.target.name !== "name" || e.target.form?.id !== "pForm") return;
