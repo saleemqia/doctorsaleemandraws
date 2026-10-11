@@ -37,8 +37,8 @@ export const SEO: Record<SeoLanguage, { title: string; description: string; loca
 
 // Pages of the site. "" is the home page; the others are sub-pages, each in 3 languages:
 // /case, /ar/case, /ku/case and /kids, /ar/kids, /ku/kids.
-export type SitePage = "" | "/case" | "/kids" | "/treatments" | "/infographics";
-const PAGES: SitePage[] = ["", "/case", "/kids", "/treatments", "/infographics"];
+export type SitePage = "" | "/case" | "/kids" | "/treatments" | "/infographics" | "/news";
+export const PAGES: SitePage[] = ["", "/case", "/kids", "/treatments", "/infographics", "/news"];
 
 export const parsePath = (pathname: string): { lang: SeoLanguage; page: SitePage } | null => {
   let lang: SeoLanguage = "en";
@@ -57,7 +57,12 @@ export const pageUrl = (lang: SeoLanguage, page: SitePage = "") => `${SITE}${pat
 
 export const languageFromPath = (pathname: string): SeoLanguage | null => parsePath(pathname)?.lang ?? null;
 
-const PAGE_SEO: Record<"/case" | "/kids" | "/treatments" | "/infographics", Record<SeoLanguage, { title: string; description: string }>> = {
+export const PAGE_SEO: Record<"/case" | "/kids" | "/treatments" | "/infographics" | "/news", Record<SeoLanguage, { title: string; description: string }>> = {
+  "/news": {
+    en: { title: "Dental News & New Techniques in Dentistry | Dr. Saleem Andraws, Duhok", description: "Daily headlines about new dental techniques, technology and research, collected from trusted dental news sites, from a dentist in Duhok." },
+    ar: { title: "أخبار طب الأسنان وأحدث التقنيات | د. سليم أندراوس، دهوك", description: "عناوين يومية عن تقنيات طب الأسنان وتطوراته وأبحاثه من مواقع إخبارية موثوقة، مع عيادة د. سليم أندراوس في دهوك." },
+    ku: { title: "هەوالێن ددانان و تەکنیکێن نوی | د. سەلیم ئەندراوس، دهوک", description: "ناڤونیشانێن ڕۆژانە دەربارەی تەکنیک و لێکۆلینەوێن نوی یێن ددانان ژ ماڵپەڕێن باوەرپێکری، ل کلینیکا د. سەلیم ئەندراوس ل دهوکێ." },
+  },
   "/case": {
     en: { title: "Digital Implant Case & 3D Scanning | Dr. Saleem Andraws, Duhok", description: "A real dental implant case step by step: CBCT, digital implant planning, surgical guide and the final result. Plus videos of 3D intraoral scanning at our clinic in Duhok." },
     ar: { title: "حالة زراعة رقمية والمسح ثلاثي الأبعاد | د. سليم أندراوس، دهوك", description: "حالة زراعة أسنان حقيقية خطوة بخطوة: أشعة ثلاثية الأبعاد، تخطيط رقمي للزراعة، دليل جراحي والنتيجة النهائية، مع فيديوهات المسح الضوئي في عيادتنا في دهوك." },

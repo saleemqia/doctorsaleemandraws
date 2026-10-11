@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Newspaper, ExternalLink } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { pathFor } from "@/config/seo";
 
 interface NewsItem { title: string; link: string; source: string; kind: string; date: string; excerpt: string }
 
@@ -85,6 +86,11 @@ const DentalNews = () => {
                 </span>
               </a>
             ))}
+          </div>
+        )}
+        {items && window.location.pathname.replace(/^\/(ar|ku)/, "").replace(/\/+$/, "") !== "/news" && (
+          <div className="text-center mt-6">
+            <a href={pathFor(language, "/news")} className="px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-semibold inline-block">{t("news.all_news")}</a>
           </div>
         )}
         {items && list.length > 6 && !showAll && (

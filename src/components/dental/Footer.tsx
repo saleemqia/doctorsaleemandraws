@@ -22,6 +22,7 @@ const Footer = () => {
     { key: "case", href: "/case" },
     { key: "kids", href: "/kids" },
     { key: "infographics", href: "/infographics" },
+    { key: "news", href: "/news" },
     { key: "links", href: "/links" },
   ];
   const onHome = parsePath(window.location.pathname)?.page === "";
