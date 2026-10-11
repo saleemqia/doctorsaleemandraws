@@ -43,6 +43,8 @@ Features:
 - Export: the "تصدير Excel" button builds a workbook in the same layout as the 2026 file (Annual Dashboard plus 12 month sheets, same cell positions, live formulas) with ExcelJS from cdnjs.
 - Rule: IQD totals must match the workbook exactly (rows without a valid date go to `other_income`). USD may differ slightly where Excel ignored text like "400$".
 
+- **Owner PIN (second lock):** accounts, statistics, patient cards, files, sheet links and account imports need the owner's PIN as well as the clinic key. Without it the finance section shows only the quick-entry forms (payment, expense, new patient). Rules in `lib/clinic.ts` `needsPin`; endpoint `/clinic/api/pin` (unlock for 30 minutes, or lock now). Only `sha256("fin:" + PIN)` is stored, in `clinic_settings` key `fin_pin`; change the PIN by updating that value. Never write the PIN itself in the repo.
+
 ## 4. Working method (always)
 1. Work on a test branch, show the change, and merge to `main` only after the owner approves (for design changes).
 2. Check: `npx tsc --noEmit -p tsconfig.app.json`, `npx eslint <files>`, `npx vite build`.
