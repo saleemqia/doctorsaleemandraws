@@ -48,6 +48,8 @@ export async function pinUnlocked(env: Env, req: Request): Promise<boolean> {
 /** What stays open without the PIN: the appointments, and typing in a payment, an expense or a new patient. */
 export function needsPin(url: URL, method: string): boolean {
   const p = url.pathname.replace(/\/+$/, ""), action = url.searchParams.get("action") || "";
+  if (p === "/clinic/api/cal/connect") return true;
+  if (p === "/clinic/api/cal") return method === "POST" && ["config", "disconnect"].includes(action);
   if (p === "/clinic/api/finance") return method === "GET" ? !url.searchParams.has("names") : !["pay", "add", "patient"].includes(action);
   return ["/clinic/api/patients", "/clinic/api/files", "/clinic/api/payments", "/clinic/api/sheet"].includes(p);
 }

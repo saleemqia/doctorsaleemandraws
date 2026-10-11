@@ -100,6 +100,13 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .pickbar span{flex:1;font-size:13px}.btn:disabled{opacity:.45}.btn.pri{background:var(--navy);color:#fff}.btn.sm{padding:4px 8px}
 #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 16px;border-radius:12px;z-index:60;box-shadow:0 6px 24px #0004;max-width:92vw}
 #toast a{color:#9CC4FF;font-weight:700;margin-inline-start:10px}
+#adlg{border:0;border-radius:16px;padding:16px;max-width:520px;width:94vw;color:var(--navy);font:inherit}#adlg::backdrop{background:#0007}
+#adlg form{display:grid;grid-template-columns:1fr 1fr;gap:10px}#adlg label{display:flex;flex-direction:column;font-size:13px;font-weight:600;gap:4px}
+#adlg *{box-sizing:border-box}#adlg label{min-width:0}#adlg input,#adlg select,#adlg textarea{width:100%;min-width:0;padding:9px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}#adlg .full{grid-column:1/-1}
+#adlg h3{margin:0 0 10px}#adlg .row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center;grid-column:1/-1}
+.cal-p{border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0}.cal-p b{display:block}.cal-ok{color:#16a34a}.cal-no{color:#b45309}
+.aact{display:flex;gap:6px;margin-top:6px}.aact button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:3px 9px;font:inherit;font-size:12px;cursor:pointer}
+@media print{.aact{display:none}}
 #mdlg{border:0;border-radius:16px;padding:16px;max-width:560px;width:94vw;color:var(--navy);font:inherit}#mdlg::backdrop{background:#0007}
 #mdlg table{width:100%;border-collapse:collapse;margin:6px 0}#mdlg td,#mdlg th{padding:6px;border-bottom:1px solid var(--line);font-size:13px}
 .opt{display:block;padding:8px;border:1px solid var(--line);border-radius:10px;margin:5px 0}.opt input[type=text],.opt input:not([type]){width:60%}
@@ -224,6 +231,8 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     <span class="dnav" id="dnav"><button class="btn" data-step="y-1" title="قبل سنة">« سنة</button><button class="btn" data-step="m-1" title="قبل شهر">‹ شهر</button><button class="btn" data-step="d-1" id="prevDay" title="اليوم السابق">→ يوم</button><button class="btn" id="goToday" title="العودة إلى اليوم">اليوم</button><button class="btn" data-step="d+1" id="nextDay" title="اليوم التالي">يوم ←</button><button class="btn" data-step="m+1" title="بعد شهر">شهر ›</button><button class="btn" data-step="y+1" title="بعد سنة">سنة »</button></span>
     <h2 id="title">اليوم</h2><span class="count" id="count">…</span>
     <div class="tools">
+      <button class="btn pri" id="newAppt" type="button" title="يُكتب في Outlook وGoogle">➕ موعد جديد</button>
+      <button class="btn" id="calBtn" type="button" title="ربط Outlook وGoogle">🔗 التقويم</button>
       <button class="btn" id="refresh" title="تحديث">↻ تحديث</button>
       <a class="btn" id="csv" href="#">⬇ Excel</a>
       <button class="btn" onclick="print()">🖨 طباعة</button>
@@ -269,6 +278,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   <p class="note" id="note"></p>
   <div id="toast" hidden></div>
   <dialog id="mdlg"></dialog>
+  <dialog id="adlg"></dialog>
   <div id="rpt" hidden><div class="rptbar"><button class="btn pri" id="rpPdf" type="button">⬇ تنزيل PDF</button><button class="btn" id="rpShare" type="button">📤 مشاركة</button><button class="btn" id="rpPrint" type="button">🖨 طباعة</button>
     <label><input type="checkbox" id="rpMoney" checked> الدفعات</label><label><input type="checkbox" id="rpImgs" checked> الأشعة والصور</label><label><input type="checkbox" id="rpNotes" checked> الملاحظات</label><label><input type="checkbox" id="rpQr" checked> QR</label>
     <span id="rpMsg" class="note"></span><button class="btn" id="rpClose" type="button" style="margin-inline-start:auto">✕ إغلاق</button></div>
@@ -320,7 +330,7 @@ function render(data, label) {
     ? "تعذّر الوصول إلى Outlook الآن؛ تُعرض النسخة المحفوظة. (" + (data.error || "") + ")"
     : "آخر تحديث " + new Date().toLocaleTimeString("ar-IQ", { hour: "numeric", minute: "2-digit" }) + " · يُحفظ كل موعد في الأرشيف تلقائيًا";
   if (!appts.length) { $("list").innerHTML = `<div class="empty">لا مواعيد في هذه الفترة 🌿</div>`; return; }
-  const now = Date.now(); let html = "", lastDay = "";
+  const now = Date.now(); let html = "", lastDay = ""; const shown = []; window._shown = shown;
   const multi = new Set(appts.map((a) => a.day)).size > 1 || label !== "اليوم";
   for (const a of appts) {
     if (multi && a.day !== lastDay) { const n = appts.filter((x) => x.day === a.day).length; html += `<div class="day">${dayLabel(a.day)} · ${n}</div>`; lastDay = a.day; }
@@ -335,7 +345,8 @@ function render(data, label) {
       <dt>الموعد</dt><dd class="tm">${time}</dd>
       <dt>الهاتف</dt><dd class="ph">${ph}</dd>
       ${a.treatment ? `<dt>العمل</dt><dd class="wk">${esc(a.treatment)}</dd>` : ""}
-    </dl></article>`;
+    </dl>${a.allDay ? "" : `<div class="aact"><button type="button" data-aed="${shown.length}">✏️ تعديل</button><button type="button" data-adel="${shown.length}">🗑 حذف</button></div>`}</article>`;
+    shown.push(a);
   }
   $("list").innerHTML = html;
 }
@@ -1432,6 +1443,90 @@ $("list").addEventListener("click", async (e) => {
   await fetch("/clinic/api/finance?action=del", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: +b.dataset.del }) }); loadFin();
 });
 
+
+/* ---------- new / edit / delete appointment: written into Outlook and Google (see lib/calendars.ts) ---------- */
+function apptDialog(a) {
+  const d = $("adlg"), day = a ? a.day : (/^\d{4}-\d{2}-\d{2}$/.test(current) ? current : current === "tomorrow" ? addDays(today, 1) : curFrom || today);
+  const mins = a ? Math.max(5, Math.round((Date.parse(a.end) - Date.parse(a.start)) / 60000)) : 30;
+  const opt = [15, 30, 45, 60, 90, 120].map((m) => `<option value="${m}" ${m === mins ? "selected" : ""}>${m < 60 ? m + " دقيقة" : m / 60 + " ساعة"}</option>`).join("");
+  d.innerHTML = `<h3>${a ? "✏️ تعديل الموعد" : "➕ موعد جديد"}</h3><form id="apForm">
+    <label class="full">اسم المريض<input name="name" list="apNames" required autocomplete="off" value="${esc(a?.title || "")}"><datalist id="apNames"></datalist></label>
+    <label>الهاتف<input name="phone" type="tel" inputmode="tel" dir="ltr" value="${esc(a?.phone || "")}" placeholder="0750…"></label>
+    <label>العمل<input name="treatment" value="${esc(a?.treatment || "")}" placeholder="حشوة، تنظيف…"></label>
+    <label>اليوم<input name="day" type="date" required value="${day}"></label>
+    <label>الوقت<input name="time" type="time" required step="300" value="${a ? hm(a.start) : ""}"></label>
+    <label>المدة<select name="minutes">${mins && ![15, 30, 45, 60, 90, 120].includes(mins) ? `<option value="${mins}" selected>${mins} دقيقة</option>` : ""}${opt}</select></label>
+    <label>ملاحظات<input name="notes"></label>
+    <div class="row2"><button class="btn pri">💾 حفظ</button><button class="btn" type="button" onclick="$('adlg').close()">إلغاء</button><span class="note" id="apMsg"></span></div></form>`;
+  const f = $("apForm");
+  f.onsubmit = async (e) => {
+    e.preventDefault(); const m = $("apMsg"); m.className = "note"; m.textContent = "جارٍ الحفظ في التقويم…";
+    const body = Object.fromEntries(new FormData(f)); if (a) body.uid = a.uid;
+    const r = await (await fetch("/clinic/api/appt" + (a ? "?action=update" : ""), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
+    if (!r.ok) { m.className = "note warn"; m.textContent = r.error || (r.errors || []).join(" · ") || "تعذّر الحفظ"; return; }
+    const where = [r.ms || r.outlook ? "Outlook" : "", r.g || r.google ? "Google" : ""].filter(Boolean).join(" و");
+    d.close(); toast(`✔ ${a ? "تم التعديل" : "أُضيف الموعد"}${where ? " في " + where : ""}${r.errors?.length ? " · ⚠️ " + esc(r.errors.join(" · ")) : ""}`);
+    if (body.day !== (curFrom || today) && !["remind", "reqs", "fin", "patients", "archive"].includes(current)) gotoDay(body.day); else load();
+  };
+  f.name.oninput = () => { clearTimeout(nameT); const v = f.name.value.trim(); if (v.length < 2) return;
+    nameT = setTimeout(async () => { try { const r = await (await fetch("/clinic/api/finance?names=" + encodeURIComponent(v))).json(); if (r.ok) $("apNames").innerHTML = r.names.map((n) => `<option value="${esc(n)}">`).join(""); } catch { /* offline */ } }, 250); };
+  d.showModal(); (a ? f.time : f.name).focus();
+}
+$("newAppt").onclick = () => apptDialog(null);
+$("list").addEventListener("click", async (e) => {
+  const ed = e.target.closest("[data-aed]"), del = e.target.closest("[data-adel]"); if (!ed && !del) return;
+  const a = window._shown?.[+(ed || del).dataset[ed ? "aed" : "adel"]]; if (!a) return;
+  if (ed) return apptDialog(a);
+  if (!confirm(`حذف موعد «${a.title}» ${dayLabel(a.day)} ${ampm(a.start)} من التقويم؟`)) return;
+  const r = await (await fetch("/clinic/api/appt?action=delete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uid: a.uid }) })).json().catch(() => ({ ok: false }));
+  toast(r.ok ? "✔ حُذف الموعد" + (r.errors?.length ? " · ⚠️ " + esc(r.errors.join(" · ")) : "") : "⚠️ تعذّر الحذف: " + esc((r.errors || []).join(" · ") || r.error || "لا يوجد تقويم مربوط"));
+  load();
+});
+
+/* ---------- calendar connections: Outlook (Microsoft) and Google ---------- */
+async function calDialog(msg) {
+  const d = $("adlg"); d.innerHTML = `<h3>🔗 ربط التقويم</h3><div class="spin"></div>`; if (!d.open) d.showModal();
+  const st = await (await fetch("/clinic/api/cal", { cache: "no-store" })).json().catch(() => ({ ok: false }));
+  const unlocked = (await (await fetch("/clinic/api/pin", { cache: "no-store" })).json().catch(() => ({}))).unlocked;
+  if (!unlocked) pinAfter = () => calDialog("");
+  const prov = (p, name) => { const x = st[p] || {}; return `<div class="cal-p"><b>${name}</b>
+    ${x.connected ? `<span class="cal-ok">✔ مربوط${x.account ? " · " + esc(x.account) : ""}</span>` : x.configured ? `<span class="cal-no">جاهز للربط، اضغط «ربط»</span>` : `<span class="cal-no">لم يُضف رمز التطبيق بعد</span>`}
+    ${unlocked ? `<div class="row2" style="margin-top:6px">${x.configured ? `<a class="btn pri" href="/clinic/api/cal/connect?p=${p}">${x.connected ? "إعادة الربط" : "ربط"}</a>` : ""}${x.connected ? `<button class="btn" type="button" data-cdis="${p}">فصل</button>` : ""}</div>
+    <details style="margin-top:6px"><summary class="note">رمز التطبيق (${p === "ms" ? "Microsoft Entra" : "Google Cloud"})</summary><form class="calcfg" data-p="${p}" style="display:grid;gap:6px;margin-top:6px">
+      <input name="clientId" placeholder="Client ID" dir="ltr" required autocomplete="off"><input name="secret" type="password" placeholder="Client secret" dir="ltr" autocomplete="off">
+      ${p === "ms" ? `<input name="tenant" placeholder="common" dir="ltr" value="${esc(x.tenant || "common")}">` : ""}
+      <small class="note">عنوان الرجوع: <bdi dir="ltr">https://www.doctorsaleem.com/clinic/api/cal/callback</bdi></small><button class="btn">حفظ</button></form></details>` : ""}</div>`; };
+  d.innerHTML = `<h3>🔗 ربط التقويم</h3>${msg ? `<p class="note ${msg.startsWith("✔") ? "" : "warn"}">${esc(msg)}</p>` : ""}
+    <p class="note">المواعيد التي تضيفها من هنا تُكتب في Outlook وفي Google معًا. ويمكن نسخ مواعيد Outlook كلها إلى Google.</p>
+    ${unlocked ? "" : pinBox("الربط والإعدادات")}
+    ${prov("ms", "Outlook (Microsoft)")}${prov("g", "Google Calendar")}
+    ${st.g?.connected ? `<div class="cal-p"><b>نسخ مواعيد Outlook إلى Google</b>
+      <div class="row2" style="margin-top:6px"><select id="cpRange"><option value="f">من اليوم فصاعدًا</option><option value="y">من بداية هذه السنة</option><option value="a">كل الأرشيف (منذ 2020)</option></select><button class="btn pri" type="button" id="cpGo">📋 نسخ</button></div>
+      <p class="note" id="cpMsg">تُنسخ المواعيد الجديدة والمعدّلة تلقائيًا كلما فُتحت الصفحة (للأشهر الأربعة القادمة).</p></div>` : ""}
+    <div class="row2"><button class="btn" type="button" onclick="$('adlg').close()">إغلاق</button></div>`;
+}
+$("calBtn").onclick = () => calDialog("");
+$("adlg").addEventListener("submit", async (e) => {
+  const f = e.target.closest(".calcfg"); if (!f) return; e.preventDefault();
+  const r = await (await fetch("/clinic/api/cal?action=config", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ provider: f.dataset.p, ...Object.fromEntries(new FormData(f)) }) })).json().catch(() => ({ ok: false }));
+  calDialog(r.ok ? "✔ حُفظ رمز التطبيق، اضغط «ربط»" : r.error || "تعذّر الحفظ");
+});
+$("adlg").addEventListener("click", async (e) => {
+  const dis = e.target.closest("[data-cdis]");
+  if (dis) { if (!confirm("فصل هذا التقويم؟")) return; await fetch("/clinic/api/cal?action=disconnect", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ provider: dis.dataset.cdis }) }); return calDialog(""); }
+  if (e.target.id !== "cpGo") return;
+  const v = $("cpRange").value, from = v === "f" ? today : v === "y" ? today.slice(0, 4) + "-01-01" : "2020-01-01", to = addDays(today, 400);
+  const m = $("cpMsg"), b = e.target; b.disabled = true; let total = 0;
+  for (let i = 0; i < 400; i++) {
+    const r = await (await fetch("/clinic/api/cal?action=copy", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ from, to }) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
+    if (!r.ok && !r.done) { m.className = "note warn"; m.textContent = "⚠️ " + (r.error || (r.errors || []).join(" · ")); break; }
+    total += r.done; m.className = "note"; m.textContent = `نُسخ ${total} موعدًا… ${r.left ? "مستمر" : "✔ اكتمل"}`;
+    if (!r.left) break;
+  }
+  b.disabled = false;
+});
+const calHash = location.hash.match(/cal=([^&]*)/);
+if (calHash) { const v = decodeURIComponent(calHash[1]); history.replaceState(null, "", location.pathname); setTimeout(() => calDialog(v === "ok-ms" ? "✔ تم ربط Outlook" : v === "ok-g" ? "✔ تم ربط Google" : "⚠️ " + v), 300); }
 
 /* ---------- reminders (2 hours before) and review requests ---------- */
 const REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJHQVly9aNCEARjys3d6OhFLI";
