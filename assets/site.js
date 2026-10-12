@@ -62,7 +62,7 @@ ku:{
 en:{
 
  skip:"Skip to content", testbar:"Test version for review — content awaits the doctor's approval.",
- brand:"", brandSub:"Child & adolescent mental health · Online",
+ brand:"Dr. Sally Rizqo", brandSub:"Child & adolescent mental health · Online",
  navHome:"Home", navAutism:"Autism", navAdhd:"ADHD", navTeen:"Adolescence", navPlay:"Games & activities", navBook:"Book",
  btnBook:"Book via WhatsApp", fab:"WhatsApp",
  confid:"Every consultation and all information are completely confidential.",
