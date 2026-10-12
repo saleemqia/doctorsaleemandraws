@@ -13,7 +13,6 @@ import DentalNews from "@/components/dental/DentalNews";
 import ClinicTour from "@/components/dental/ClinicTour";
 import DigitalDentistry from "@/components/dental/DigitalDentistry";
 import WeeklyHours from "@/components/dental/WeeklyHours";
-import SectionNav from "@/components/dental/SectionNav";
 import Contact from "@/components/dental/Contact";
 import DuhokBand from "@/components/dental/DuhokBand";
 import ExploreMore from "@/components/dental/ExploreMore";
@@ -88,7 +87,6 @@ const Index = () => {
       </main>
       <Footer />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
-      <SectionNav />
       <ChatBot onBookingClick={openBooking("chat")} />
       <ScrollToTop />
       <MobileActionBar onBookingClick={openBooking("mobile_bar")} />
