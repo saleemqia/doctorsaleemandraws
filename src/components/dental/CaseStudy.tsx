@@ -120,9 +120,9 @@ const CaseStudy = () => {
             <FileHeart className="w-4 h-4" />
             {c.badge}
           </span>
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+          <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             {c.title1} <span className="text-gradient">{c.title2}</span>
-          </h2>
+          </h1>
           <p className="text-muted-foreground text-base md:text-lg">{c.intro}</p>
         </motion.div>
 
