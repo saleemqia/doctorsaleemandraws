@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { MapPin, Clock, ExternalLink, Navigation, Phone, Instagram, Mail } from "lucide-react";
-import { PHONES, CLINIC_EMAIL } from "@/config/clinic";
+import { PHONES, CLINIC_EMAIL, EMAILS, EMAIL_LABELS } from "@/config/clinic";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { GOOGLE_DIRECTIONS_URL, GOOGLE_MAPS_URL, GOOGLE_MAP_EMBED_URL, INSTAGRAM_URL, ENTRANCE_360_EMBED_URLS, MAP_APPS } from "@/config/clinic";
 import { useState } from "react";
@@ -87,15 +87,22 @@ const Contact = ({ onBookingClick }: ContactProps) => {
                 </div>
               </div>
 
-              <a href={`mailto:${CLINIC_EMAIL}`} className={`group flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 hover:border-primary/40 transition-colors ${dir === "rtl" ? "text-right" : ""}`}>
+              <div className={`flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 ${dir === "rtl" ? "text-right" : ""}`}>
                 <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 flex-shrink-0">
                   <Mail className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm md:text-base">{{ en: "Email", ar: "البريد الإلكتروني", ku: "ئیمەیل" }[language as "en" | "ar" | "ku"]}</p>
-                  <p dir="ltr" className={`text-primary text-sm font-semibold break-all group-hover:underline ${dir === "rtl" ? "text-right" : ""}`}>{CLINIC_EMAIL}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-sm md:text-base mb-1">{{ en: "Email", ar: "البريد الإلكتروني", ku: "ئیمەیل" }[language as "en" | "ar" | "ku"]}</p>
+                  <ul className="space-y-1.5">
+                    {([["info", EMAILS.info], ["booking", EMAILS.booking], ["clinic", EMAILS.clinic], ["doctor", CLINIC_EMAIL]] as const).map(([k, mail]) => (
+                      <li key={k} className="flex flex-wrap items-baseline gap-x-2">
+                        <span className="text-xs text-muted-foreground">{EMAIL_LABELS[k][language as "en" | "ar" | "ku"]}:</span>
+                        <a href={`mailto:${mail}`} dir="ltr" className="text-primary text-sm font-semibold break-all hover:underline">{mail}</a>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </a>
+              </div>
 
               <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-card border border-border/50 ${dir === "rtl" ? "text-right" : ""}`}>
                 <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 flex-shrink-0">

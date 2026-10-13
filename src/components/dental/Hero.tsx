@@ -35,7 +35,7 @@ const SOCIALS = [
   { label: "Telegram", href: "https://t.me/CHercules130" },
   { label: "LinkedIn", href: "https://iq.linkedin.com/in/saleem-andraws-hana-71a71377" },
   { label: "Google Maps", href: GOOGLE_MAPS_URL },
-  { label: "Email", href: "mailto:dr.saleemo@gmail.com" },
+  { label: "Email", href: "mailto:info@doctorsaleem.com" },
 ];
 
 const Hero = ({ onBookingClick }: HeroProps) => {

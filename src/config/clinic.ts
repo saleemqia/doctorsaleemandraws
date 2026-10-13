@@ -31,6 +31,18 @@ export const GOOGLE_WRITE_REVIEW_URL =
   "https://search.google.com/local/writereview?placeid=ChIJHQVly9aNCEARjys3d6OhFLI";
 
 export const CLINIC_EMAIL = "dr.saleemo@gmail.com";
+// Addresses on the clinic's own domain (forwarded by Cloudflare Email Routing to the right inbox).
+export const EMAILS = {
+  info: "info@doctorsaleem.com",       // general questions
+  booking: "booking@doctorsaleem.com", // appointments
+  clinic: "clinic@doctorsaleem.com",   // clinic office: reports, records, labs
+};
+export const EMAIL_LABELS: Record<keyof typeof EMAILS | "doctor", Record<"en" | "ar" | "ku", string>> = {
+  info: { en: "General questions", ar: "الاستفسارات العامة", ku: "پرسیارێن گشتی" },
+  booking: { en: "Appointments & booking", ar: "المواعيد والحجز", ku: "ژڤان و حجزکرن" },
+  clinic: { en: "Clinic office & reports", ar: "إدارة العيادة والتقارير", ku: "کارگێڕیا کلینیکێ و ڕاپۆرت" },
+  doctor: { en: "Dr. Saleem", ar: "د. سليم", ku: "د. سەلیم" },
+};
 export const INSTAGRAM_URL = "https://www.instagram.com/dr.saleemandraws/";
 export const INSTAGRAM_HANDLE = "@dr.saleemandraws";
 

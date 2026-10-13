@@ -6,7 +6,7 @@ import { X, Calendar, Clock, User, Phone, FileText } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { WHATSAPP_NUMBER } from "@/config/clinic";
+import { WHATSAPP_NUMBER, EMAILS } from "@/config/clinic";
 
 const timeSlots = [
   "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM",
@@ -20,7 +20,7 @@ interface BookingModalProps {
 }
 
 const BookingModal = ({ isOpen, onClose }: BookingModalProps) => {
-  const { t, dir } = useLanguage();
+  const { t, dir, language } = useLanguage();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
@@ -321,6 +321,10 @@ Thank you!`;
                       {isSubmitting ? (t("booking.submitting") || "Submitting...") : t("booking.bookViaWhatsapp")}
                     </Button>
                   </div>
+                  <p className="mt-3 text-center text-xs text-muted-foreground">
+                    {{ en: "Or email us:", ar: "أو راسلنا على:", ku: "یان ئیمەیلێ بۆ مە بنێرە:" }[language as "en" | "ar" | "ku"]}{" "}
+                    <a href={`mailto:${EMAILS.booking}`} dir="ltr" className="font-semibold text-primary hover:underline">{EMAILS.booking}</a>
+                  </p>
                 </motion.div>
               )}
             </form>

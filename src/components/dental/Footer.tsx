@@ -2,7 +2,7 @@ import { MapPin, ExternalLink, Shield, Facebook, Instagram, Star, Phone, Mail } 
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import clinicLogo from "@/assets/clinic-logo.png";
-import { GOOGLE_MAPS_URL, CLINIC_EMAIL } from "@/config/clinic";
+import { GOOGLE_MAPS_URL, CLINIC_EMAIL, EMAILS, EMAIL_LABELS } from "@/config/clinic";
 import { parsePath, pathFor, type SitePage } from "@/config/seo";
 
 const Footer = () => {
@@ -116,10 +116,14 @@ const Footer = () => {
                 <a href="tel:07781665000" className="hover:text-white transition-colors">07781665000</a>
               </div>
             </div>
-            <a href={`mailto:${CLINIC_EMAIL}`} dir="ltr" className={`flex items-center gap-2 text-sm text-background/70 hover:text-white transition-colors mt-3 ${dir === "rtl" ? "justify-end" : ""}`}>
-              <Mail className="w-4 h-4 text-[hsl(199,85%,70%)] flex-shrink-0" />
-              <span>{CLINIC_EMAIL}</span>
-            </a>
+            <div className="flex items-start gap-2 text-sm text-background/70 mt-3">
+              <Mail className="w-4 h-4 text-[hsl(199,85%,70%)] mt-0.5 flex-shrink-0" />
+              <ul className="space-y-1">
+                {([["info", EMAILS.info], ["booking", EMAILS.booking], ["clinic", EMAILS.clinic], ["doctor", CLINIC_EMAIL]] as const).map(([k, mail]) => (
+                  <li key={k}><span className="text-background/50">{EMAIL_LABELS[k][language as "en" | "ar" | "ku"]}: </span><a href={`mailto:${mail}`} dir="ltr" className="hover:text-white transition-colors">{mail}</a></li>
+                ))}
+              </ul>
+            </div>
             <p className="text-sm text-background/50 mt-4">{t("footer.openDaily")}</p>
           </div>
         </div>
