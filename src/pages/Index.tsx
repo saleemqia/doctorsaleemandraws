@@ -1,32 +1,14 @@
 import { useState, useEffect } from "react";
 import { track, startClickTracking } from "@/lib/track";
 import Navbar from "@/components/dental/Navbar";
-import Hero from "@/components/dental/Hero";
-import Services from "@/components/dental/Services";
-import About from "@/components/dental/About";
-import Gallery from "@/components/dental/Gallery";
-import BeforeAfter from "@/components/dental/BeforeAfter";
-import InstagramFeed from "@/components/dental/InstagramFeed";
-import Testimonials from "@/components/dental/Testimonials";
-import FAQ from "@/components/dental/FAQ";
-import DentalNews from "@/components/dental/DentalNews";
-import ClinicTour from "@/components/dental/ClinicTour";
-import DigitalDentistry from "@/components/dental/DigitalDentistry";
-import WeeklyHours from "@/components/dental/WeeklyHours";
-import Contact from "@/components/dental/Contact";
-import DuhokBand from "@/components/dental/DuhokBand";
-import ExploreMore from "@/components/dental/ExploreMore";
 import Footer from "@/components/dental/Footer";
 import BookingModal from "@/components/dental/BookingModal";
 import ChatBot from "@/components/dental/ChatBot";
 import ScrollToTop from "@/components/dental/ScrollToTop";
 import MobileActionBar from "@/components/dental/MobileActionBar";
-import WelcomeScreen from "@/components/dental/WelcomeScreen";
-import Marquee from "@/components/dental/Marquee";
-import SmilePreview from "@/components/dental/SmilePreview";
-import Reveal from "@/components/dental/Reveal";
 
-const WELCOME_KEY = "diamond-welcome-shown";
+import HomeContent from "@/components/dental/HomeContent";
+import { parsePath, pathFor, type SitePage } from "@/config/seo";
 
 const Index = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -41,50 +23,18 @@ const Index = () => {
     // Coming back from a sub-page with a section in the address (e.g. /ar#contact): go there.
     if (window.location.hash.length > 1) {
       const id = decodeURIComponent(window.location.hash.slice(1));
+      const moved: Record<string, SitePage> = { smile: "/smile-preview", clinic: "/our-clinic", technology: "/digital-dentistry", videos: "/digital-dentistry", faq: "/faq", hours: "/opening-hours", duhok: "/duhok", "before-after": "/gallery", instagram: "/social/instagram", case: "/case", kids: "/kids", posters: "/infographics", news: "/news", treatments: "/treatments" };
+      if (moved[id]) {
+        window.location.replace(pathFor(parsePath(window.location.pathname)?.lang ?? "en", moved[id]));
+        return;
+      }
       setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }), 400);
     }
   }, []);
-  const [showWelcome, setShowWelcome] = useState(() => {
-    try {
-      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return false;
-      return sessionStorage.getItem(WELCOME_KEY) !== "true";
-    } catch {
-      return true;
-    }
-  });
-
-  const handleWelcomeComplete = () => {
-    try {
-      sessionStorage.setItem(WELCOME_KEY, "true");
-    } catch {
-      // ignore storage errors
-    }
-    setShowWelcome(false);
-  };
-
   return (
     <div className="min-h-screen bg-background scroll-smooth pb-[calc(56px+env(safe-area-inset-bottom,0px))] md:pb-0">
-      {showWelcome && <WelcomeScreen onComplete={handleWelcomeComplete} />}
       <Navbar onBookingClick={openBooking("navbar")} />
-      <main>
-        <Hero onBookingClick={openBooking("home")} />
-        <Marquee />
-        <Services onBookingClick={openBooking("services")} />
-        <Reveal threshold={0.04}><About /></Reveal>
-        <Reveal threshold={0.04}><ClinicTour /></Reveal>
-        <Reveal threshold={0.04}><DigitalDentistry /></Reveal>
-        <Reveal threshold={0.04}><SmilePreview onBookingClick={openBooking("smile")} /></Reveal>
-        <Reveal threshold={0.04}><BeforeAfter onBookingClick={openBooking("before_after")} /></Reveal>
-        <Reveal threshold={0.04}><Gallery /></Reveal>
-        <Reveal threshold={0.04}><InstagramFeed /></Reveal>
-        <Reveal threshold={0.04}><Testimonials /></Reveal>
-        <Reveal threshold={0.04}><DentalNews /></Reveal>
-        <Reveal threshold={0.04}><FAQ /></Reveal>
-        <Reveal threshold={0.04}><ExploreMore /></Reveal>
-        <Reveal threshold={0.04}><WeeklyHours /></Reveal>
-        <Reveal threshold={0.04}><DuhokBand /></Reveal>
-        <Reveal threshold={0.04}><Contact onBookingClick={openBooking("contact")} /></Reveal>
-      </main>
+      <main><HomeContent onBookingClick={openBooking("home")} /></main>
       <Footer />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
       <ChatBot onBookingClick={openBooking("chat")} />
