@@ -2,9 +2,12 @@
 // so Google and social networks see them without running the page's scripts (the app sets the same values again in the browser).
 import { SEO, pageSeo, pageUrl, parsePath, type BasePage, type SeoLanguage, type SitePage } from "../src/config/seo";
 import { serviceBySlug } from "../src/config/services";
+import { EXTRA_PAGES } from "../src/config/extraPages";
+import { DETAILS } from "../src/config/serviceDetails";
 import { socialBySlug } from "../src/config/social";
 
 const NAMES: Record<BasePage, Record<SeoLanguage, string>> = {
+  ...Object.fromEntries(EXTRA_PAGES.map(p=>[p.path,p.title])) as Record<BasePage,Record<SeoLanguage,string>>,
   "": { en: "Home", ar: "الرئيسية", ku: "سەرەکی" },
   "/case": { en: "Digital implant case", ar: "حالة زراعة رقمية", ku: "حالەتا چاندنا دیجیتالی" },
   "/kids": { en: "Children's teeth", ar: "أسنان الأطفال", ku: "ددانێن زارۆکان" },
@@ -59,11 +62,18 @@ export const onRequest: PagesFunction = async ({ request, next }) => {
   const s = page ? { ...SEO[lang], ...pageSeo(page)[lang] } : SEO[lang];
   const here = pageUrl(lang, page);
   const crumbs = structuredData(lang, page);
+  const svc = page.startsWith("/services/") ? serviceBySlug(page.slice(10)) : undefined;
+  const esc = (text: string) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const extra = EXTRA_PAGES.find(x=>x.path===page);
+  const detail = svc ? DETAILS[svc.slug] : undefined;
+  // Visitors and crawlers without JavaScript receive the same treatment explanation as the app.
+  const treatmentHtml = svc ? `<h1>${esc(svc.name[lang])} — ${lang === "en" ? "Dr. Saleem Andraws, Duhok" : lang === "ar" ? "د. سليم أندراوس، دهوك" : "د. سەلیم ئەندراوس، دهوک"}</h1><p>${esc(detail?.what[lang] || svc.a[lang])}</p><h2>${esc(svc.q[lang])}</h2><p>${esc(svc.a[lang])}</p>${detail ? `<ul>${detail.who.map(x => `<li>${esc(x[lang])}</li>`).join("")}</ul>` : ""}<p>${lang === "en" ? "Treatment costs and the number of visits depend on your individual examination and plan. Ask Dr. Saleem about the proposed options before treatment." : lang === "ar" ? "تعتمد التكلفة وعدد الزيارات على الفحص والخطة الفردية. اسأل الدكتور سليم عن الخيارات قبل العلاج." : "بها و ژمارەیا سەردانان ل دویڤ پشکنین و پلانێ تە نە."}</p><p><a href="${pageUrl(lang, "") }#contact">${lang === "en" ? "Location, access and booking" : lang === "ar" ? "الموقع والوصول والحجز" : "جهـ، گەهشتن و حجز"}</a> · <a href="tel:07507816500">0750 781 6500</a></p>` : "";
 
   const setContent = (v: string) => ({ element(e: Element) { e.setAttribute("content", v); } });
   let rw = new HTMLRewriter()
     .on("html", { element(e) { e.setAttribute("lang", SEO[lang].htmlLang); if (lang !== "en") e.setAttribute("dir", "rtl"); } })
     .on("title", { element(e) { e.setInnerContent(s.title); } })
+    .on("#root > main", { element(e) { if (svc) e.setInnerContent(treatmentHtml, { html: true }); else if(extra) e.setInnerContent(`<h1>${esc(extra.title[lang])}</h1><p>${esc(extra.description[lang])}</p><p><a href="${pageUrl(lang, "")}#contact">Dr. Saleem Andraws · 0750 781 6500</a></p>`, {html:true}); } })
     .on('meta[name="description"]', setContent(s.description))
     .on('meta[property="og:title"]', setContent(s.title))
     .on('meta[property="og:description"]', setContent(s.description))

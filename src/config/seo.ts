@@ -1,3 +1,4 @@
+import { EXTRA_PAGES, type ExtraPagePath } from "./extraPages";
 import { SERVICES, serviceBySlug } from "./services";
 import { SOCIALS, SOCIAL_INDEX, socialBySlug, socialTitle } from "./social";
 
@@ -16,14 +17,14 @@ export const LANGUAGE_PATHS: Record<SeoLanguage, string> = {
 
 export const SEO: Record<SeoLanguage, { title: string; description: string; locale: string; htmlLang: string }> = {
   en: {
-    title: "Dentist in Duhok | Dental Clinic, Implants & Veneers | Dr. Saleem Andraws",
+    title: "Dr. Saleem Andraws — Dentist in Duhok | Dental Clinic",
     description:
       "Dr. Saleem Andraws Dental Clinic, a dentist in Duhok, Kurdistan, Iraq: dental implants, veneers and Hollywood smile, orthodontics (braces), fillings, root canal treatment, zircon and E-max crowns, whitening and children's dentistry. Qazi Mohammad Road. Call 0750 781 6500.",
     locale: "en_US",
     htmlLang: "en",
   },
   ar: {
-    title: "طبيب أسنان في دهوك | زراعة وتقويم وفينير | عيادة د. سليم أندراوس",
+    title: "د. سليم أندراوس — طبيب أسنان في دهوك | زراعة وفينير وتقويم",
     description:
       "عيادة الدكتور سليم أندراوس لطب الأسنان في دهوك: زراعة الأسنان، فينير وابتسامة هوليود، تقويم الأسنان، حشو الأسنان، حشو العصب، تيجان (كراس) زركون وإيماكس، تبييض وطب أسنان الأطفال. شارع قاضي محمد. للحجز 07507816500",
     locale: "ar_IQ",
@@ -41,9 +42,9 @@ export const SEO: Record<SeoLanguage, { title: string; description: string; loca
 // Pages of the site. "" is the home page; the others are sub-pages, each in 3 languages:
 // /case, /ar/case, /ku/case and /kids, /ar/kids, /ku/kids.
 // "/services" lists all treatments; "/services/<slug>" is one treatment (see services.ts).
-export type BasePage = "" | "/case" | "/kids" | "/treatments" | "/infographics" | "/news" | "/services" | "/social";
+export type BasePage = ExtraPagePath | "" | "/case" | "/kids" | "/treatments" | "/infographics" | "/news" | "/services" | "/social";
 export type SitePage = BasePage | `/services/${string}` | `/social/${string}`;
-export const PAGES: SitePage[] = ["", "/case", "/kids", "/treatments", "/infographics", "/news", "/services", ...SERVICES.map((s) => `/services/${s.slug}` as SitePage), "/social", ...SOCIALS.map((s) => `/social/${s.slug}` as SitePage)];
+export const PAGES: SitePage[] = [...EXTRA_PAGES.map(p=>p.path), "", "/case", "/kids", "/treatments", "/infographics", "/news", "/services", ...SERVICES.map((s) => `/services/${s.slug}` as SitePage), "/social", ...SOCIALS.map((s) => `/social/${s.slug}` as SitePage)];
 
 export const parsePath = (pathname: string): { lang: SeoLanguage; page: SitePage } | null => {
   let lang: SeoLanguage = "en";
@@ -76,7 +77,9 @@ export const pageSeo = (page: Exclude<SitePage, "">): PageText => {
   return PAGE_SEO[page as Exclude<BasePage, "">];
 };
 
+const extraSeo = Object.fromEntries(EXTRA_PAGES.map(p=>[p.path, Object.fromEntries((["en","ar","ku"] as const).map(l=>[l,{title:p.title[l]+" | "+(l==="en"?"Dr. Saleem Andraws, Duhok":l==="ar"?"د. سليم أندراوس، دهوك":"د. سەلیم ئەندراوس، دهوک"),description:p.description[l]}]))])) as Record<ExtraPagePath,PageText>;
 export const PAGE_SEO: Record<Exclude<BasePage, "">, PageText> = {
+  ...extraSeo,
   "/social": {
     en: { title: SOCIAL_INDEX.title.en, description: SOCIAL_INDEX.description.en },
     ar: { title: SOCIAL_INDEX.title.ar, description: SOCIAL_INDEX.description.ar },

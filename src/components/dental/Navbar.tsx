@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Calendar, Globe, ChevronDown, Instagram } from "lucide-react";
@@ -11,8 +11,9 @@ const navLinks: { key: string; href: string; mobileOnly?: boolean }[] = [
   { key: "home", href: "#home" },
   { key: "services", href: "#services" },
   { key: "about", href: "#about" },
-  { key: "smile", href: "#smile" },
-  { key: "gallery", href: "#gallery" },
+
+  { key: "smile", href: "/smile-preview" },
+  { key: "gallery", href: "/gallery" },
   { key: "testimonials", href: "#testimonials" },
   { key: "treatments", href: "/treatments" },
   { key: "case", href: "/case" },
@@ -35,16 +36,6 @@ interface NavbarProps {
 const Navbar = ({ onBookingClick }: NavbarProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
-  const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
   const { language, setLanguage, t, dir } = useLanguage();
 
   const currentLang = languages.find((l) => l.code === language);
@@ -139,7 +130,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
                 <span className="hidden 2xl:inline">07781665000</span>
               </Button>
             </a>
-            <Button size="sm" onClick={onBookingClick} className="gap-2 rounded-full bg-[hsl(var(--sun))] text-[hsl(var(--ink))] shadow-[0_6px_18px_-6px_hsl(var(--sun))] hover:bg-[hsl(41_100%_68%)]">
+            <Button size="sm" onClick={onBookingClick} className="gap-2 rounded-full bg-primary text-white shadow-[0_6px_18px_-6px_hsl(var(--sun))] hover:bg-primary/90">
               <Calendar className="w-4 h-4" />
               {t("nav.bookAppointment")}
             </Button>
@@ -228,7 +219,6 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
       </div>
       {/* Reading progress */}
       <div aria-hidden="true" className="absolute inset-x-0 bottom-[-1px] h-[2px] bg-transparent">
-        <div className="h-full bg-gradient-to-r from-[hsl(var(--aqua))] to-[hsl(var(--sun))]" style={{ transform: `scaleX(${progress})`, transformOrigin: dir === "rtl" ? "right" : "left" }} />
       </div>
     </header>
   );

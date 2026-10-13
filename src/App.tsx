@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import ExplorePage from "./pages/ExplorePage";
+import { EXTRA_PAGES } from "./config/extraPages";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import CasePage from "./pages/CasePage";
@@ -43,6 +45,7 @@ const App = () => (
                 <Route key={`${p}/social/:slug`} path={`${p}/social/:slug`} element={<SocialDetailPage />} />,
                 <Route key={`${p}/infographics`} path={`${p}/infographics`} element={<InfographicsPage />} />,
               ])}
+              {EXTRA_PAGES.flatMap(page=>["", "/ar", "/ku"].map(prefix=><Route key={prefix+page.path} path={prefix+page.path} element={<ExplorePage />} />))}
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />

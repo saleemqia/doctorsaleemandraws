@@ -1,3 +1,4 @@
+import ServicePatientInfo from "@/components/dental/ServicePatientInfo";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { Calendar, MessageCircle, Phone, ChevronRight, ArrowRight, CheckCircle2, HeartPulse, Play, ExternalLink } from "lucide-react";
@@ -220,8 +221,8 @@ export const ServiceDetailPage = () => {
                   <p className="mt-3 text-sm text-muted-foreground">{TX.generalNote[l]}</p>
                 </section>
               )}
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Button onClick={openBooking(`service:${s.slug}`)} className="gap-2 rounded-full bg-[hsl(var(--sun))] text-[hsl(var(--ink))] hover:bg-[hsl(41_100%_68%)]">
+              <ServicePatientInfo /><div className="mt-8 flex flex-wrap gap-3">
+                <Button onClick={openBooking(`service:${s.slug}`)} className="gap-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
                   <Calendar className="h-4 w-4" /> {TX.book[l]}
                 </Button>
                 <Button asChild variant="outline" className="gap-2 rounded-full">
