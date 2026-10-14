@@ -1,6 +1,6 @@
 ---
 name: dental-clinic-website
-description: Build or change Dr. Saleem Andraws' dental clinic website (doctorsaleem.com) and its private /clinic page: services, social, smile design, appointments with Outlook/Google calendars, PIN-locked accounts, patient cards, domain emails, trilingual EN/AR/KU.
+description: Build or change Dr. Saleem Andraws' dental clinic website (doctorsaleem.com), its private /clinic page and the clinic's print materials: services, social, smile design, calendars, PIN-locked accounts, patient cards, domain emails, Rx pad, business card, EN/AR/KU.
 ---
 
 # Dental clinic website and /clinic system
@@ -28,6 +28,10 @@ Read first in the repo: `docs/HANDOFF.md` (accounts, IDs, emails, calendar setup
 
 ## Email
 - Cloudflare Email Routing (free, unlimited addresses): info@/booking@ → duhokresearches@gmail.com, clinic@ → dr_saanha@hotmail.com, alqoshi@ → saleem.hana84@gmail.com, samuel@/sireen@/santos@ → saleem.sally.sireen@gmail.com. New destinations must be verified by the owner.
+
+## Print materials (`print/` in the repo)
+- Vector sources rendered to PDF with Chromium (`node print/build.cjs`): `rx.html` (A4 Rx pad), `card.html` (tooth-shaped business card, front + back), `logo.svg` (traced clinic logo), `qr.svg` (to https://www.doctorsaleem.com/links), fonts in `print/f/`. See the skills clinic-rx-pad, clinic-business-card and clinic-stamp.
+- Contact data on print: phones 0750 781 6500 and 0778 166 5000 (WhatsApp, Telegram, Viber), emails clinic@doctorsaleem.com and info@doctorsaleem.com (owner replaced dr.saleemo@gmail.com on the Rx and card), www.doctorsaleem.com, address دهوك - شارع قاضي محمد - بناية جرزات شيركو، الطابق الأول - مقابل صيدلية هناسة, hours ٣:٠٠ – ٩:٠٠ مساءً except Friday, Reg. No. 933 (15 April 2009).
 
 ## Working method
 1. Say what you will do, then work; design changes on a branch, shown before merging.
