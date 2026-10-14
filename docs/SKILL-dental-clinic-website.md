@@ -31,7 +31,7 @@ Read first in the repo: `docs/HANDOFF.md` (accounts, IDs, emails, calendar setup
 - Cloudflare Email Routing (free, unlimited addresses): info@/booking@ → duhokresearches@gmail.com, clinic@ → dr_saanha@hotmail.com, alqoshi@ → saleem.hana84@gmail.com, samuel@/sireen@/santos@ → saleem.sally.sireen@gmail.com. New destinations must be verified by the owner.
 
 ## Print materials (`print/` in the repo)
-- Vector sources rendered to PDF with Chromium (`node print/build.cjs`): `rx.html` (A4 Rx pad), `card.html` (tooth-shaped business card, front + back), `logo.svg` (traced clinic logo), `qr.svg` (to https://www.doctorsaleem.com/links), fonts in `print/f/`. See the skills clinic-rx-pad, clinic-business-card and clinic-stamp.
+- Vector sources rendered to PDF with Chromium (`node print/build.cjs`): `rx.html` (A4 Rx pad), `card.html` (vector rebuild of the tooth business card; the owner prefers his ORIGINAL card picture, edit only the changed text there), `logo.svg` (traced clinic logo), `qr.svg` (to https://www.doctorsaleem.com/links), fonts in `print/f/`. See the skills clinic-rx-pad, clinic-business-card and clinic-stamp.
 - Contact data on print: phones 0750 781 6500 and 0778 166 5000 (WhatsApp, Telegram, Viber), emails clinic@doctorsaleem.com and info@doctorsaleem.com (owner replaced dr.saleemo@gmail.com on the Rx and card), www.doctorsaleem.com, address دهوك - شارع قاضي محمد - بناية جرزات شيركو، الطابق الأول - مقابل صيدلية هناسة, hours ٣:٠٠ – ٩:٠٠ مساءً except Friday, Reg. No. 933 (15 April 2009).
 
 ## Working method
