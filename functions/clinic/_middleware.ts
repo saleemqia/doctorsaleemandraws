@@ -1,7 +1,8 @@
 // Guards everything under /clinic: only browsers holding a valid clinic key cookie get in.
 // /clinic/login?k=KEY checks the key (only its SHA-256 hash is stored in D1), sets the cookie,
 // and redirects to /clinic/ so the key does not stay in the address bar or history.
-import { COOKIE, Env, cookieValue, keyValid, needsPin, pinUnlocked } from "../../lib/clinic";
+import { COOKIE, Env, cookieValue, keyValid, needsPin, pinUnlocked, sha256 } from "../../lib/clinic";
+import { GOOGLE_CLIENT_ID, newSession, sessionCookie, verifyGoogle } from "../../lib/googleLogin";
 
 const PRIVATE = { "X-Robots-Tag": "noindex, nofollow", "Cache-Control": "no-store", "Referrer-Policy": "no-referrer" };
 
@@ -9,7 +10,14 @@ const denied = () => new Response(
   `<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>صفحة خاصة</title>
 <body style="font-family:system-ui,sans-serif;background:#f4f7fc;color:#13285C;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center;padding:16px">
-<div><h1 style="font-size:22px">صفحة خاصة بالعيادة</h1><p>افتح رابط الدخول الخاص بك مرة واحدة على هذا الجهاز.</p>
+<div><h1 style="font-size:22px">صفحة خاصة بالعيادة</h1><p>سجّل الدخول بحساب Google المسموح له، أو افتح رابط الدخول الخاص بك.</p>
+<script src="https://accounts.google.com/gsi/client" async></script>
+<div id="g_id_onload" data-client_id="${GOOGLE_CLIENT_ID}" data-callback="gLogin" data-auto_prompt="false" data-ux_mode="popup"></div>
+<div style="display:flex;justify-content:center;margin:18px 0 6px"><div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_blue" data-text="signin_with" data-size="large" data-locale="ar" data-logo_alignment="left"></div></div>
+<p id="gMsg" style="color:#C2413A;font-size:14px;min-height:1em"></p>
+<script>function gLogin(r){var m=document.getElementById("gMsg");m.style.color="#5B6B8C";m.textContent="جارٍ التحقق…";
+fetch("/clinic/google",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({credential:r.credential})}).then(function(x){return x.json()}).then(function(d){if(d.ok){location.href="/clinic/"}else{m.style.color="#C2413A";m.textContent=d.error||"تعذّر الدخول"}}).catch(function(){m.style.color="#C2413A";m.textContent="تعذّر الاتصال"})}</script>
+<p style="color:#5B6B8C;font-size:13px;margin:4px 0 0">أو بمفتاح الدخول:</p>
 <form action="/clinic/login" method="get" style="margin:18px auto;display:flex;gap:8px;max-width:420px">
 <input name="k" type="password" required minlength="20" autocomplete="current-password" placeholder="أو الصق مفتاح الدخول هنا" style="flex:1;padding:10px;border:1px solid #cbd6ea;border-radius:10px;font:inherit;direction:ltr">
 <button style="padding:10px 16px;border:0;border-radius:10px;background:#13285C;color:#fff;font:inherit">دخول</button></form>
@@ -26,7 +34,20 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, next }) => {
     return new Response(null, { status: 301, headers: { Location: url.toString(), ...PRIVATE } });
   }
 
+  // Sign in with Google: the page sends Google's ID token; we check it and the allowed-email list, then give a session cookie.
+  if (url.pathname === "/clinic/google" && request.method === "POST") {
+    const j = (o: unknown, st = 200, extra: Record<string, string> = {}) => new Response(JSON.stringify(o), { status: st, headers: { "Content-Type": "application/json; charset=utf-8", ...PRIVATE, ...extra } });
+    if (request.headers.get("Origin") !== url.origin) return j({ ok: false, error: "طلب غير مسموح" }, 403);
+    const body = await request.json<{ credential?: string }>().catch(() => ({} as { credential?: string }));
+    const v = await verifyGoogle(env, body.credential || "");
+    if (!v.email) { await new Promise((r) => setTimeout(r, 800)); return j({ ok: false, error: v.error }, 403); }
+    return j({ ok: true, email: v.email }, 200, { "Set-Cookie": sessionCookie(await newSession(env, v.email)) });
+  }
+
   if (url.pathname === "/clinic/logout") {
+    // A Google session is removed from the database too, so the cookie cannot be reused.
+    const k = cookieValue(request, COOKIE);
+    if (k) await env.DB.prepare("DELETE FROM clinic_keys WHERE hash = ? AND label LIKE 'google:%'").bind(await sha256(k)).run().catch(() => {});
     return new Response(null, { status: 302, headers: {
       Location: "/", "Set-Cookie": `${COOKIE}=; Path=/clinic; Max-Age=0; HttpOnly; Secure; SameSite=Lax`, ...PRIVATE } });
   }

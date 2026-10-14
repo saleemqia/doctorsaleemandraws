@@ -27,7 +27,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .bar{display:flex;align-items:center;gap:10px;margin:16px 2px 10px;flex-wrap:wrap}
 .bar h2{font-size:17px;margin:0}
 .count{background:var(--sky);color:var(--navy);border-radius:999px;padding:3px 12px;font-weight:700;font-size:14px}
-.bar .tools{margin-inline-start:auto;display:flex;gap:8px}
+.bar .tools{margin-inline-start:auto;display:flex;gap:8px;flex-wrap:wrap;max-width:100%}
 .btn{border:1px solid var(--line);background:var(--card);color:var(--navy);border-radius:10px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .note{font-size:13px;color:var(--muted);margin:0 2px 10px}
 .note.warn{color:var(--red)}
@@ -100,6 +100,25 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .pickbar span{flex:1;font-size:13px}.btn:disabled{opacity:.45}.btn.pri{background:var(--navy);color:#fff}.btn.sm{padding:4px 8px}
 #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 16px;border-radius:12px;z-index:60;box-shadow:0 6px 24px #0004;max-width:92vw}
 #toast a{color:#9CC4FF;font-weight:700;margin-inline-start:10px}
+.plan{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:6px}
+.plan .ph{display:grid;grid-template-columns:62px 1fr;height:var(--rowh);border-top:1px solid #EEF2F8}
+.plan .ph.hr{border-top:1px solid #D5DEEC}.plan .ph:first-child{border-top:0}
+.plan .ph b{font-size:12px;color:var(--muted);font-weight:600;padding:2px 8px;text-align:start;white-space:nowrap}
+.plan .ph.q b{visibility:hidden}
+.plan .slot{border:0;background:none;cursor:pointer;font:inherit;color:transparent;text-align:start;padding:0 10px}
+.plan .slot:hover,.plan .slot:focus-visible{background:#EAF3FF;color:var(--blue);font-size:12px;font-weight:600;outline:0}
+.plan .ev{position:absolute;inset-inline-start:66px;inset-inline-end:8px;border-radius:10px;background:#E3EEFB;border-inline-start:4px solid var(--blue);padding:3px 8px;overflow:hidden;cursor:pointer;font-size:13px;line-height:1.3;box-shadow:0 1px 2px #13285c1a;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.plan .ev b{font-size:14px}.plan .ev .t{color:var(--muted);font-size:12px;white-space:nowrap}.plan .ev .w{color:#0E5E3A}
+.plan .ev.past{opacity:.6}.plan .ev.now{background:#FFF4D6;border-color:var(--gold)}
+.plan .ev.half{inset-inline-end:calc(50% + 4px)}.plan .ev.half2{inset-inline-start:calc(50% + 35px)}
+.plan .nowl{position:absolute;inset-inline:62px 0;height:2px;background:var(--red);pointer-events:none}
+.plan .nowl::before{content:"";position:absolute;inset-inline-start:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--red)}
+.plan-sum{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:4px 2px}
+.plan-sum b{color:var(--navy)}
+.allday{background:#F4F7FC;border:1px dashed var(--line);border-radius:10px;padding:6px 10px;margin:6px 0;font-size:13px}
+#planBtn.on{background:var(--navy);color:#fff}
+@media print{.plan .slot{display:none}}
+.acc-l{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:6px 0;font-size:14px}
 #adlg{border:0;border-radius:16px;padding:16px;max-width:520px;width:94vw;color:var(--navy);font:inherit}#adlg::backdrop{background:#0007}
 #adlg form{display:grid;grid-template-columns:1fr 1fr;gap:10px}#adlg label{display:flex;flex-direction:column;font-size:13px;font-weight:600;gap:4px}
 #adlg *{box-sizing:border-box}#adlg label{min-width:0}#adlg input,#adlg select,#adlg textarea{width:100%;min-width:0;padding:9px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}#adlg .full{grid-column:1/-1}
@@ -232,7 +251,9 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     <h2 id="title">اليوم</h2><span class="count" id="count">…</span>
     <div class="tools">
       <button class="btn pri" id="newAppt" type="button" title="يُكتب في Outlook وGoogle">➕ موعد جديد</button>
+      <button class="btn" id="planBtn" type="button" title="عرض اليوم كجدول ساعات">🗓 جدول</button>
       <button class="btn" id="calBtn" type="button" title="ربط Outlook وGoogle">🔗 التقويم</button>
+      <button class="btn" id="accBtn" type="button" title="من يستطيع الدخول بحساب Google">👥 الدخول</button>
       <button class="btn" id="refresh" title="تحديث">↻ تحديث</button>
       <a class="btn" id="csv" href="#">⬇ Excel</a>
       <button class="btn" onclick="print()">🖨 طباعة</button>
@@ -1445,8 +1466,8 @@ $("list").addEventListener("click", async (e) => {
 
 
 /* ---------- new / edit / delete appointment: written into Outlook and Google (see lib/calendars.ts) ---------- */
-function apptDialog(a) {
-  const d = $("adlg"), day = a ? a.day : (/^\d{4}-\d{2}-\d{2}$/.test(current) ? current : current === "tomorrow" ? addDays(today, 1) : curFrom || today);
+function apptDialog(a, preset) {
+  const d = $("adlg"), day = a ? a.day : preset?.day || (/^\d{4}-\d{2}-\d{2}$/.test(current) ? current : current === "tomorrow" ? addDays(today, 1) : curFrom || today);
   const mins = a ? Math.max(5, Math.round((Date.parse(a.end) - Date.parse(a.start)) / 60000)) : 30;
   const opt = [15, 30, 45, 60, 90, 120].map((m) => `<option value="${m}" ${m === mins ? "selected" : ""}>${m < 60 ? m + " دقيقة" : m / 60 + " ساعة"}</option>`).join("");
   d.innerHTML = `<h3>${a ? "✏️ تعديل الموعد" : "➕ موعد جديد"}</h3><form id="apForm">
@@ -1454,7 +1475,7 @@ function apptDialog(a) {
     <label>الهاتف<input name="phone" type="tel" inputmode="tel" dir="ltr" value="${esc(a?.phone || "")}" placeholder="0750…"></label>
     <label>العمل<input name="treatment" value="${esc(a?.treatment || "")}" placeholder="حشوة، تنظيف…"></label>
     <label>اليوم<input name="day" type="date" required value="${day}"></label>
-    <label>الوقت<input name="time" type="time" required step="300" value="${a ? hm(a.start) : ""}"></label>
+    <label>الوقت<input name="time" type="time" required step="300" value="${a ? hm(a.start) : preset?.time || ""}"></label>
     <label>المدة<select name="minutes">${mins && ![15, 30, 45, 60, 90, 120].includes(mins) ? `<option value="${mins}" selected>${mins} دقيقة</option>` : ""}${opt}</select></label>
     <label>ملاحظات<input name="notes"></label>
     <div class="row2"><button class="btn pri">💾 حفظ</button><button class="btn" type="button" onclick="$('adlg').close()">إلغاء</button><span class="note" id="apMsg"></span></div></form>`;
@@ -1483,6 +1504,65 @@ $("list").addEventListener("click", async (e) => {
   load();
 });
 
+
+/* ---------- day planner: one day as a time grid (clinic hours), free slots open a new appointment ---------- */
+let planMode = false; try { planMode = localStorage.getItem("planMode") === "1"; } catch { /* private mode */ }
+const PLAN = { from: 15 * 60, to: 21 * 60, step: 15, rowh: 22 };
+const toMin = (iso) => { const [h, m] = hm(iso).split(":").map(Number); return h * 60 + m; };
+const fmtMin = (m) => `${((Math.floor(m / 60) + 11) % 12) + 1}:${String(m % 60).padStart(2, "0")} ${m < 720 ? "ص" : "م"}`;
+function renderPlanner(data, label) {
+  const appts = (data.appts || []).filter((a) => a.day === curFrom), timed = appts.filter((a) => !a.allDay), allDay = appts.filter((a) => a.allDay);
+  $("title").textContent = label; $("count").textContent = appts.length + (appts.length === 1 ? " موعد" : " مواعيد");
+  const wd = new Date(curFrom + "T00:00:00Z").getUTCDay();
+  let from = PLAN.from, to = PLAN.to;
+  for (const a of timed) { from = Math.min(from, Math.floor(toMin(a.start) / 60) * 60); to = Math.max(to, Math.ceil(Math.max(toMin(a.end), toMin(a.start) + 15) / 60) * 60); }
+  const shown = []; window._shown = shown; const rows = [];
+  for (let m = from; m < to; m += PLAN.step) rows.push(`<div class="ph ${m % 60 ? "q" : "hr"}"><b>${fmtMin(m)}</b><button class="slot" type="button" data-slot="${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}">＋ ${fmtMin(m)}</button></div>`);
+  const now = Date.now(), y = (m) => ((m - from) / PLAN.step) * PLAN.rowh;
+  const sorted = timed.slice().sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
+  let evs = "", busy = 0;
+  sorted.forEach((a, i) => {
+    const s = toMin(a.start), e = Math.max(toMin(a.end), s + 10); busy += e - s;
+    const overlap = sorted.some((b, j) => j !== i && toMin(b.start) < e && Math.max(toMin(b.end), toMin(b.start) + 10) > s);
+    const side = overlap ? (sorted.findIndex((b) => toMin(b.start) < e && Math.max(toMin(b.end), toMin(b.start) + 10) > s) === i ? "half" : "half2") : "";
+    const st = Date.parse(a.start), en = Date.parse(a.end), cls = en < now ? "past" : st <= now && now < en ? "now" : "";
+    evs += `<div class="ev ${cls} ${side}" style="top:${y(s) + 1}px;height:${Math.max(y(e) - y(s) - 2, PLAN.rowh - 2)}px" data-aed="${shown.length}" title="اضغط للتعديل"><b>${esc(a.title) || "بدون اسم"}</b><span class="t">${ampm(a.start)} – ${ampm(a.end)}</span>${a.treatment ? `<span class="w">${esc(a.treatment)}</span>` : ""}${a.phone ? `<a href="tel:${esc(a.phone)}" dir="ltr">${esc(a.phone)}</a>` : ""}</div>`;
+    shown.push(a);
+  });
+  const nowMin = curFrom === today ? toMin(new Date().toISOString()) : -1;
+  const free = Math.max(0, (PLAN.to - PLAN.from) - busy);
+  $("note").className = "note"; $("note").textContent = "اضغط على وقت فارغ لإضافة موعد، أو على موعد لتعديله.";
+  $("list").innerHTML = `<div class="plan-sum"><span>المواعيد: <b>${timed.length}</b></span><span>وقت محجوز: <b>${Math.floor(busy / 60)}س ${busy % 60}د</b></span><span>وقت فارغ تقريبًا: <b>${Math.floor(free / 60)}س ${free % 60}د</b></span>${wd === 5 ? `<span style="color:var(--red)">الجمعة: العيادة مغلقة عادةً</span>` : ""}</div>
+    ${allDay.map((a) => `<div class="allday">📌 طوال اليوم: ${esc(a.title)}</div>`).join("")}
+    <div class="plan" style="--rowh:${PLAN.rowh}px">${rows.join("")}${evs}${nowMin >= from && nowMin <= to ? `<div class="nowl" style="top:${y(nowMin)}px"></div>` : ""}</div>`;
+}
+function setPlan(v) { planMode = v; try { localStorage.setItem("planMode", v ? "1" : "0"); } catch { /* ignore */ } $("planBtn").classList.toggle("on", v); load(); }
+$("planBtn").onclick = () => { if ($("dnav").hidden && !planMode) { planMode = true; try { localStorage.setItem("planMode", "1"); } catch { /* ignore */ } $("planBtn").classList.add("on"); if (curGroup !== "a") setGroup("a", false); return gotoDay(today); } setPlan(!planMode); };
+$("planBtn").classList.toggle("on", planMode);
+$("list").addEventListener("click", (e) => { const b = e.target.closest("[data-slot]"); if (b) apptDialog(null, { day: curFrom, time: b.dataset.slot }); });
+
+/* ---------- who may sign in with Google ---------- */
+async function accDialog(msg) {
+  const d = $("adlg"); d.innerHTML = `<h3>👥 الدخول بحساب Google</h3><div class="spin"></div>`; if (!d.open) d.showModal();
+  const unlocked = (await (await fetch("/clinic/api/pin", { cache: "no-store" })).json().catch(() => ({}))).unlocked;
+  if (!unlocked) { pinAfter = () => accDialog(""); d.innerHTML = `<h3>👥 الدخول بحساب Google</h3>${pinBox("إدارة الدخول")}<div class="row2"><button class="btn" type="button" onclick="$('adlg').close()">إغلاق</button></div>`; return; }
+  const r = await (await fetch("/clinic/api/access", { cache: "no-store" })).json().catch(() => ({ ok: false }));
+  if (!r.ok) { d.innerHTML = `<h3>👥 الدخول</h3><p class="note warn">تعذّر التحميل</p>`; return; }
+  const ses = (r.sessions || []);
+  d.innerHTML = `<h3>👥 الدخول بحساب Google</h3>${msg ? `<p class="note">${esc(msg)}</p>` : ""}
+    <p class="note">من يكون بريده هنا يستطيع فتح صفحة العيادة بزر «تسجيل الدخول باستخدام Google» دون رابط أو مفتاح. الحسابات والإحصاءات تبقى محمية بالرقم السري.</p>
+    <form id="accForm"><label class="full">البريد المسموح (سطر لكل حساب)<textarea name="emails" rows="4" dir="ltr">${esc((r.emails || []).join("\n"))}</textarea></label>
+    <div class="row2"><button class="btn pri">💾 حفظ</button><button class="btn" type="button" onclick="$('adlg').close()">إغلاق</button></div></form>
+    <h4 style="margin:12px 0 4px">الأجهزة المسجّلة الآن</h4>
+    ${ses.length ? ses.map((x) => `<div class="acc-l"><span dir="ltr">${esc(x.email)}</span><span class="note" style="margin:0">${x.n} جهاز</span><button class="btn" type="button" data-accout="${esc(x.email)}">تسجيل خروج</button></div>`).join("") : `<p class="note">لا أحد دخل بحساب Google بعد.</p>`}`;
+  $("accForm").onsubmit = async (e) => { e.preventDefault();
+    const emails = e.target.emails.value.split(/[\s,;]+/).filter(Boolean);
+    const x = await (await fetch("/clinic/api/access?action=save", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ emails }) })).json().catch(() => ({ ok: false }));
+    accDialog(x.ok ? "✔ حُفظت القائمة" + (x.emails.length < emails.length ? " (أُهمل بريد غير صحيح)" : "") : "⚠️ تعذّر الحفظ"); };
+}
+$("accBtn").onclick = () => accDialog("");
+$("adlg").addEventListener("click", async (e) => { const b = e.target.closest("[data-accout]"); if (!b || !confirm("تسجيل خروج " + b.dataset.accout + " من كل الأجهزة؟")) return;
+  await fetch("/clinic/api/access?action=signout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: b.dataset.accout }) }); accDialog("✔ تم تسجيل الخروج"); });
 /* ---------- calendar connections: Outlook (Microsoft) and Google ---------- */
 async function calDialog(msg) {
   const d = $("adlg"); d.innerHTML = `<h3>🔗 ربط التقويم</h3><div class="spin"></div>`; if (!d.open) d.showModal();
@@ -1622,7 +1702,7 @@ async function load(r = current) {
     const res = await fetch(`/clinic/api/day?from=${from}&days=${days}`, { credentials: "same-origin", cache: "no-store" });
     if (res.status === 401) { location.reload(); return; }
     const data = await res.json(); if (data.today) today = data.today;
-    render(data, label);
+    if (planMode && days === 1) renderPlanner(data, label); else render(data, label);
   } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر التحميل، تحقّق من الإنترنت ثم اضغط تحديث.</div>`; }
 }
 
