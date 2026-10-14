@@ -1,6 +1,6 @@
 ---
-name: clinic-business-card
-description: Create or change a print-ready business card PDF (including die-cut shapes like Dr. Saleem's tooth card) from a picture or from scratch, with vector logo, QR and Arabic/Kurdish/English text.
+name: "clinic-business-card"
+description: "Create or change a print-ready business card PDF (including die-cut shapes like Dr. Saleem's tooth card) from a picture or from scratch, with vector logo, QR and Arabic/Kurdish/English text."
 ---
 
 # Business card

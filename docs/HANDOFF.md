@@ -1,6 +1,6 @@
 # doctorsaleem.com: full handoff (start here in any new account or tool)
 
-Last updated: 14 Oct 2026. This file holds everything needed to continue the work in another Claude account, another computer or with another developer.
+Last updated: 14 Oct 2026 (afternoon). This file holds everything needed to continue the work in another Claude account, another computer or with another developer.
 **No passwords, keys, PINs or client secrets are written here on purpose.** The owner keeps those himself.
 
 Read next: `docs/clinic-website-guide.md` (how each part works in detail).
@@ -52,17 +52,25 @@ Site emails are configured in `src/config/clinic.ts` (`EMAILS`, `EMAIL_LABELS`).
 - Home (blue design): hero, services, about, smile preview, before/after, gallery, real Google reviews, FAQ, contact, sticky action bar (call, WhatsApp, links, book), chat helper (approved text only, cautious medical wording).
 - **Services**: `/services` + 8 pages `/services/<slug>` (implants, veneers-hollywood-smile, teeth-whitening, root-canal-fillings, crowns-bridges-dentures, orthodontics-braces, dental-cleaning, tooth-extraction). Data: `src/config/services.ts` (Q&A, SEO) + `src/config/serviceDetails.ts` (what, who, steps, aftercare, YouTube videos). Server adds MedicalProcedure, FAQPage, BreadcrumbList.
 - **Smile preview**: on-device, photo never uploaded. Modes "whiten" and "design" (Hollywood smile: 10 drawn teeth with golden proportions, shade/shape/width/length/curve/tilt, move, fit to painted area). `src/components/dental/SmilePreview.tsx`.
+- **/links** page: home button with path, "صفحات الموقع" section in two columns (page links + live phone preview of the chosen page).
 - **Social** sub-pages, extra pages (`src/config/extraPages.ts`: case, kids, treatments, infographics, news...), `/links`, `/privacy`.
 - SEO: `src/config/seo.ts` + `functions/_middleware.ts` (titles, canonical, hreflang, JSON-LD, no-JS fallback content, old-URL 301s). `public/sitemap.xml` (87 URLs).
 - Booking: WhatsApp + Supabase + `/api/booking` (D1 `booking_requests`, shown in /clinic).
 
 **Private `/clinic`** (`public/clinic/index.html`, vanilla JS, Arabic RTL):
-- Login: `/clinic/login?k=KEY` (key hash in D1 `clinic_keys`; cookie `clinic_key`).
+- Login: **Sign in with Google** button (allowed emails in `clinic_settings.login_emails`, default dr.saleemo@gmail.com; manage with 👥 الدخول + PIN; 60-day session saved as `google:<email>` in `clinic_keys`; code `lib/googleLogin.ts`, `functions/clinic/api/access.ts`, `/clinic/google` in the middleware). Backup: `/clinic/login?k=KEY` (key hash in D1 `clinic_keys`; cookie `clinic_key`). Google client "Clinic page" has JavaScript origin https://www.doctorsaleem.com.
+- **🗓 جدول (day planner)**: a single day as a 3–9 PM time grid; tap a free time to add an appointment there, tap an appointment to edit; booked/free totals; remembered per browser.
 - **Owner PIN** (second lock, 30 min): accounts, statistics, patient cards, files, sheets and calendar settings. Without it only quick-entry forms show. Hash `sha256("fin:"+PIN)` in `clinic_settings.fin_pin`. Rules: `lib/clinic.ts` `needsPin`.
 - Appointments from Outlook ICS (today, tomorrow, ranges, archive since 2020), WhatsApp reminders 2h before, review requests, booking requests.
 - **➕ موعد جديد / ✏️ / 🗑**: add, edit, delete appointments; written to Outlook and/or Google (`functions/clinic/api/appt.ts`, `lib/calendars.ts`). Page-made changes show for 6h until the ICS catches up (`cal_events`).
 - **🔗 التقويم**: connect Outlook and Google (OAuth; tokens in D1 `clinic_settings` keys `cal_ms_*`, `cal_g_*`), copy Outlook appointments to Google (button "📋 نسخ", plus auto-copy of the next 120 days, 12 per run; mirror table `cal_copy`).
 - Accounts (payments, expenses, other income; Google Drive Excel sync; Excel export in the 2026 layout; charts), patient cards (QR, PDF, print with letterhead).
+
+## 5b. Print materials (`print/` folder, vector, rebuild with `node print/build.cjs`)
+- Rx pad A4: `print/rx.html` → `print/out/Rx-Dr-Saleem-Andraws.pdf` (Noto Naskh/Kufi Arabic, Playfair, Montserrat; traced logo `print/logo.svg`; QR `print/qr.svg` → doctorsaleem.com/links; Kurdish registration line; emails clinic@ and info@; no top blue line).
+- Dr. Saleem's tooth business card: his ORIGINAL picture with only the email changed (info@ or clinic@ versions; do not redesign it). A vector rebuild exists in `print/card.html` but the owner prefers his original look and QR.
+- Dr. Sandy Andraws (brother, M.Sc. Oral Surgery, lecturer at College of Dentistry – University of Duhok, 0750 432 5923, Duhok – Masike – in front of Dollar Center): approved card `print/sandy/card-v2.html` → `print/out/Business-Card-Dr-Sandy-Andraws-v2.pdf` (horizontal 90×55, teal + gold, WhatsApp QR). `print/sandy/card.html` (arch shape) was rejected.
+- Skills (copies in `docs/skills/`): clinic-rx-pad, clinic-business-card, clinic-stamp, doctor-sandy-andraws.
 
 ## 6. Connecting the calendars (do once; repeat if a connection is removed)
 Open https://www.doctorsaleem.com/clinic → 🔗 التقويم → enter the PIN.
@@ -95,13 +103,17 @@ git push origin HEAD:main                                   # deploys
 - Design changes: show the owner first, merge after approval.
 
 ## 8. Starting in a new Claude account
-1. Connect GitHub and give access to `saleemqia/doctorsaleemandraws`; connect Cloudflare (Developer Platform) for D1.
-2. Add the skill **dental-clinic-website** (SKILL.md in `docs/SKILL-dental-clinic-website.md`).
+1. Connect GitHub and give access to `saleemqia/doctorsaleemandraws` (and `hercules84/drsallycare` for Dr. Sally's site); connect Cloudflare (Developer Platform) for D1.
+2. Add the skills from this repo: `docs/SKILL-dental-clinic-website.md` and every file in `docs/skills/` (Settings → Skills, or ask Claude to propose them). Each repo also has a `CLAUDE.md` that Claude reads automatically.
 3. Tell Claude: "Read docs/HANDOFF.md and docs/clinic-website-guide.md, then continue."
 4. For dashboards (Cloudflare, Google Cloud, Search Console, Entra) sign in yourself in the browser; Claude never types passwords or secrets.
 
-## 9. Open items
-- Google and Outlook calendar connection: paste IDs + secrets as in §6 (in progress).
+## 9. Other site: drsallycare.com
+Separate repo `hercules84/drsallycare` (static site, Cloudflare Pages project `drsallycare`, D1 `drsally-stories`). Everything about it is in that repo's `CLAUDE.md` and `README.md`.
+
+## 10. Open items
+- Google and Outlook calendar connection: paste IDs + secrets as in §6 (in progress). The Google client secret is shown only once: if lost, delete the old secrets (max 2) and add a new one.
+- Test "Sign in with Google" on /clinic; add staff emails in 👥 الدخول.
 - Disable the old Google client secret ending in `S-zv` after the new one works.
 - Owner should revoke GitHub tokens pasted in earlier chats.
 - Treatment price list (owner will send). Recall list for overdue patients (suggested only).

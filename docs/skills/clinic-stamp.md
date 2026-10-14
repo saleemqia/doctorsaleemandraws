@@ -1,6 +1,6 @@
 ---
-name: clinic-stamp
-description: Design a clinic or doctor rubber/self-inking stamp (round or rectangular) as print-ready vector PDF/SVG in Arabic, Kurdish and English, e.g. for Dr. Saleem Andraws' dental clinic.
+name: "clinic-stamp"
+description: "Design a clinic or doctor rubber/self-inking stamp (round or rectangular) as print-ready vector PDF/SVG in Arabic, Kurdish and English, e.g. for Dr. Saleem Andraws' dental clinic."
 ---
 
 # Clinic stamp

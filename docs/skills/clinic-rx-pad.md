@@ -1,6 +1,6 @@
 ---
-name: clinic-rx-pad
-description: Create or change a print-ready prescription (Rx) pad PDF for Dr. Saleem Andraws' clinic or any doctor, with clear Arabic/Kurdish/English fonts and vector logo.
+name: "clinic-rx-pad"
+description: "Create or change a print-ready prescription (Rx) pad PDF for Dr. Saleem Andraws' clinic or any doctor, with clear Arabic/Kurdish/English fonts and vector logo."
 ---
 
 # Rx pad (prescription sheet)
