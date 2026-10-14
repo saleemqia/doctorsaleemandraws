@@ -28,7 +28,7 @@ Two sections (buttons at the top):
 - **Finance and patients:** Accounts and Patient cards.
 
 Features:
-- Calendar: read-only from the clinic's Outlook calendar (ICS). Visits are archived into D1 (`appointments`). New appointments are added in Outlook, not here.
+- Calendar: read from the clinic's Outlook calendar (ICS); visits are archived into D1 (`appointments`). Appointments can also be added, edited and deleted in the page (➕ / ✏️ / 🗑), written to Outlook and/or Google once they are connected in 🔗 التقويم (`lib/calendars.ts`, `functions/clinic/api/appt.ts`, `functions/clinic/api/cal*`). Outlook appointments can be copied to Google. Setup steps and IDs: `docs/HANDOFF.md`.
 - Reminders: for every appointment with a phone number, a green "send" button appears 2 hours before. It opens WhatsApp with the message ready (WhatsApp cannot be sent automatically without its paid business service). After a visit, a button sends a Google review request. Sent marks are kept in the browser.
 - Booking requests: requests from the website, with call, WhatsApp, done and delete.
 - Patient cards: merged by name key (`patientKey`), with phones, visits, payments, files, QR, PDF report and printing.
