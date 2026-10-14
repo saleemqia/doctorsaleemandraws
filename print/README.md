@@ -8,3 +8,4 @@
 - Build: `node print/build.cjs` (needs playwright-core and Chromium). Print at 100% / actual size.
 
 - `sandy/card.html` → `out/Business-Card-Dr-Sandy-Andraws.pdf`: card for Dr. Sandy Andraws (brother; oral surgery, Masike clinic), arch-top shape 55 × 85 mm on a 61 × 91 mm page, teal + gold; QR opens WhatsApp 0750 432 5923.
+- `sandy/card-v2.html` → `out/Business-Card-Dr-Sandy-Andraws-v2.pdf`: second design (preferred after the owner disliked the arch shape): standard horizontal 90 × 55 mm with rounded corners on a 96 × 61 mm page; front ivory with a curved teal panel and gold emblem, back teal with WhatsApp QR. Arabic degree: ماجستير جراحة الفم والأسنان.
