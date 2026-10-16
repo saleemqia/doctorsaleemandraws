@@ -19,7 +19,7 @@ header h1{font-size:19px;margin:0}
 header small{opacity:.85}
 header a.out{margin-inline-start:auto;color:#fff;opacity:.8;font-size:13px;text-decoration:none;border:1px solid #ffffff55;border-radius:8px;padding:6px 10px}
 main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
-.seg{display:flex;gap:8px;margin-bottom:10px}.seg button{flex:1;border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:14px;padding:12px;font:inherit;font-weight:800;font-size:16px;cursor:pointer}.seg button.on{background:var(--navy);color:#fff}.tabs [hidden]{display:none!important}
+.seg{display:flex;gap:8px;margin-bottom:10px}.seg button,.seg a{flex:1;border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:14px;padding:12px;font:inherit;font-weight:800;font-size:16px;cursor:pointer;text-align:center;text-decoration:none}.seg button.on,.seg a.on{background:var(--navy);color:#fff}.tabs [hidden]{display:none!important}
 .tabs{display:flex;gap:6px;background:var(--card);border-radius:14px;padding:6px;box-shadow:0 4px 18px #13285C14;overflow-x:auto}
 .tabs button{flex:1;min-width:max-content;border:0;background:none;padding:10px 12px;border-radius:10px;font:inherit;font-weight:600;color:var(--muted);cursor:pointer}
 .tabs button.on{background:var(--navy);color:#fff}
@@ -210,7 +210,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   <a class="out" href="/" target="_blank" rel="noopener" title="يفتح في تبويب جديد، أغلقه لتعود إلى هنا" style="margin-inline-end:6px">🏠 الصفحة الرئيسية</a><a class="out" href="/clinic/logout" style="margin-inline-start:0">خروج</a>
 </div></header>
 <main>
-  <div class="seg" id="seg"><button data-g="a" class="on">📅 المواعيد</button><button data-g="f">💰 المالية والمرضى</button></div>
+  <div class="seg" id="seg"><a data-g="a" href="/clinic/?view=appointments">📅 المواعيد</a><a data-g="f" href="/clinic/?view=finance">💰 المالية والمرضى</a></div>
   <nav class="tabs" id="tabs">
     <button data-g="a" data-r="today" class="on">اليوم</button>
     <button data-g="a" data-r="tomorrow">غدًا</button>
@@ -1652,11 +1652,11 @@ window.addEventListener("beforeprint", fillLh);
 let curGroup = "a";
 function setGroup(g, go = true) {
   curGroup = g;
-  document.querySelectorAll("#seg button").forEach((x) => x.classList.toggle("on", x.dataset.g === g));
+  document.querySelectorAll("#seg [data-g]").forEach((x) => x.classList.toggle("on", x.dataset.g === g));
   document.querySelectorAll("#tabs [data-g]").forEach((x) => { x.hidden = x.dataset.g !== g; });
   if (go) { const first = document.querySelector(`#tabs button[data-g="${g}"]`); document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x === first)); $("pick").value = ""; load(first.dataset.r); }
 }
-$("seg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && b.dataset.g !== curGroup) setGroup(b.dataset.g); });
+$("seg").addEventListener("click", (e) => { const b = e.target.closest("[data-g]"); if (b && b.dataset.g !== curGroup && b.tagName === "BUTTON") setGroup(b.dataset.g); });
 $("tabs").addEventListener("click", (e) => {
   const b = e.target.closest("button"); if (!b) return;
   document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x === b));
@@ -1689,10 +1689,12 @@ $("dnav").addEventListener("click", (e) => {
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !["archive","patients","card","dups","bc","fin","remind","reqs"].includes(current)) load(); });
 setInterval(() => { if (!document.hidden && !["archive","patients","card","dups","bc","fin","remind","reqs"].includes(current)) load(); }, 5 * 60000);
 const deep = location.hash.match(/card=(\d+)/);
+const requestedView = new URLSearchParams(location.search).get("view");
 if (deep) {
   document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x.dataset.r === "patients"));
   setGroup("f", false); current = "patients"; $("pats").hidden = false; $("dnav").hidden = true; openCard(+deep[1]);
-} else { setGroup("a", false); load("today"); remFetch(true).then(remBadge); reqCount(); }
+} else if (requestedView === "finance") { setGroup("f", false); load("fin"); }
+else { setGroup("a", false); load("today"); remFetch(true).then(remBadge); reqCount(); }
 </script>
 </body>
 </html>
