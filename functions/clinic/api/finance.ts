@@ -50,7 +50,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       othrows = (await env.DB.prepare("SELECT sheet, label, day, amount_iqd, amount_usd FROM other_income WHERE sheet LIKE ? ORDER BY sheet, id").bind(like).all()).results;
     }
     const { results: pays } = await env.DB.prepare(
-      "SELECT id, name, day, paid_iqd, paid_usd, due_iqd, due_usd, work FROM payments WHERE src LIKE 'm:%' ORDER BY id DESC LIMIT 25",
+      "SELECT id, name, day, paid_iqd, paid_usd, due_iqd, due_usd, work, notes, phone FROM payments WHERE src LIKE 'm:%' ORDER BY id DESC LIMIT 25",
     ).all();
     const { results: works } = await env.DB.prepare(
       `SELECT CAST(substr(sheet,6,2) AS INTEGER) AS m, trim(work) AS w, count(*) AS n, coalesce(sum(paid_iqd),0) AS iqd, coalesce(sum(paid_usd),0) AS usd
@@ -126,11 +126,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       const key = patientKey(name);
       const phone = cleanPhone(body.phone);
       if (!name || key.startsWith("#") || !/^\d{4}-\d{2}-\d{2}$/.test(day)) return json({ ok: false, error: "أدخل اسم المريض والتاريخ" }, 400);
-      if (![paidI, paidU, dueI, dueU].some((v) => (v || 0) !== 0)) return json({ ok: false, error: "أدخل مبلغًا مدفوعًا أو متبقيًا" }, 400);
+      // A visit may be recorded before any money is collected. Empty money fields are
+      // stored as zero so it remains visible in the patient card and export.
       const known = await env.DB.prepare("SELECT key FROM patients WHERE key = ?").bind(key).first();
       const stmts = [env.DB.prepare(
         `INSERT INTO payments (src, sheet, patient_key, name, day, paid_iqd, paid_usd, due_iqd, due_usd, work, notes, phone, matched) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-      ).bind("m:" + Date.now() + Math.random().toString(36).slice(2, 6), day.slice(0, 7), key, name, day, paidI, paidU, dueI, dueU,
+      ).bind("m:" + Date.now() + Math.random().toString(36).slice(2, 6), day.slice(0, 7), key, name, day, paidI ?? 0, paidU ?? 0, dueI ?? 0, dueU ?? 0,
         String(body.work || "").slice(0, 300), String(body.notes || "").slice(0, 300), phone, "manual")];
       if (!known) stmts.push(env.DB.prepare(
         "INSERT OR IGNORE INTO patients (key, no) SELECT ?1, (SELECT coalesce(max(no), 10000) + 1 FROM patients) WHERE NOT EXISTS (SELECT 1 FROM patients WHERE key = ?1)",
@@ -139,6 +140,18 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       await env.DB.batch(stmts);
       if (!known) await setSetting(env, "stats_dirty", "1");
       return json({ ok: true, newCard: !known });
+    }
+    if (action === "payedit") {
+      const id = Number(body.id), name = String(body.name || "").trim().slice(0, 120), day = String(body.day || "");
+      const key = patientKey(name), phone = cleanPhone(body.phone);
+      if (!id || !name || key.startsWith("#") || !/^\d{4}-\d{2}-\d{2}$/.test(day)) return json({ ok: false, error: "أدخل اسم المريض والتاريخ" }, 400);
+      const own = await env.DB.prepare("SELECT id FROM payments WHERE id = ? AND src LIKE 'm:%'").bind(id).first();
+      if (!own) return json({ ok: false, error: "هذه الدفعة غير قابلة للتعديل" }, 404);
+      await env.DB.prepare("UPDATE payments SET sheet=?, patient_key=?, name=?, day=?, paid_iqd=?, paid_usd=?, due_iqd=?, due_usd=?, work=?, notes=?, phone=? WHERE id=? AND src LIKE 'm:%'")
+        .bind(day.slice(0, 7), key, name, day, num(body.paid_iqd) ?? 0, num(body.paid_usd) ?? 0, num(body.due_iqd) ?? 0, num(body.due_usd) ?? 0,
+          String(body.work || "").slice(0, 300), String(body.notes || "").slice(0, 300), phone, id).run();
+      if (phone) await setPhone(env, key, phone);
+      return json({ ok: true });
     }
     if (action === "patient") {                       // a new patient card without a payment
       const name = String(body.name || "").trim().slice(0, 120), key = patientKey(name), phone = cleanPhone(body.phone);
