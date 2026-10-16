@@ -1251,8 +1251,16 @@ async function loadFin() {
       `<button class="${finCur === "iqd" ? "on" : ""}" data-c="iqd" style="margin-inline-start:auto">دينار</button><button class="${finCur === "usd" ? "on" : ""}" data-c="usd">دولار $</button><button data-x="1" title="ملف Excel بنفس شكل ملف السنة">⬇ تصدير Excel</button><button data-lock="1" title="إخفاء الحسابات الآن">🔒 قفل</button>`;
       document.querySelector("#exportMsg")?.remove();
       $("finYears").insertAdjacentHTML("afterend", `<p class="note" id="exportMsg">اختر السنة ثم اضغط «تصدير Excel» للحصول على نسخة محدثة من الحسابات.</p>`);
-    renderFin(d); qeAppts();
+    renderFin(d); qeAppts(); sheetsStatus();
   } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر تحميل الحسابات: ${esc(e.message || e)}</div>`; }
+}
+async function sheetsStatus() {
+  const note = $("exportMsg"); if (!note) return;
+  try {
+    const r = await (await fetch("/clinic/api/finance?action=sheetscheck", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })).json();
+    if (r.ok && r.sheets?.["2025"] && r.sheets?.["2026"]) note.textContent += " · ✔ الربط التلقائي بجدولي 2025 و2026 يعمل";
+    else note.textContent += " · ⚠ يحتاج ربط Google Sheets إلى مراجعة";
+  } catch { note.textContent += " · ⚠ تعذّر فحص ربط Google Sheets"; }
 }
 function monthlySummary(d, c, inc, exp, net) {
   const act = d.months.map((m, i) => (m.visits || exp[i] ? i : -1)).filter((i) => i >= 0); if (!act.length) return "";
