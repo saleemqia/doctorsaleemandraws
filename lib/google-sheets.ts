@@ -1,8 +1,7 @@
 import type { Env } from "./clinic";
 
 const BOOKS: Record<string, string> = {
-  "2025": "1vSIQdSz9bmSh8GdkSsTqPH-zOer3IJzU",
-  "2026": "1DCNdzkpFZT4wQB5nGcTKguox56TLF9CS",
+  "2026": "1WFnlFnNSHoNQpX1ls8tratB0wPs0qF23QjuIbFiPcmo",
 };
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const API = "https://sheets.googleapis.com/v4/spreadsheets";
@@ -68,13 +67,13 @@ async function google(token: string, url: string, init?: RequestInit) {
 
 function target(day: string) {
   const match = /^(\d{4})-(\d{2})-\d{2}$/.exec(day);
-  if (!match || !BOOKS[match[1]]) throw new Error("Only the linked 2025 and 2026 sheets can be updated");
+  if (!match || !BOOKS[match[1]]) throw new Error("Automatic sheet editing is configured for 2026 only. Other years can be exported as Excel.");
   const month = MONTHS[Number(match[2]) - 1];
   if (!month) throw new Error("Invalid payment month");
   return { spreadsheetId: BOOKS[match[1]], month };
 }
 
-const values = (r: PaymentSheetRow) => [[r.name, r.day, r.paid_iqd, r.paid_usd, r.due_iqd, r.due_usd, r.work, r.notes, r.src]];
+const values = (r: PaymentSheetRow) => [[r.name, Math.round(Date.parse(r.day + "T00:00:00Z") / 86400000) + 25569, r.paid_iqd, r.paid_usd, r.due_iqd, r.due_usd, r.work, r.notes, r.src]];
 const rangeUrl = (spreadsheetId: string, range: string, suffix = "") => `${API}/${spreadsheetId}/values/${encodeURIComponent(range)}${suffix}`;
 const clearUrl = (spreadsheetId: string, range: string) => `${API}/${spreadsheetId}/values/${encodeURIComponent(range)}:clear`;
 
@@ -90,9 +89,23 @@ async function findRow(token: string, spreadsheetId: string, month: string, src:
 
 export async function appendPaymentToSheet(env: Env, row: PaymentSheetRow) {
   const token = await accessToken(env), { spreadsheetId, month } = target(row.day);
+  await writeNewPayment(token, spreadsheetId, month, row);
+}
+
+async function writeNewPayment(token: string, spreadsheetId: string, month: string, row: PaymentSheetRow) {
+  // Keep new payments inside the income table so the existing totals and import
+  // parser include them. Appending at the bottom would enter the expense area.
+  const existing = await findRow(token, spreadsheetId, month, row.src);
+  const data = await google(token, rangeUrl(spreadsheetId, `${month}!A5:I`, "?valueRenderOption=FORMULA")) as { values?: unknown[][] };
+  const rows = data.values || [];
+  const end = rows.findIndex(r => /TOTAL\s+INCOME/i.test(String(r[0] || "")));
+  if (end < 0) throw new Error("The monthly income table was not found; payment remains saved in the clinic.");
+  const empty = rows.slice(0, end).findIndex(r => r.every(v => v === "" || v === null));
+  const destination = existing || (empty < 0 ? 0 : empty + 5);
+  if (!destination) throw new Error("The monthly income table is full. Add empty rows above TOTAL INCOME, then retry.");
   await ensureSyncHeader(token, spreadsheetId, month);
-  await google(token, rangeUrl(spreadsheetId, `${month}!A:I`, "?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS"), {
-    method: "POST", body: JSON.stringify({ values: values(row) }),
+  await google(token, rangeUrl(spreadsheetId, `${month}!A${destination}:I${destination}`, "?valueInputOption=RAW"), {
+    method: "PUT", body: JSON.stringify({ values: values(row) }),
   });
 }
 
@@ -100,16 +113,13 @@ export async function updatePaymentInSheet(env: Env, oldDay: string, row: Paymen
   const token = await accessToken(env), oldTarget = target(oldDay), nextTarget = target(row.day);
   const oldRow = await findRow(token, oldTarget.spreadsheetId, oldTarget.month, row.src);
   if (oldTarget.spreadsheetId === nextTarget.spreadsheetId && oldTarget.month === nextTarget.month && oldRow) {
-    await google(token, rangeUrl(nextTarget.spreadsheetId, `${nextTarget.month}!A${oldRow}:I${oldRow}`, "?valueInputOption=USER_ENTERED"), {
+    await google(token, rangeUrl(nextTarget.spreadsheetId, `${nextTarget.month}!A${oldRow}:I${oldRow}`, "?valueInputOption=RAW"), {
       method: "PUT", body: JSON.stringify({ values: values(row) }),
     });
     return;
   }
+  await writeNewPayment(token, nextTarget.spreadsheetId, nextTarget.month, row);
   if (oldRow) await google(token, clearUrl(oldTarget.spreadsheetId, `${oldTarget.month}!A${oldRow}:I${oldRow}`), { method: "POST", body: "{}" });
-  await ensureSyncHeader(token, nextTarget.spreadsheetId, nextTarget.month);
-  await google(token, rangeUrl(nextTarget.spreadsheetId, `${nextTarget.month}!A:I`, "?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS"), {
-    method: "POST", body: JSON.stringify({ values: values(row) }),
-  });
 }
 
 export async function deletePaymentFromSheet(env: Env, day: string, src: string) {
