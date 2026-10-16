@@ -5,6 +5,7 @@
 //   POST /clinic/api/finance?action=del           {id}
 // Income comes from the same `payments` rows that feed the patient cards, so one Excel upload updates cards and charts together.
 import { Env, ensureSchema, json, patientKey, setSetting } from "../../../lib/clinic";
+import { appendPaymentToSheet, checkPaymentSheets, deletePaymentFromSheet, updatePaymentInSheet } from "../../../lib/google-sheets";
 
 const num = (v: unknown) => (v === null || v === undefined || v === "" || isNaN(Number(v)) ? null : Number(v));
 
@@ -85,6 +86,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     await ensureSchema(env);
     const action = new URL(request.url).searchParams.get("action");
     const body = (await request.json()) as Record<string, unknown>;
+    if (action === "sheetscheck") {
+      return json({ ok: true, sheets: await checkPaymentSheets(env) });
+    }
     if (action === "expenses") {
       const sheet = String(body.sheet || "");
       if (!/^\d{4}-\d{2}$/.test(sheet)) return json({ ok: false, error: "bad sheet" }, 400);
@@ -129,29 +133,41 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       // A visit may be recorded before any money is collected. Empty money fields are
       // stored as zero so it remains visible in the patient card and export.
       const known = await env.DB.prepare("SELECT key FROM patients WHERE key = ?").bind(key).first();
+      const src = "m:" + Date.now() + Math.random().toString(36).slice(2, 6);
+      const work = String(body.work || "").slice(0, 300), notes = String(body.notes || "").slice(0, 300);
       const stmts = [env.DB.prepare(
         `INSERT INTO payments (src, sheet, patient_key, name, day, paid_iqd, paid_usd, due_iqd, due_usd, work, notes, phone, matched) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-      ).bind("m:" + Date.now() + Math.random().toString(36).slice(2, 6), day.slice(0, 7), key, name, day, paidI ?? 0, paidU ?? 0, dueI ?? 0, dueU ?? 0,
-        String(body.work || "").slice(0, 300), String(body.notes || "").slice(0, 300), phone, "manual")];
+      ).bind(src, day.slice(0, 7), key, name, day, paidI ?? 0, paidU ?? 0, dueI ?? 0, dueU ?? 0, work, notes, phone, "manual")];
       if (!known) stmts.push(env.DB.prepare(
         "INSERT OR IGNORE INTO patients (key, no) SELECT ?1, (SELECT coalesce(max(no), 10000) + 1 FROM patients) WHERE NOT EXISTS (SELECT 1 FROM patients WHERE key = ?1)",
       ).bind(key));
       if (phone) stmts.push(setPhone(env, key, phone));
       await env.DB.batch(stmts);
       if (!known) await setSetting(env, "stats_dirty", "1");
-      return json({ ok: true, newCard: !known });
+      try {
+        await appendPaymentToSheet(env, { src, name, day, paid_iqd: paidI ?? 0, paid_usd: paidU ?? 0, due_iqd: dueI ?? 0, due_usd: dueU ?? 0, work, notes });
+        return json({ ok: true, newCard: !known, sheetSynced: true });
+      } catch (e) {
+        return json({ ok: true, newCard: !known, sheetSynced: false, syncWarning: String((e as Error)?.message || e) });
+      }
     }
     if (action === "payedit") {
       const id = Number(body.id), name = String(body.name || "").trim().slice(0, 120), day = String(body.day || "");
       const key = patientKey(name), phone = cleanPhone(body.phone);
       if (!id || !name || key.startsWith("#") || !/^\d{4}-\d{2}-\d{2}$/.test(day)) return json({ ok: false, error: "أدخل اسم المريض والتاريخ" }, 400);
-      const own = await env.DB.prepare("SELECT id FROM payments WHERE id = ? AND src LIKE 'm:%'").bind(id).first();
+      const own = await env.DB.prepare("SELECT id, src, day FROM payments WHERE id = ? AND src LIKE 'm:%'").bind(id).first<{ id: number; src: string; day: string }>();
       if (!own) return json({ ok: false, error: "هذه الدفعة غير قابلة للتعديل" }, 404);
+      const paidI = num(body.paid_iqd) ?? 0, paidU = num(body.paid_usd) ?? 0, dueI = num(body.due_iqd) ?? 0, dueU = num(body.due_usd) ?? 0;
+      const work = String(body.work || "").slice(0, 300), notes = String(body.notes || "").slice(0, 300);
       await env.DB.prepare("UPDATE payments SET sheet=?, patient_key=?, name=?, day=?, paid_iqd=?, paid_usd=?, due_iqd=?, due_usd=?, work=?, notes=?, phone=? WHERE id=? AND src LIKE 'm:%'")
-        .bind(day.slice(0, 7), key, name, day, num(body.paid_iqd) ?? 0, num(body.paid_usd) ?? 0, num(body.due_iqd) ?? 0, num(body.due_usd) ?? 0,
-          String(body.work || "").slice(0, 300), String(body.notes || "").slice(0, 300), phone, id).run();
+        .bind(day.slice(0, 7), key, name, day, paidI, paidU, dueI, dueU, work, notes, phone, id).run();
       if (phone) await setPhone(env, key, phone);
-      return json({ ok: true });
+      try {
+        await updatePaymentInSheet(env, own.day, { src: own.src, name, day, paid_iqd: paidI, paid_usd: paidU, due_iqd: dueI, due_usd: dueU, work, notes });
+        return json({ ok: true, sheetSynced: true });
+      } catch (e) {
+        return json({ ok: true, sheetSynced: false, syncWarning: String((e as Error)?.message || e) });
+      }
     }
     if (action === "patient") {                       // a new patient card without a payment
       const name = String(body.name || "").trim().slice(0, 120), key = patientKey(name), phone = cleanPhone(body.phone);
@@ -168,8 +184,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       return json({ ok: true, newCard: !known, no: row?.no });
     }
     if (action === "paydel") {
+      const row = await env.DB.prepare("SELECT src, day FROM payments WHERE id = ? AND src LIKE 'm:%'").bind(Number(body.id)).first<{ src: string; day: string }>();
       await env.DB.prepare("DELETE FROM payments WHERE id = ? AND src LIKE 'm:%'").bind(Number(body.id)).run();
-      return json({ ok: true });
+      if (!row) return json({ ok: true });
+      try { await deletePaymentFromSheet(env, row.day, row.src); return json({ ok: true, sheetSynced: true }); }
+      catch (e) { return json({ ok: true, sheetSynced: false, syncWarning: String((e as Error)?.message || e) }); }
     }
     if (action === "del") {
       await env.DB.prepare("DELETE FROM expenses WHERE id = ?").bind(Number(body.id)).run();
