@@ -509,7 +509,7 @@ function sheetRows(XLSX, ws, title, fileYear) {
   if (hi < 0 || !year) return null;
   const h = grid[hi].map((c) => String(c ?? "").toLowerCase());
   const col = (re, not) => h.findIndex((c) => re.test(c) && !(not && not.test(c)));
-  const cName = col(/name|اسم/), cDate = col(/date|تاريخ/), cWork = col(/work|treatment|علاج|عمل/), cNotes = col(/note|ملاحظ/), cPhone = col(/phone|هاتف/), cLab = col(/lab/);
+  const cName = col(/name|اسم/), cDate = col(/date|تاريخ/), cWork = col(/work|treatment|علاج|عمل/), cNotes = col(/note|ملاحظ/), cPhone = col(/phone|هاتف/), cLab = col(/lab/), cSync = col(/clinic sync id|sync id/);
   const cPaid = col(/paid|done|مدفوع|واصل/, /usd|\$/), cPaidU = col(/(paid|done)[\s\S]*(usd|\$)/), cDue = col(/due|left|متبقي|باقي/, /usd|\$/), cDueU = col(/(due|left)[\s\S]*(usd|\$)/);
   const out = [], extra = [];
   const ymS = `${year}-${String(month).padStart(2, "0")}`;
@@ -528,7 +528,8 @@ function sheetRows(XLSX, ws, title, fileYear) {
     if (cPaidU >= 0 && r[cPaidU] != null && r[cPaidU] !== "") { const [a, b] = money(r[cPaidU]); pu = (pu || 0) + (b ?? a ?? 0); }
     if (cDueU >= 0 && r[cDueU] != null && r[cDueU] !== "") { const [a, b] = money(r[cDueU]); du = (du || 0) + (b ?? a ?? 0); }
     const phone = cPhone >= 0 ? toEn(r[cPhone] ?? "").replace(/\D/g, "") : "";
-    out.push({ src: `${year}-${String(month).padStart(2, "0")}#${i + 1}`, name, day, paid_iqd: pi, paid_usd: pu, due_iqd: di, due_usd: du,
+    const sync = cSync >= 0 ? String(r[cSync] ?? "").trim() : "";
+    out.push({ src: /^m:[a-z0-9]+$/i.test(sync) ? sync : `${year}-${String(month).padStart(2, "0")}#${i + 1}`, name, day, paid_iqd: pi, paid_usd: pu, due_iqd: di, due_usd: du,
       work: String(work ?? "").trim(), notes: [cLab >= 0 ? r[cLab] : null, cNotes >= 0 ? r[cNotes] : null].filter(Boolean).join(" ").trim(), phone: phone.length >= 10 ? phone : "" });
   }
   return { sheet: ymS, rows: out, extra };
@@ -1281,7 +1282,7 @@ function qeBox(d) {      // the quick-entry forms; d is null while the accounts 
         <label>المدفوع (دينار)<input name="paid_iqd" type="number" inputmode="numeric" min="0" step="any" placeholder="لا يوجد / 0"></label><label>المدفوع ($)<input name="paid_usd" type="number" inputmode="decimal" min="0" step="any" placeholder="لا يوجد / 0"></label>
         <label>المتبقي (دينار)<input name="due_iqd" type="number" inputmode="numeric" min="0" step="any" placeholder="لا يوجد / 0"></label><label>المتبقي ($)<input name="due_usd" type="number" inputmode="decimal" min="0" step="any" placeholder="لا يوجد / 0"></label>
         <label>العمل المنجز<input name="work" placeholder="حشوة، تنظيف…"></label><label>ملاحظات<input name="notes"></label><label>هاتف المريض (اختياري)<input name="phone" type="tel" inputmode="tel" dir="ltr"></label><button class="btn pri">حفظ الدفعة</button></form>
-        <p class="note" id="qMsg">تظهر الدفعة فورًا في بطاقة المريض والرسوم البيانية. هذه الدفعات تبقى محفوظة ولا يمحوها تحديث الجدول، فلا تكتب نفس الدفعة في الجدول أيضًا.</p>`
+        <p class="note" id="qMsg">تظهر الدفعة فورًا في بطاقة المريض والرسوم البيانية، وتُضاف تلقائيًا إلى جدول السنة المرتبط.</p>`
       : qeMode === "pt" ? `<form id="ptForm" class="xf"><label>اسم المريض<input name="name" required autocomplete="off"></label><label>الهاتف<input name="phone" type="tel" inputmode="tel" dir="ltr" placeholder="0750…"></label><button class="btn pri">حفظ المريض</button></form><p class="note" id="ptMsg">تُنشأ بطاقة للمريض فورًا، وتظهر مواعيده من التقويم ودفعاته فيها عندما يتطابق الاسم.</p>`
       : `<form id="xForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
         <label>النوع<input name="category" list="xcats" required placeholder="كهرباء، مختبر…"><datalist id="xcats">${["كهرباء", "إيجار", "راتب المساعدة", "مواد طبية", "المختبر", "إنترنت", "أخرى", ...cats].map((k) => `<option value="${esc(k)}">`).join("")}</datalist></label>
@@ -1417,7 +1418,7 @@ $("list").addEventListener("submit", async (e) => {
   const action = isPay ? (e.target.dataset.editId ? "payedit" : "pay") : isPt ? "patient" : "add";
   const r = await (await fetch("/clinic/api/finance?action=" + action, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
   if (r.ok && isPt) { e.target.reset(); m.className = "note"; m.innerHTML = `✔ تم الحفظ${r.newCard ? " (بطاقة جديدة)" : " (البطاقة موجودة أصلًا)"} · <a href="#card=${r.no}" onclick="setTimeout(()=>location.reload(),50)">فتح البطاقة</a>`; e.target.querySelector("[name=name]").focus(); }
-  else if (r.ok) { qeDay = f.day; finYear = f.day.slice(0, 4); await loadFin(); const n = $(isPay ? "qMsg" : "xMsg"); if (n) { n.className = "note"; n.textContent = (e.target.dataset.editId ? "✔ تم تحديث الدفعة" : "✔ تم الحفظ") + (r.newCard ? " (بطاقة مريض جديدة)" : ""); } $("list").querySelector(isPay ? "#pForm [name=name]" : "#xForm [name=category]")?.focus(); }
+  else if (r.ok) { qeDay = f.day; finYear = f.day.slice(0, 4); await loadFin(); const n = $(isPay ? "qMsg" : "xMsg"); if (n) { n.className = r.syncWarning ? "note warn" : "note"; n.textContent = (e.target.dataset.editId ? "✔ تم تحديث الدفعة" : "✔ تم الحفظ") + (r.newCard ? " (بطاقة مريض جديدة)" : "") + (isPay ? r.sheetSynced ? " · ✔ تم تحديث جدول Google" : r.syncWarning ? " · ⚠ حُفظت في العيادة، لكن تعذّر تحديث جدول Google" : "" : ""); } $("list").querySelector(isPay ? "#pForm [name=name]" : "#xForm [name=category]")?.focus(); }
   else { m.className = "note warn"; m.textContent = r.error || "تعذّر الحفظ"; }
 });
 
