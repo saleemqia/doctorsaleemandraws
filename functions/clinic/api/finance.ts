@@ -13,6 +13,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   try {
     await ensureSchema(env);
     const url = new URL(request.url);
+    if (url.searchParams.get("sheetscheck") === "1") return json({ ok: true, sheets: await checkPaymentSheets(env) });
     const q = (url.searchParams.get("names") || "").trim();
     if (q) {      // name suggestions for the quick-entry form
       const like = `%${q.slice(0, 40)}%`;
