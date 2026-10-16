@@ -27,7 +27,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .bar{display:flex;align-items:center;gap:10px;margin:16px 2px 10px;flex-wrap:wrap}
 .bar h2{font-size:17px;margin:0}
 .count{background:var(--sky);color:var(--navy);border-radius:999px;padding:3px 12px;font-weight:700;font-size:14px}
-.bar .tools{margin-inline-start:auto;display:flex;gap:8px;flex-wrap:wrap;max-width:100%}
+.bar .tools{margin-inline-start:auto;display:flex;gap:8px}
 .btn{border:1px solid var(--line);background:var(--card);color:var(--navy);border-radius:10px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .note{font-size:13px;color:var(--muted);margin:0 2px 10px}
 .note.warn{color:var(--red)}
@@ -100,25 +100,6 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .pickbar span{flex:1;font-size:13px}.btn:disabled{opacity:.45}.btn.pri{background:var(--navy);color:#fff}.btn.sm{padding:4px 8px}
 #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 16px;border-radius:12px;z-index:60;box-shadow:0 6px 24px #0004;max-width:92vw}
 #toast a{color:#9CC4FF;font-weight:700;margin-inline-start:10px}
-.plan{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:6px}
-.plan .ph{display:grid;grid-template-columns:62px 1fr;height:var(--rowh);border-top:1px solid #EEF2F8}
-.plan .ph.hr{border-top:1px solid #D5DEEC}.plan .ph:first-child{border-top:0}
-.plan .ph b{font-size:12px;color:var(--muted);font-weight:600;padding:2px 8px;text-align:start;white-space:nowrap}
-.plan .ph.q b{visibility:hidden}
-.plan .slot{border:0;background:none;cursor:pointer;font:inherit;color:transparent;text-align:start;padding:0 10px}
-.plan .slot:hover,.plan .slot:focus-visible{background:#EAF3FF;color:var(--blue);font-size:12px;font-weight:600;outline:0}
-.plan .ev{position:absolute;inset-inline-start:66px;inset-inline-end:8px;border-radius:10px;background:#E3EEFB;border-inline-start:4px solid var(--blue);padding:3px 8px;overflow:hidden;cursor:pointer;font-size:13px;line-height:1.3;box-shadow:0 1px 2px #13285c1a;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
-.plan .ev b{font-size:14px}.plan .ev .t{color:var(--muted);font-size:12px;white-space:nowrap}.plan .ev .w{color:#0E5E3A}
-.plan .ev.past{opacity:.6}.plan .ev.now{background:#FFF4D6;border-color:var(--gold)}
-.plan .ev.half{inset-inline-end:calc(50% + 4px)}.plan .ev.half2{inset-inline-start:calc(50% + 35px)}
-.plan .nowl{position:absolute;inset-inline:62px 0;height:2px;background:var(--red);pointer-events:none}
-.plan .nowl::before{content:"";position:absolute;inset-inline-start:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--red)}
-.plan-sum{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:4px 2px}
-.plan-sum b{color:var(--navy)}
-.allday{background:#F4F7FC;border:1px dashed var(--line);border-radius:10px;padding:6px 10px;margin:6px 0;font-size:13px}
-#planBtn.on{background:var(--navy);color:#fff}
-@media print{.plan .slot{display:none}}
-.acc-l{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:6px 0;font-size:14px}
 #adlg{border:0;border-radius:16px;padding:16px;max-width:520px;width:94vw;color:var(--navy);font:inherit}#adlg::backdrop{background:#0007}
 #adlg form{display:grid;grid-template-columns:1fr 1fr;gap:10px}#adlg label{display:flex;flex-direction:column;font-size:13px;font-weight:600;gap:4px}
 #adlg *{box-sizing:border-box}#adlg label{min-width:0}#adlg input,#adlg select,#adlg textarea{width:100%;min-width:0;padding:9px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}#adlg .full{grid-column:1/-1}
@@ -251,9 +232,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     <h2 id="title">اليوم</h2><span class="count" id="count">…</span>
     <div class="tools">
       <button class="btn pri" id="newAppt" type="button" title="يُكتب في Outlook وGoogle">➕ موعد جديد</button>
-      <button class="btn" id="planBtn" type="button" title="عرض اليوم كجدول ساعات">🗓 جدول</button>
       <button class="btn" id="calBtn" type="button" title="ربط Outlook وGoogle">🔗 التقويم</button>
-      <button class="btn" id="accBtn" type="button" title="من يستطيع الدخول بحساب Google">👥 الدخول</button>
       <button class="btn" id="refresh" title="تحديث">↻ تحديث</button>
       <a class="btn" id="csv" href="#">⬇ Excel</a>
       <button class="btn" onclick="print()">🖨 طباعة</button>
@@ -1267,8 +1246,10 @@ async function loadFin() {
     if (d.pin) { $("fin").hidden = true; $("title").textContent = "إدخال البيانات"; $("list").innerHTML = qeBox(null) + pinBox("الحسابات والإحصائيات وبطاقات المرضى"); qeAppts(); return; }
     if (!d.ok) throw new Error(d.error); finYear = d.year;
     $("fin").hidden = false; if (!finBooted) { finBooted = true; gsAuto(); } else gsLoad();
-    $("finYears").innerHTML = (d.years.length ? d.years : [d.year]).map((y) => `<button class="${y === d.year ? "on" : ""}" data-y="${y}">${y}</button>`).join("") +
+      $("finYears").innerHTML = (d.years.length ? d.years : [d.year]).map((y) => `<button class="${y === d.year ? "on" : ""}" data-y="${y}">${y}</button>`).join("") +
       `<button class="${finCur === "iqd" ? "on" : ""}" data-c="iqd" style="margin-inline-start:auto">دينار</button><button class="${finCur === "usd" ? "on" : ""}" data-c="usd">دولار $</button><button data-x="1" title="ملف Excel بنفس شكل ملف السنة">⬇ تصدير Excel</button><button data-lock="1" title="إخفاء الحسابات الآن">🔒 قفل</button>`;
+      document.querySelector("#exportMsg")?.remove();
+      $("finYears").insertAdjacentHTML("afterend", `<p class="note" id="exportMsg">اختر السنة ثم اضغط «تصدير Excel» للحصول على نسخة محدثة من الحسابات.</p>`);
     renderFin(d); qeAppts();
   } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر تحميل الحسابات: ${esc(e.message || e)}</div>`; }
 }
@@ -1287,7 +1268,7 @@ function monthlySummary(d, c, inc, exp, net) {
     <table class="vt"><tr><th></th><th>${MN_AR[i]}</th><th>${p >= 0 ? MN_AR[p] : ""}</th><th></th></tr>
     ${row("الدخل", inc[i], p < 0 ? 0 : inc[p], true)}${row("المصاريف", exp[i], p < 0 ? 0 : exp[p], false)}${row("الصافي", net[i], p < 0 ? 0 : net[p], true)}${row("عدد الدفعات", vi, vp, true, false)}</table>
     ${cn.length ? `<p class="note">أكبر مصروف: <b>${esc(cn[0].k)}</b> (${fm(cn[0].v, c)})</p>` : ""}
-    ${jumps.length ? `<p class="note warn">⚠️ ارتفع مصروف: ${jumps.map((x) => `<b>${esc(x.k)}</b> (${fm(x.o, c)} ← ${fm(x.v, c)})`).join("، ")}</p>` : ""}
+      ${jumps.length ? `<p class="note warn">⚠️ ارتفع مصروف: ${jumps.map((x) => `<b>${esc(x.k)}</b> (${fm(x.o, c)} ← ${fm(x.v, c)})`).join("، ")}</p>` : ""}
     ${wk.length ? `<p class="note">الأعلى دخلًا حسب خانة «العمل»:</p><ol style="margin:0;padding-inline-start:20px">${wk.map((x) => `<li>${esc(x.w)} · ${fm(x.v, c)} (${x.n})</li>`).join("")}</ol>` : ""}</div>`;
 }
 function qeBox(d) {      // the quick-entry forms; d is null while the accounts are locked (then no list of recent payments)
@@ -1297,8 +1278,8 @@ function qeBox(d) {      // the quick-entry forms; d is null while the accounts 
       ${qeMode === "pay" ? `<form id="pForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
         <div class="qa" id="qeAppts" style="grid-column:1/-1"></div>
         <label>اسم المريض<input name="name" list="pnames" required autocomplete="off" placeholder="ابدأ بكتابة الاسم"><datalist id="pnames"></datalist></label>
-        <label>المدفوع (دينار)<input name="paid_iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>المدفوع ($)<input name="paid_usd" type="number" inputmode="decimal" min="0" step="any"></label>
-        <label>المتبقي (دينار)<input name="due_iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>المتبقي ($)<input name="due_usd" type="number" inputmode="decimal" min="0" step="any"></label>
+        <label>المدفوع (دينار)<input name="paid_iqd" type="number" inputmode="numeric" min="0" step="any" placeholder="لا يوجد / 0"></label><label>المدفوع ($)<input name="paid_usd" type="number" inputmode="decimal" min="0" step="any" placeholder="لا يوجد / 0"></label>
+        <label>المتبقي (دينار)<input name="due_iqd" type="number" inputmode="numeric" min="0" step="any" placeholder="لا يوجد / 0"></label><label>المتبقي ($)<input name="due_usd" type="number" inputmode="decimal" min="0" step="any" placeholder="لا يوجد / 0"></label>
         <label>العمل المنجز<input name="work" placeholder="حشوة، تنظيف…"></label><label>ملاحظات<input name="notes"></label><label>هاتف المريض (اختياري)<input name="phone" type="tel" inputmode="tel" dir="ltr"></label><button class="btn pri">حفظ الدفعة</button></form>
         <p class="note" id="qMsg">تظهر الدفعة فورًا في بطاقة المريض والرسوم البيانية. هذه الدفعات تبقى محفوظة ولا يمحوها تحديث الجدول، فلا تكتب نفس الدفعة في الجدول أيضًا.</p>`
       : qeMode === "pt" ? `<form id="ptForm" class="xf"><label>اسم المريض<input name="name" required autocomplete="off"></label><label>الهاتف<input name="phone" type="tel" inputmode="tel" dir="ltr" placeholder="0750…"></label><button class="btn pri">حفظ المريض</button></form><p class="note" id="ptMsg">تُنشأ بطاقة للمريض فورًا، وتظهر مواعيده من التقويم ودفعاته فيها عندما يتطابق الاسم.</p>`
@@ -1306,12 +1287,17 @@ function qeBox(d) {      // the quick-entry forms; d is null while the accounts 
         <label>النوع<input name="category" list="xcats" required placeholder="كهرباء، مختبر…"><datalist id="xcats">${["كهرباء", "إيجار", "راتب المساعدة", "مواد طبية", "المختبر", "إنترنت", "أخرى", ...cats].map((k) => `<option value="${esc(k)}">`).join("")}</datalist></label>
         <label>بالدينار<input name="iqd" type="number" inputmode="numeric" min="0" step="any"></label><label>بالدولار<input name="usd" type="number" inputmode="decimal" min="0" step="any"></label>
         <label>وصف<input name="desc"></label><button class="btn pri">حفظ المصروف</button></form><p class="note" id="xMsg"></p>`}
-      ${d && d.pays.length && qeMode === "pay" ? `<details style="margin-top:6px"><summary class="note">آخر الدفعات المدخلة هنا (${d.pays.length})</summary>${d.pays.map((x) => `<div class="xrow"><div>${esc(x.name)} <small>· ${esc(x.day)}${x.work ? " · " + esc(x.work) : ""}</small></div><span><b>${[x.paid_iqd ? fm(x.paid_iqd, "iqd") : "", x.paid_usd ? fm(x.paid_usd, "usd") : ""].filter(Boolean).join(" + ") || "—"}</b> <button data-pdel="${x.id}" title="حذف">✕</button></span></div>`).join("")}</details>` : ""}
+      ${d && d.pays.length && qeMode === "pay" ? `<details open style="margin-top:6px"><summary class="note">آخر الدفعات المدخلة هنا (${d.pays.length}) — يمكنك المراجعة والتعديل</summary>${d.pays.map((x) => `<div class="xrow"><div><b>${esc(x.name)}</b> <small>· ${esc(x.day)}${x.work ? " · " + esc(x.work) : ""}${x.notes ? " · " + esc(x.notes) : ""}</small></div><span><b>${[x.paid_iqd ? fm(x.paid_iqd, "iqd") : "", x.paid_usd ? fm(x.paid_usd, "usd") : "", x.due_iqd ? "متبقي " + fm(x.due_iqd, "iqd") : "", x.due_usd ? "متبقي " + fm(x.due_usd, "usd") : ""].filter(Boolean).join(" + ") || "—"}</b> <button type="button" data-pedit="${x.id}" title="تعديل">✏️</button> <button type="button" data-pdel="${x.id}" title="حذف">✕</button></span></div>`).join("")}</details>` : ""}
     </div>`;
 }
 function renderFin(d) {
-  const c = finCur, inc = d.months.map((m) => m["inc_" + c] + m["oth_" + c]), exp = d.months.map((m) => m["exp_" + c]), due = d.months.map((m) => m["due_" + c]);
-  const net = inc.map((v, i) => v - exp[i]); const sum = (a) => a.reduce((t, v) => t + v, 0);
+  window.__clinicPays = d.pays || [];
+  // D1 can return numeric columns as strings after an import. Coerce every
+  // currency value before adding, otherwise USD values can concatenate as text
+  // and disappear from net totals and chart scaling.
+  const n = (v) => Number(v) || 0;
+  const c = finCur, inc = d.months.map((m) => n(m["inc_" + c]) + n(m["oth_" + c])), exp = d.months.map((m) => n(m["exp_" + c])), due = d.months.map((m) => n(m["due_" + c]));
+  const net = inc.map((v, i) => v - exp[i]); const sum = (a) => a.reduce((t, v) => t + n(v), 0);
   const active = d.months.map((m, i) => (m.visits || exp[i] ? i : -1)).filter((i) => i >= 0);
   const best = active.length ? active.reduce((a, b) => (net[b] > net[a] ? b : a)) : -1, worst = active.length ? active.reduce((a, b) => (net[b] < net[a] ? b : a)) : -1;
   const catList = Object.entries(d.cats).map(([k, v]) => ({ label: k, v: sum(v[c]) })).filter((x) => x.v > 0).sort((a, b) => b.v - a.v);
@@ -1418,6 +1404,7 @@ async function exportYear(btn) {
     for (let c = 1; c <= 9; c++) { const x = tr.getCell(c); x.font = { bold: true }; x.fill = { type: "pattern", pattern: "solid", fgColor: { argb: LIGHT } }; x.border = BOX; }
     const buf = await wb.xlsx.writeBuffer();
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })); a.download = `Dental-Financial-${Y}.xlsx`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+    const note = $("exportMsg"); if (note) { note.className = "note"; note.textContent = `✔ تم تجهيز ملف Excel لسنة ${Y} وتنزيله.`; }
   } catch (e) { alert("تعذّر التصدير: " + (e.message || e)); }
   btn.disabled = false; btn.textContent = old;
 }
@@ -1426,9 +1413,11 @@ $("list").addEventListener("submit", async (e) => {
   const isPt = e.target.id === "ptForm";
   const isPay = e.target.id === "pForm"; if (!isPay && !isPt && e.target.id !== "xForm") return; e.preventDefault();
   const f = Object.fromEntries(new FormData(e.target)); const m = $(isPay ? "qMsg" : isPt ? "ptMsg" : "xMsg"); m.className = "note"; m.textContent = "جارٍ الحفظ…";
-  const r = await (await fetch("/clinic/api/finance?action=" + (isPay ? "pay" : isPt ? "patient" : "add"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
+  if (isPay && e.target.dataset.editId) f.id = e.target.dataset.editId;
+  const action = isPay ? (e.target.dataset.editId ? "payedit" : "pay") : isPt ? "patient" : "add";
+  const r = await (await fetch("/clinic/api/finance?action=" + action, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) })).json().catch(() => ({ ok: false, error: "تعذّر الاتصال" }));
   if (r.ok && isPt) { e.target.reset(); m.className = "note"; m.innerHTML = `✔ تم الحفظ${r.newCard ? " (بطاقة جديدة)" : " (البطاقة موجودة أصلًا)"} · <a href="#card=${r.no}" onclick="setTimeout(()=>location.reload(),50)">فتح البطاقة</a>`; e.target.querySelector("[name=name]").focus(); }
-  else if (r.ok) { qeDay = f.day; finYear = f.day.slice(0, 4); await loadFin(); const n = $(isPay ? "qMsg" : "xMsg"); if (n) { n.className = "note"; n.textContent = "✔ تم الحفظ" + (r.newCard ? " (بطاقة مريض جديدة)" : ""); } $("list").querySelector(isPay ? "#pForm [name=name]" : "#xForm [name=category]")?.focus(); }
+  else if (r.ok) { qeDay = f.day; finYear = f.day.slice(0, 4); await loadFin(); const n = $(isPay ? "qMsg" : "xMsg"); if (n) { n.className = "note"; n.textContent = (e.target.dataset.editId ? "✔ تم تحديث الدفعة" : "✔ تم الحفظ") + (r.newCard ? " (بطاقة مريض جديدة)" : ""); } $("list").querySelector(isPay ? "#pForm [name=name]" : "#xForm [name=category]")?.focus(); }
   else { m.className = "note warn"; m.textContent = r.error || "تعذّر الحفظ"; }
 });
 
@@ -1455,6 +1444,14 @@ $("list").addEventListener("input", (e) => {          // suggest patient names w
   nameT = setTimeout(async () => { try { const r = await (await fetch("/clinic/api/finance?names=" + encodeURIComponent(v))).json(); const dl = $("pnames"); if (dl && r.ok) dl.innerHTML = r.names.map((n) => `<option value="${esc(n)}">`).join(""); } catch { /* offline */ } }, 250);
 });
 $("list").addEventListener("click", async (e) => {
+  const edit = e.target.closest("[data-pedit]");
+  if (edit) {
+    const row = edit.closest(".xrow"), form = $("pForm"), item = window.__clinicPays?.find((x) => +x.id === +edit.dataset.pedit);
+    if (!form || !item) return;
+    form.dataset.editId = item.id; form.querySelector("[name=day]").value = item.day || ""; form.querySelector("[name=name]").value = item.name || "";
+    ["paid_iqd", "paid_usd", "due_iqd", "due_usd", "work", "notes", "phone"].forEach((k) => { const el = form.querySelector(`[name=${k}]`); if (el) el.value = item[k] ?? ""; });
+    form.querySelector("button[type=submit]").textContent = "حفظ التعديل"; form.scrollIntoView({ behavior: "smooth", block: "center" }); form.querySelector("[name=name]").focus(); return;
+  }
   const t = e.target.closest("#qeTabs button"); if (t) { qeMode = t.dataset.m; loadFin(); return; }
   const b = e.target.closest("[data-pdel]"); if (!b || !confirm("حذف هذه الدفعة؟")) return;
   await fetch("/clinic/api/finance?action=paydel", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: +b.dataset.pdel }) }); loadFin();
@@ -1466,8 +1463,8 @@ $("list").addEventListener("click", async (e) => {
 
 
 /* ---------- new / edit / delete appointment: written into Outlook and Google (see lib/calendars.ts) ---------- */
-function apptDialog(a, preset) {
-  const d = $("adlg"), day = a ? a.day : preset?.day || (/^\d{4}-\d{2}-\d{2}$/.test(current) ? current : current === "tomorrow" ? addDays(today, 1) : curFrom || today);
+function apptDialog(a) {
+  const d = $("adlg"), day = a ? a.day : (/^\d{4}-\d{2}-\d{2}$/.test(current) ? current : current === "tomorrow" ? addDays(today, 1) : curFrom || today);
   const mins = a ? Math.max(5, Math.round((Date.parse(a.end) - Date.parse(a.start)) / 60000)) : 30;
   const opt = [15, 30, 45, 60, 90, 120].map((m) => `<option value="${m}" ${m === mins ? "selected" : ""}>${m < 60 ? m + " دقيقة" : m / 60 + " ساعة"}</option>`).join("");
   d.innerHTML = `<h3>${a ? "✏️ تعديل الموعد" : "➕ موعد جديد"}</h3><form id="apForm">
@@ -1475,7 +1472,7 @@ function apptDialog(a, preset) {
     <label>الهاتف<input name="phone" type="tel" inputmode="tel" dir="ltr" value="${esc(a?.phone || "")}" placeholder="0750…"></label>
     <label>العمل<input name="treatment" value="${esc(a?.treatment || "")}" placeholder="حشوة، تنظيف…"></label>
     <label>اليوم<input name="day" type="date" required value="${day}"></label>
-    <label>الوقت<input name="time" type="time" required step="300" value="${a ? hm(a.start) : preset?.time || ""}"></label>
+    <label>الوقت<input name="time" type="time" required step="300" value="${a ? hm(a.start) : ""}"></label>
     <label>المدة<select name="minutes">${mins && ![15, 30, 45, 60, 90, 120].includes(mins) ? `<option value="${mins}" selected>${mins} دقيقة</option>` : ""}${opt}</select></label>
     <label>ملاحظات<input name="notes"></label>
     <div class="row2"><button class="btn pri">💾 حفظ</button><button class="btn" type="button" onclick="$('adlg').close()">إلغاء</button><span class="note" id="apMsg"></span></div></form>`;
@@ -1504,65 +1501,6 @@ $("list").addEventListener("click", async (e) => {
   load();
 });
 
-
-/* ---------- day planner: one day as a time grid (clinic hours), free slots open a new appointment ---------- */
-let planMode = false; try { planMode = localStorage.getItem("planMode") === "1"; } catch { /* private mode */ }
-const PLAN = { from: 15 * 60, to: 21 * 60, step: 15, rowh: 22 };
-const toMin = (iso) => { const [h, m] = hm(iso).split(":").map(Number); return h * 60 + m; };
-const fmtMin = (m) => `${((Math.floor(m / 60) + 11) % 12) + 1}:${String(m % 60).padStart(2, "0")} ${m < 720 ? "ص" : "م"}`;
-function renderPlanner(data, label) {
-  const appts = (data.appts || []).filter((a) => a.day === curFrom), timed = appts.filter((a) => !a.allDay), allDay = appts.filter((a) => a.allDay);
-  $("title").textContent = label; $("count").textContent = appts.length + (appts.length === 1 ? " موعد" : " مواعيد");
-  const wd = new Date(curFrom + "T00:00:00Z").getUTCDay();
-  let from = PLAN.from, to = PLAN.to;
-  for (const a of timed) { from = Math.min(from, Math.floor(toMin(a.start) / 60) * 60); to = Math.max(to, Math.ceil(Math.max(toMin(a.end), toMin(a.start) + 15) / 60) * 60); }
-  const shown = []; window._shown = shown; const rows = [];
-  for (let m = from; m < to; m += PLAN.step) rows.push(`<div class="ph ${m % 60 ? "q" : "hr"}"><b>${fmtMin(m)}</b><button class="slot" type="button" data-slot="${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}">＋ ${fmtMin(m)}</button></div>`);
-  const now = Date.now(), y = (m) => ((m - from) / PLAN.step) * PLAN.rowh;
-  const sorted = timed.slice().sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
-  let evs = "", busy = 0;
-  sorted.forEach((a, i) => {
-    const s = toMin(a.start), e = Math.max(toMin(a.end), s + 10); busy += e - s;
-    const overlap = sorted.some((b, j) => j !== i && toMin(b.start) < e && Math.max(toMin(b.end), toMin(b.start) + 10) > s);
-    const side = overlap ? (sorted.findIndex((b) => toMin(b.start) < e && Math.max(toMin(b.end), toMin(b.start) + 10) > s) === i ? "half" : "half2") : "";
-    const st = Date.parse(a.start), en = Date.parse(a.end), cls = en < now ? "past" : st <= now && now < en ? "now" : "";
-    evs += `<div class="ev ${cls} ${side}" style="top:${y(s) + 1}px;height:${Math.max(y(e) - y(s) - 2, PLAN.rowh - 2)}px" data-aed="${shown.length}" title="اضغط للتعديل"><b>${esc(a.title) || "بدون اسم"}</b><span class="t">${ampm(a.start)} – ${ampm(a.end)}</span>${a.treatment ? `<span class="w">${esc(a.treatment)}</span>` : ""}${a.phone ? `<a href="tel:${esc(a.phone)}" dir="ltr">${esc(a.phone)}</a>` : ""}</div>`;
-    shown.push(a);
-  });
-  const nowMin = curFrom === today ? toMin(new Date().toISOString()) : -1;
-  const free = Math.max(0, (PLAN.to - PLAN.from) - busy);
-  $("note").className = "note"; $("note").textContent = "اضغط على وقت فارغ لإضافة موعد، أو على موعد لتعديله.";
-  $("list").innerHTML = `<div class="plan-sum"><span>المواعيد: <b>${timed.length}</b></span><span>وقت محجوز: <b>${Math.floor(busy / 60)}س ${busy % 60}د</b></span><span>وقت فارغ تقريبًا: <b>${Math.floor(free / 60)}س ${free % 60}د</b></span>${wd === 5 ? `<span style="color:var(--red)">الجمعة: العيادة مغلقة عادةً</span>` : ""}</div>
-    ${allDay.map((a) => `<div class="allday">📌 طوال اليوم: ${esc(a.title)}</div>`).join("")}
-    <div class="plan" style="--rowh:${PLAN.rowh}px">${rows.join("")}${evs}${nowMin >= from && nowMin <= to ? `<div class="nowl" style="top:${y(nowMin)}px"></div>` : ""}</div>`;
-}
-function setPlan(v) { planMode = v; try { localStorage.setItem("planMode", v ? "1" : "0"); } catch { /* ignore */ } $("planBtn").classList.toggle("on", v); load(); }
-$("planBtn").onclick = () => { if ($("dnav").hidden && !planMode) { planMode = true; try { localStorage.setItem("planMode", "1"); } catch { /* ignore */ } $("planBtn").classList.add("on"); if (curGroup !== "a") setGroup("a", false); return gotoDay(today); } setPlan(!planMode); };
-$("planBtn").classList.toggle("on", planMode);
-$("list").addEventListener("click", (e) => { const b = e.target.closest("[data-slot]"); if (b) apptDialog(null, { day: curFrom, time: b.dataset.slot }); });
-
-/* ---------- who may sign in with Google ---------- */
-async function accDialog(msg) {
-  const d = $("adlg"); d.innerHTML = `<h3>👥 الدخول بحساب Google</h3><div class="spin"></div>`; if (!d.open) d.showModal();
-  const unlocked = (await (await fetch("/clinic/api/pin", { cache: "no-store" })).json().catch(() => ({}))).unlocked;
-  if (!unlocked) { pinAfter = () => accDialog(""); d.innerHTML = `<h3>👥 الدخول بحساب Google</h3>${pinBox("إدارة الدخول")}<div class="row2"><button class="btn" type="button" onclick="$('adlg').close()">إغلاق</button></div>`; return; }
-  const r = await (await fetch("/clinic/api/access", { cache: "no-store" })).json().catch(() => ({ ok: false }));
-  if (!r.ok) { d.innerHTML = `<h3>👥 الدخول</h3><p class="note warn">تعذّر التحميل</p>`; return; }
-  const ses = (r.sessions || []);
-  d.innerHTML = `<h3>👥 الدخول بحساب Google</h3>${msg ? `<p class="note">${esc(msg)}</p>` : ""}
-    <p class="note">من يكون بريده هنا يستطيع فتح صفحة العيادة بزر «تسجيل الدخول باستخدام Google» دون رابط أو مفتاح. الحسابات والإحصاءات تبقى محمية بالرقم السري.</p>
-    <form id="accForm"><label class="full">البريد المسموح (سطر لكل حساب)<textarea name="emails" rows="4" dir="ltr">${esc((r.emails || []).join("\n"))}</textarea></label>
-    <div class="row2"><button class="btn pri">💾 حفظ</button><button class="btn" type="button" onclick="$('adlg').close()">إغلاق</button></div></form>
-    <h4 style="margin:12px 0 4px">الأجهزة المسجّلة الآن</h4>
-    ${ses.length ? ses.map((x) => `<div class="acc-l"><span dir="ltr">${esc(x.email)}</span><span class="note" style="margin:0">${x.n} جهاز</span><button class="btn" type="button" data-accout="${esc(x.email)}">تسجيل خروج</button></div>`).join("") : `<p class="note">لا أحد دخل بحساب Google بعد.</p>`}`;
-  $("accForm").onsubmit = async (e) => { e.preventDefault();
-    const emails = e.target.emails.value.split(/[\s,;]+/).filter(Boolean);
-    const x = await (await fetch("/clinic/api/access?action=save", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ emails }) })).json().catch(() => ({ ok: false }));
-    accDialog(x.ok ? "✔ حُفظت القائمة" + (x.emails.length < emails.length ? " (أُهمل بريد غير صحيح)" : "") : "⚠️ تعذّر الحفظ"); };
-}
-$("accBtn").onclick = () => accDialog("");
-$("adlg").addEventListener("click", async (e) => { const b = e.target.closest("[data-accout]"); if (!b || !confirm("تسجيل خروج " + b.dataset.accout + " من كل الأجهزة؟")) return;
-  await fetch("/clinic/api/access?action=signout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: b.dataset.accout }) }); accDialog("✔ تم تسجيل الخروج"); });
 /* ---------- calendar connections: Outlook (Microsoft) and Google ---------- */
 async function calDialog(msg) {
   const d = $("adlg"); d.innerHTML = `<h3>🔗 ربط التقويم</h3><div class="spin"></div>`; if (!d.open) d.showModal();
@@ -1702,7 +1640,7 @@ async function load(r = current) {
     const res = await fetch(`/clinic/api/day?from=${from}&days=${days}`, { credentials: "same-origin", cache: "no-store" });
     if (res.status === 401) { location.reload(); return; }
     const data = await res.json(); if (data.today) today = data.today;
-    if (planMode && days === 1) renderPlanner(data, label); else render(data, label);
+    render(data, label);
   } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر التحميل، تحقّق من الإنترنت ثم اضغط تحديث.</div>`; }
 }
 
