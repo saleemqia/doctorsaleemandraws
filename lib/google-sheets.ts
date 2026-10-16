@@ -29,7 +29,11 @@ function pemBytes(pem: string): ArrayBuffer {
 
 async function accessToken(env: Env): Promise<string> {
   if (!env.GOOGLE_SERVICE_ACCOUNT_JSON) throw new Error("Google Sheets is not configured");
-  const account = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON) as { client_email?: string; private_key?: string; token_uri?: string };
+  // Cloudflare's dashboard can turn indentation spaces into non-breaking spaces
+  // when a JSON secret is pasted from a browser editor. Normalize them before
+  // parsing so a valid service-account key remains usable after deployment.
+  const secret = env.GOOGLE_SERVICE_ACCOUNT_JSON.replace(/^\uFEFF/, "").replace(/\u00a0/g, " ");
+  const account = JSON.parse(secret) as { client_email?: string; private_key?: string; token_uri?: string };
   if (!account.client_email || !account.private_key) throw new Error("Google service account secret is invalid");
   const now = Math.floor(Date.now() / 1000);
   const head = enc(JSON.stringify({ alg: "RS256", typ: "JWT" }));
