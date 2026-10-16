@@ -1,7 +1,11 @@
 // Private clinic tools: shared helpers for /clinic (Outlook calendar → today's visits + archive).
 // The Outlook ICS link and the access-key hashes live in the D1 database, never in this code.
 
-export interface Env { DB: D1Database }
+export interface Env {
+  DB: D1Database;
+  /** Encrypted Cloudflare secret containing the Google service-account JSON. */
+  GOOGLE_SERVICE_ACCOUNT_JSON?: string;
+}
 
 export interface Appt {
   uid: string; day: string; start: string; end: string; allDay: boolean;
@@ -49,7 +53,6 @@ export async function pinUnlocked(env: Env, req: Request): Promise<boolean> {
 export function needsPin(url: URL, method: string): boolean {
   const p = url.pathname.replace(/\/+$/, ""), action = url.searchParams.get("action") || "";
   if (p === "/clinic/api/cal/connect") return true;
-  if (p === "/clinic/api/access") return true;
   if (p === "/clinic/api/cal") return method === "POST" && ["config", "disconnect"].includes(action);
   if (p === "/clinic/api/finance") return method === "GET" ? !url.searchParams.has("names") : !["pay", "add", "patient"].includes(action);
   return ["/clinic/api/patients", "/clinic/api/files", "/clinic/api/payments", "/clinic/api/sheet"].includes(p);
