@@ -137,3 +137,59 @@ export async function checkPaymentSheets(env: Env) {
   }
   return out;
 }
+
+type ExpenseSheetRow = {
+  src: string; category: string; day: string;
+  iqd: number; usd: number; desc: string;
+};
+
+const expenseValues = (r: ExpenseSheetRow) => [[r.category, Math.round(Date.parse(r.day + "T00:00:00Z") / 86400000) + 25569, r.iqd, r.usd, r.desc, "", "", "", r.src]];
+
+async function findExpenseRow(token: string, spreadsheetId: string, month: string, src: string): Promise<number | null> {
+  const data = await google(token, rangeUrl(spreadsheetId, month + "!I129:I")) as { values?: unknown[][] };
+  const i = (data.values || []).findIndex((r) => String(r?.[0] || "") === src);
+  return i < 0 ? null : i + 129;
+}
+
+async function expenseTotalRow(token: string, spreadsheetId: string, month: string): Promise<number> {
+  const data = await google(token, rangeUrl(spreadsheetId, month + "!A129:A", "?valueRenderOption=FORMULA")) as { values?: unknown[][] };
+  const i = (data.values || []).findIndex((r) => /TOTAL\s+EXPENDITURES/i.test(String(r[0] || "")));
+  if (i < 0) throw new Error("The monthly expense table was not found; entry remains saved in the clinic.");
+  return i + 129;
+}
+
+async function monthSheetId(token: string, spreadsheetId: string, month: string): Promise<number> {
+  const data = await google(token, API + "/" + spreadsheetId + "?fields=sheets.properties(sheetId,title)") as { sheets?: { properties?: { sheetId?: number; title?: string } }[] };
+  const sheet = data.sheets?.find((s) => s.properties?.title === month)?.properties;
+  if (sheet?.sheetId === undefined) throw new Error("The " + month + " worksheet was not found.");
+  return sheet.sheetId;
+}
+
+async function writeExpense(token: string, spreadsheetId: string, month: string, row: ExpenseSheetRow) {
+  const existing = await findExpenseRow(token, spreadsheetId, month, row.src);
+  const total = await expenseTotalRow(token, spreadsheetId, month);
+  const data = await google(token, rangeUrl(spreadsheetId, month + "!A129:I" + (total - 1), "?valueRenderOption=FORMULA")) as { values?: unknown[][] };
+  const rows = data.values || [];
+  const empty = rows.findIndex((r) => /^Extra\s+\d+$/i.test(String(r[0] || "")) && r.slice(1, 9).every((v) => v === "" || v === null));
+  let destination = existing || (empty < 0 ? 0 : empty + 129);
+  if (!destination) {
+    const sheetId = await monthSheetId(token, spreadsheetId, month);
+    await google(token, API + "/" + spreadsheetId + ":batchUpdate", { method: "POST", body: JSON.stringify({ requests: [{ insertDimension: { range: { sheetId, dimension: "ROWS", startIndex: total - 1, endIndex: total }, inheritFromBefore: true } }] }) });
+    destination = total;
+  }
+  await google(token, rangeUrl(spreadsheetId, month + "!I128", "?valueInputOption=RAW"), { method: "PUT", body: JSON.stringify({ values: [["Clinic Sync ID"]] }) });
+  await google(token, rangeUrl(spreadsheetId, month + "!A" + destination + ":I" + destination, "?valueInputOption=RAW"), {
+    method: "PUT", body: JSON.stringify({ values: expenseValues(row) }),
+  });
+}
+
+export async function appendExpenseToSheet(env: Env, row: ExpenseSheetRow) {
+  const token = await accessToken(env), { spreadsheetId, month } = target(row.day);
+  await writeExpense(token, spreadsheetId, month, row);
+}
+
+export async function deleteExpenseFromSheet(env: Env, day: string, src: string) {
+  const token = await accessToken(env), { spreadsheetId, month } = target(day);
+  const row = await findExpenseRow(token, spreadsheetId, month, src);
+  if (row) await google(token, clearUrl(spreadsheetId, month + "!A" + row + ":I" + row), { method: "POST", body: "{}" });
+}
