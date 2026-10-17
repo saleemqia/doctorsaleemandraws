@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import drDesk from "@/assets/dr-saleem-consultation.webp";
 import drProfile from "@/assets/dr-saleem-profile.webp";
-import drClinic from "@/assets/dr-saleem-clinic.webp";
 import drSaleem from "@/assets/dr-saleem.jpg";
 import drConference from "@/assets/dr-saleem-conference.webp";
 
@@ -10,7 +9,6 @@ import drConference from "@/assets/dr-saleem-conference.webp";
 const SLIDES = [
   { src: drDesk, pos: "58% center", alt: "Dr. Saleem Andraws at his clinic desk in Duhok" },
   { src: drProfile, pos: "center", alt: "Dr. Saleem Andraws in his clinic office in Duhok" },
-  { src: drClinic, pos: "center", alt: "Dr. Saleem Andraws in the treatment room of his clinic in Duhok" },
   { src: drSaleem, pos: "37% center", alt: "Dr. Saleem Andraws, dentist in Duhok" },
   { src: drConference, pos: "center", alt: "Dr. Saleem Andraws at a dental conference and exhibition" },
 ];
