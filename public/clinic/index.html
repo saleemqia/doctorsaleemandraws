@@ -216,6 +216,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   .portal{background:linear-gradient(135deg,#e1efff,#f4f9ff);border:1px solid #b8d2f1;border-radius:22px;padding:24px;box-shadow:0 8px 24px #13285c08}
   .portal h2{margin:8px 0;font-size:23px}.portal p{color:var(--muted);line-height:1.7}.portal-icon{font-size:32px}
   .portal-links{display:flex;gap:10px;flex-wrap:wrap}.seg .portal a{flex:auto;font-size:15px;padding:12px 16px;border-width:1px}
+  .portal-sections{display:grid;gap:12px;margin-top:18px}.portal-section{background:#ffffffd9;border:1px solid #c9dbef;border-radius:14px;padding:12px 14px}.portal-section h3{font-size:15px;margin:0 0 9px}.portal-section-links{display:flex;flex-wrap:wrap;gap:8px}.seg .portal .portal-section-links a{flex:0 1 auto;padding:8px 11px;border-radius:10px;font-size:14px;font-weight:650;background:#fff;border-width:1px}.portal .portal-section-links a:hover{background:#eaf3ff}.portal-fin .portal-section{border-color:#c4dedb}
   .portal.on{border:2px solid var(--blue)}.portal-fin{background:linear-gradient(135deg,#e0edf9,#edf9f7)}
   .workspace-nav{display:flex;align-items:center;gap:12px;margin-bottom:16px}.workspace-nav h2{margin:0}
   .year-tools{background:#e8f2fc;border:1px solid #b8d2f1;padding:16px;border-radius:16px;margin:12px 0}.year-tools form{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.year-tools input{width:100px;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit}
@@ -225,8 +226,8 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   </style>
   <div class="clinic-welcome" id="clinicWelcome"><h2>أهلًا بك في العيادة</h2><p>اختر القسم الذي تحتاجه للبدء</p></div>
   <div class="seg" id="seg">
-    <section class="portal" data-g="a"><span class="portal-icon">📅</span><h2>المواعيد وبطاقات المرضى</h2><p>جدول اليوم، الحجوزات، والبحث السريع عن بطاقة المريض.</p><div class="portal-links"><a href="/clinic/?view=appointments">فتح المواعيد</a><a href="/clinic/?view=patients">👤 بطاقات المرضى</a></div></section>
-    <section class="portal portal-fin" data-g="f"><span class="portal-icon">💰</span><h2>المالية والحسابات</h2><p>إدخال الدفعات والمصاريف، مراجعة الحسابات، وتصدير ملفات Excel.</p><div class="portal-links"><a href="/clinic/?view=finance">فتح المالية</a><a href="/clinic/?view=finance&year=2027">📗 حسابات 2027</a></div></section>
+    <section class="portal" data-g="a"><span class="portal-icon">📅</span><h2>المواعيد وبطاقات المرضى</h2><p>افتح الجزء المطلوب مباشرة:</p><div class="portal-section"><h3>📅 المواعيد</h3><div class="portal-section-links"><a href="/clinic/?view=appointments">اليوم</a><a href="/clinic/?view=appointments&day=tomorrow">غدًا</a><a href="/clinic/?view=appointments&range=week">الأيام السبعة</a><a href="/clinic/?view=appointments&section=reminders">التذكيرات</a><a href="/clinic/?view=appointments&section=requests">طلبات الحجز</a><a href="/clinic/?view=appointments&section=archive">الأرشيف</a></div></div><div class="portal-section"><h3>👤 بطاقات المرضى</h3><div class="portal-section-links"><a href="/clinic/?view=patients">بحث وفتح بطاقة مريض</a><a href="/clinic/?view=finance&section=patient">إضافة مريض</a></div></div></section>
+    <section class="portal portal-fin" data-g="f"><span class="portal-icon">💰</span><h2>المالية والحسابات</h2><p>اختر الحساب أو الإجراء مباشرة:</p><div class="portal-section"><h3>📊 الحسابات</h3><div class="portal-section-links"><a href="/clinic/?view=finance&year=2026">حسابات 2026</a><a href="/clinic/?view=finance&year=2027">حسابات 2027</a><a href="/clinic/?view=finance&year=2025">أرشيف 2025</a></div></div><div class="portal-section"><h3>✍️ الإدخال والتصدير</h3><div class="portal-section-links"><a href="/clinic/?view=finance&section=payment">إدخال دفعة مريض</a><a href="/clinic/?view=finance&section=expense">إدخال مصروف</a><a href="/clinic/?view=finance&year=2027&section=export">إنشاء وتصدير Excel 2027</a></div></div></section>
   </div>
   <div id="workspace" hidden>
   <div class="workspace-nav"><a class="btn" href="/clinic/">⌂ أقسام العيادة</a><h2 id="workspaceTitle"></h2></div>
@@ -577,7 +578,7 @@ function expenseRows(XLSX, ws, title, fileYear) {
   if (hi < 0) return null;
   const h = grid[hi].map((c) => String(c ?? "").toLowerCase());
   const col = (re) => h.findIndex((c) => re.test(c));
-  const cDate = col(/date|تاريخ/), cI = col(/amount[\s\S]*iqd/), cU = col(/amount[\s\S]*(usd|\$)/), cDesc = col(/desc|وصف|ملاحظ/), cRec = col(/receipt|وصل/);
+  const cDate = col(/date|تاريخ/), cI = col(/amount[\s\S]*iqd/), cU = col(/amount[\s\S]*(usd|\$)/), cDesc = col(/desc|وصف|ملاحظ/), cRec = col(/receipt|وصل/), cSync = col(/clinic sync id/);
   const ym = `${year}-${String(month).padStart(2, "0")}`; const out = [];
   for (let i = hi + 1; i < grid.length; i++) {
     const r = grid[i] || []; const cat = String(r[0] ?? "").trim();
@@ -587,7 +588,7 @@ function expenseRows(XLSX, ws, title, fileYear) {
     const iqd = a[0] ?? 0, usd = (b[1] ?? b[0] ?? 0) + (a[1] ?? 0);
     if (!iqd && !usd) continue;
     const day = (cDate >= 0 && r[cDate] != null && cellDay(r[cDate], year, month)) || ym + "-01";
-    out.push({ src: `${ym}#${i + 1}`, category: catName(cat), day, iqd: iqd || null, usd: usd || null,
+    out.push({ src: cSync >= 0 && /^m:[a-z0-9]+$/i.test(String(r[cSync] || "")) ? String(r[cSync]) : `${ym}#${i + 1}`, category: catName(cat), day, iqd: iqd || null, usd: usd || null,
       desc: cDesc >= 0 ? String(r[cDesc] ?? "") : "", receipt: cRec >= 0 ? String(r[cRec] ?? "") : "" });
   }
   return { sheet: ym, rows: out };
@@ -1183,7 +1184,7 @@ async function mergeFromCard(p) {
 const MN_AR = ["كانون الثاني", "شباط", "آذار", "نيسان", "أيار", "حزيران", "تموز", "آب", "أيلول", "تشرين الأول", "تشرين الثاني", "كانون الأول"];
 const MN_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const PAL = ["#1F6FD1", "#C29A4A", "#1E9E5A", "#C2413A", "#7A5AF8", "#0EA5B7", "#E67E22", "#8A94A8"];
-let finYear = String(Math.max(2026, new Date().getFullYear())), finCur = "iqd", finBooted = false, qeMode = "pay", qeDay = new Date().toISOString().slice(0, 10);
+let finYear = String(Math.max(2026, new Date().getFullYear())), finCur = "iqd", finBooted = false, qeMode = "pay", qeDay = new Date(Date.now() + 180 * 60000).toISOString().slice(0, 10);
 async function gsAuto() {      // opening the tab pulls fresh numbers when the last sync is over 2 hours old
   const d = await gsLoad(); if (!d || !d.links.length) return;
   if (d.synced_at && Date.now() - Date.parse(d.synced_at) < 2 * 3600 * 1000) return;
@@ -1274,6 +1275,7 @@ async function loadFin() {
       document.querySelector("#exportMsg")?.remove();
       $("finYears").insertAdjacentHTML("afterend", `<p class="note" id="exportMsg">اختر السنة ثم اضغط «تصدير Excel» للحصول على نسخة محدثة من الحسابات.</p>`);
     renderFin(d); qeAppts(); sheetsStatus();
+    if (new URLSearchParams(location.search).get("section") === "export") document.querySelector('#finYears [data-x="1"]')?.scrollIntoView({ behavior: "smooth", block: "center" });
   } catch (e) { $("list").innerHTML = `<div class="empty">تعذّر تحميل الحسابات: ${esc(e.message || e)}</div>`; }
 }
 async function sheetsStatus() {
@@ -1312,7 +1314,7 @@ function qeBox(d) {      // the quick-entry forms; d is null while the accounts 
         <label>المدفوع (دينار)<input name="paid_iqd" type="number" inputmode="numeric" min="0" step="any" placeholder="لا يوجد / 0"></label><label>المدفوع ($)<input name="paid_usd" type="number" inputmode="decimal" min="0" step="any" placeholder="لا يوجد / 0"></label>
         <label>المتبقي (دينار)<input name="due_iqd" type="number" inputmode="numeric" min="0" step="any" placeholder="لا يوجد / 0"></label><label>المتبقي ($)<input name="due_usd" type="number" inputmode="decimal" min="0" step="any" placeholder="لا يوجد / 0"></label>
         <label>العمل المنجز<input name="work" placeholder="حشوة، تنظيف…"></label><label>ملاحظات<input name="notes"></label><label>هاتف المريض (اختياري)<input name="phone" type="tel" inputmode="tel" dir="ltr"></label><button class="btn pri">حفظ الدفعة</button></form>
-        <p class="note" id="qMsg">تظهر الدفعة فورًا في بطاقة المريض والرسوم البيانية، وتُضاف تلقائيًا إلى جدول السنة المرتبط.</p>`
+        <p class="note" id="qMsg">تظهر الدفعة فورًا في بطاقة المريض والرسوم البيانية، دفعات 2026 تُرسل إلى جدول Google المرتبط، وباقي السنوات يمكن تصديرها إلى Excel.</p>`
       : qeMode === "pt" ? `<form id="ptForm" class="xf"><label>اسم المريض<input name="name" required autocomplete="off"></label><label>الهاتف<input name="phone" type="tel" inputmode="tel" dir="ltr" placeholder="0750…"></label><button class="btn pri">حفظ المريض</button></form><p class="note" id="ptMsg">تُنشأ بطاقة للمريض فورًا، وتظهر مواعيده من التقويم ودفعاته فيها عندما يتطابق الاسم.</p>`
       : `<form id="xForm" class="xf"><label>التاريخ<input type="date" name="day" required value="${qeDay}"></label>
         <label>النوع<input name="category" list="xcats" required placeholder="كهرباء، مختبر…"><datalist id="xcats">${["كهرباء", "إيجار", "راتب المساعدة", "مواد طبية", "المختبر", "إنترنت", "أخرى", ...cats].map((k) => `<option value="${esc(k)}">`).join("")}</datalist></label>
@@ -1387,24 +1389,24 @@ async function exportYear(btn, selectedYear = finYear) {
       const sh = `${Y}-${String(m).padStart(2, "0")}`, ws = wb.addWorksheet(MN_FULL[m - 1]); ws.views = [{ state: "frozen", ySplit: 4 }];
       ws.columns = [{ width: 30 }, { width: 13 }, { width: 14 }, { width: 14 }, { width: 14 }, { width: 14 }, { width: 34 }, { width: 28 }];
       title(ws, 1, `🏥  Dental Clinic  —  ${MN_FULL[m - 1]} ${Y}  —  Financial Tracker`, 8); title(ws, 3, "💰  PATIENT INCOME", 8);
-      const h = ws.getRow(4); h.values = ["Patient Name", "Date", "Payment Done\n(IQD)", "Payment Done\n(USD)", "Payment Due\n(IQD)", "Payment Due\n(USD)", "Work Done", "Notes"]; head(h, 8);
-      const rows = [...d.payrows.filter((r) => r.sheet === sh).map((r) => [r.name, r.day, r.paid_iqd, r.paid_usd, r.due_iqd, r.due_usd, r.work, r.notes]),
+      const h = ws.getRow(4); h.values = ["Patient Name", "Date", "Payment Done\n(IQD)", "Payment Done\n(USD)", "Payment Due\n(IQD)", "Payment Due\n(USD)", "Work Done", "Notes", "Clinic Sync ID"]; head(h, 9); ws.getColumn(9).hidden = true;
+      const rows = [...d.payrows.filter((r) => r.sheet === sh).map((r) => [r.name, r.day, r.paid_iqd, r.paid_usd, r.due_iqd, r.due_usd, r.work, r.notes, r.src]),
         ...d.othrows.filter((r) => r.sheet === sh).map((r) => [r.label || "(إيراد آخر)", r.day, r.amount_iqd, r.amount_usd, 0, 0, "", ""])];
       const N = Math.max(120, rows.length), T = 5 + N; let tot = [0, 0, 0, 0];
       for (let i = 0; i < N; i++) {
         const r = rows[i], row = ws.getRow(5 + i);
-        if (r) { row.values = [r[0] || "", r[1] ? dayDate(r[1]) : null, r[2] || 0, r[3] || 0, r[4] || 0, r[5] || 0, r[6] || "", r[7] || ""]; for (let k = 0; k < 4; k++) tot[k] += +r[2 + k] || 0; }
+        if (r) { row.values = [r[0] || "", r[1] ? dayDate(r[1]) : null, r[2] || 0, r[3] || 0, r[4] || 0, r[5] || 0, r[6] || "", r[7] || "", r[8] || ""]; for (let k = 0; k < 4; k++) tot[k] += +r[2 + k] || 0; }
         for (let c = 1; c <= 8; c++) { const x = row.getCell(c); x.border = BOX; if (c === 2) x.numFmt = "yyyy-mm-dd"; if (c >= 3 && c <= 6) x.numFmt = "#,##0"; }
       }
       const tr = ws.getRow(T); tr.getCell(1).value = "TOTAL INCOME";
       ["C", "D", "E", "F"].forEach((L, k) => { tr.getCell(L).value = { formula: `SUM(${L}5:${L}${T - 1})`, result: tot[k] }; tr.getCell(L).numFmt = "#,##0"; });
       for (let c = 1; c <= 8; c++) { const x = tr.getCell(c); x.font = { bold: true }; x.fill = { type: "pattern", pattern: "solid", fgColor: { argb: LIGHT } }; x.border = BOX; }
       const X0 = T + 2; title(ws, X0, "📉  MONTHLY EXPENDITURES", 8);
-      const xh = ws.getRow(X0 + 1); xh.values = ["Category", "Date", "Amount\n(IQD)", "Amount\n(USD)", "Description", "Receipt #"]; head(xh, 6);
+      const xh = ws.getRow(X0 + 1); xh.values = ["Category", "Date", "Amount\n(IQD)", "Amount\n(USD)", "Description", "Receipt #", "", "", "Clinic Sync ID"]; head(xh, 6);
       const ex = d.expenses.filter((r) => r.sheet === sh).sort((a, b) => String(a.day).localeCompare(b.day) || a.id - b.id), XN = Math.max(10, ex.length); let et = [0, 0];
       for (let i = 0; i < XN; i++) {
         const r = ex[i], row = ws.getRow(X0 + 2 + i);
-        if (r) { row.values = [r.category, dayDate(r.day), r.amount_iqd || 0, r.amount_usd || 0, r.description || "", r.receipt || ""]; et[0] += +r.amount_iqd || 0; et[1] += +r.amount_usd || 0; }
+        if (r) { row.values = [r.category, dayDate(r.day), r.amount_iqd || 0, r.amount_usd || 0, r.description || "", r.receipt || "", "", "", r.src || ""]; et[0] += +r.amount_iqd || 0; et[1] += +r.amount_usd || 0; }
         for (let c = 1; c <= 6; c++) { const x = row.getCell(c); x.border = BOX; if (c === 2) x.numFmt = "yyyy-mm-dd"; if (c === 3 || c === 4) x.numFmt = "#,##0"; }
       }
       const XT = X0 + 2 + XN, xt = ws.getRow(XT); xt.getCell(1).value = "TOTAL EXPENDITURES";
@@ -1731,9 +1733,9 @@ if (/^20\d{2}$/.test(requestedYear || "")) finYear = requestedYear;
 if (deep) {
   document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x.dataset.r === "patients"));
   setGroup("a", false); $("workspace").hidden = false; $("clinicWelcome").hidden = true; current = "patients"; $("pats").hidden = false; $("dnav").hidden = true; openCard(+deep[1]);
-} else if (requestedView === "finance") { setGroup("f", false); load("fin"); }
+} else if (requestedView === "finance") { const section = new URLSearchParams(location.search).get("section"); qeMode = section === "expense" ? "exp" : section === "patient" ? "pt" : "pay"; setGroup("f", false); load("fin"); }
 else if (requestedView === "patients") { setGroup("a", false); load("patients"); }
-else if (requestedView === "appointments") { setGroup("a", false); load("today"); remFetch(true).then(remBadge); reqCount(); }
+else if (requestedView === "appointments") { setGroup("a", false); const section = new URLSearchParams(location.search).get("section"); const day = new URLSearchParams(location.search).get("day"); const rangePick = new URLSearchParams(location.search).get("range"); const route = section === "reminders" ? "remind" : section === "requests" ? "reqs" : section === "archive" ? "archive" : day === "tomorrow" ? "tomorrow" : rangePick === "week" ? "week" : "today"; load(route); remFetch(true).then(remBadge); reqCount(); }
 else { current = "home"; $("workspace").hidden = true; }
 </script>
 </body>
