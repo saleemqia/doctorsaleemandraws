@@ -1332,16 +1332,16 @@ function renderFin(d) {
   // currency value before adding, otherwise USD values can concatenate as text
   // and disappear from net totals and chart scaling.
   const n = (v) => Number(v) || 0;
-  const c = finCur, inc = d.months.map((m) => n(m["inc_" + c]) + n(m["oth_" + c])), exp = d.months.map((m) => n(m["exp_" + c])), due = d.months.map((m) => n(m["due_" + c]));
+  const c = finCur, inc = d.months.map((m) => n(m["inc_" + c]) + n(m["oth_" + c])), exp = d.months.map((m) => n(m["exp_" + c])), due = d.months.map((m) => n(m["due_" + c])); const usdInc = d.months.map((m) => n(m.inc_usd) + n(m.oth_usd)), usdExp = d.months.map((m) => n(m.exp_usd)), usdDue = d.months.map((m) => n(m.due_usd)), usdNet = usdInc.map((v, i) => v - usdExp[i]);
   const net = inc.map((v, i) => v - exp[i]); const sum = (a) => a.reduce((t, v) => t + n(v), 0);
   const active = d.months.map((m, i) => (m.visits || exp[i] ? i : -1)).filter((i) => i >= 0);
   const best = active.length ? active.reduce((a, b) => (net[b] > net[a] ? b : a)) : -1, worst = active.length ? active.reduce((a, b) => (net[b] < net[a] ? b : a)) : -1;
   const catList = Object.entries(d.cats).map(([k, v]) => ({ label: k, v: sum(v[c]) })).filter((x) => x.v > 0).sort((a, b) => b.v - a.v);
-  const kp = (cls, t, v) => `<div class="kpi ${cls}"><small>${t}</small><b>${fm(v, c)}</b></div>`;
+  const kp = (cls, t, v, currency = c) => `<div class="kpi ${cls}"><small>${t}</small><b>${fm(v, currency)}</b></div>`;
   const rowsT = d.months.map((m, i) => `<tr><td>${MN_EN[i]}</td><td>${fm(inc[i], c)}</td><td>${fm(exp[i], c)}</td><td class="${net[i] < 0 ? "neg" : "pos"}">${fm(net[i], c)}</td><td>${fm(due[i], c)}</td></tr>`).join("");
   const cats = Object.keys(d.cats);
   $("list").innerHTML = `
-    <div class="kpis">${kp("g", "إجمالي الدخل", sum(inc))}${kp("r", "إجمالي المصاريف", sum(exp))}${kp("", "الصافي", sum(net))}${kp("y", "المتبقي على المرضى", sum(due))}</div>
+    <div class="kpis">${kp("g", "إجمالي الدخل", sum(inc))}${kp("r", "إجمالي المصاريف", sum(exp))}${kp("", "الصافي", sum(net))}${kp("y", "المتبقي على المرضى", sum(due))}</div>${c === "iqd" ? `<div class="cbox"><h3>ملخص الدولار الأمريكي ($)</h3><div class="kpis">${kp("g", "إجمالي الدخل", sum(usdInc), "usd")}${kp("r", "إجمالي المصاريف", sum(usdExp), "usd")}${kp("", "الصافي بعد المصاريف", sum(usdNet), "usd")}${kp("y", "المتبقي على المرضى", sum(usdDue), "usd")}</div></div>` : ""}
     ${sum(d.months.map((m) => m["oth_" + c])) ? `<p class="note">الدخل يشمل ${fm(sum(d.months.map((m) => m["oth_" + c])), c)} من إيرادات غير مرتبطة بزيارة مريض (مثل أجور الفحص الشهرية أو بيع معدّات)، كما في ملف Excel.</p>` : ""}
     ${best >= 0 ? `<p class="note">⭐ أفضل شهر: <b>${MN_AR[best]}</b> (${fm(net[best], c)}) · ⚠️ أضعف شهر: <b>${MN_AR[worst]}</b> (${fm(net[worst], c)})</p>` : `<div class="empty">لا توجد بيانات لسنة ${d.year}. ارفع ملف الحسابات من الأعلى.</div>`}
     ${monthlySummary(d, c, inc, exp, net)}
