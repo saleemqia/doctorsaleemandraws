@@ -31,7 +31,7 @@ export async function keyValid(env: Env, key: string): Promise<boolean> {
   return !!row;
 }
 
-/* ---------- second lock: accounts, statistics and patient cards need the owner's PIN ----------
+/* ---------- second lock: financial records and spreadsheet access need the owner's PIN ----------
    Only sha256("fin:" + PIN) is stored, in clinic_settings 'fin_pin'. Unlocking sets a short-lived cookie. */
 
 export const PIN_COOKIE = "clinic_fin";
@@ -49,13 +49,11 @@ export async function pinUnlocked(env: Env, req: Request): Promise<boolean> {
   const c = cookieValue(req, PIN_COOKIE); if (!c) return false;
   const h = await pinHash(env); return !!h && c === (await pinToken(h));
 }
-/** What stays open without the PIN: the appointments, and typing in a payment, an expense or a new patient. */
+/** Appointments and patient cards stay open. The PIN protects accounts and spreadsheet access. */
 export function needsPin(url: URL, method: string): boolean {
   const p = url.pathname.replace(/\/+$/, ""), action = url.searchParams.get("action") || "";
-  if (p === "/clinic/api/cal/connect") return true;
-  if (p === "/clinic/api/cal") return method === "POST" && ["config", "disconnect"].includes(action);
   if (p === "/clinic/api/finance") return method === "GET" ? !url.searchParams.has("names") : !["pay", "add", "patient"].includes(action);
-  return ["/clinic/api/patients", "/clinic/api/files", "/clinic/api/payments", "/clinic/api/sheet"].includes(p);
+  return ["/clinic/api/payments", "/clinic/api/sheet"].includes(p);
 }
 
 /* ---------- dates ---------- */
