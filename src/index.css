@@ -260,3 +260,32 @@
     animation: fade-in-up 0.6s ease-out forwards;
   }
 }
+
+/* Assyrian name: larger, softly shimmering, and revealed like a typewriter. */
+.assyrian-name {
+  width: fit-content;
+  max-width: 100%;
+  white-space: nowrap;
+  font-family: 'Noto Sans Syriac Eastern', 'Noto Sans Syriac', 'Estrangelo Edessa', serif;
+  font-weight: 700;
+  line-height: 1.65;
+  background: linear-gradient(105deg, #087b92 0%, #c28d13 24%, #fff0a3 34%, #07839a 49%, #d6a928 66%, #087b92 100%);
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 5px hsl(44 90% 55% / .3));
+  clip-path: inset(0 0 0 100%);
+  animation: assyrian-typewriter 2.4s steps(20, end) .15s forwards, assyrian-glitter 3.6s linear 2.55s infinite;
+}
+@keyframes assyrian-typewriter {
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes assyrian-glitter {
+  from { background-position: 100% 50%; }
+  to { background-position: -120% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .assyrian-name { clip-path: none; animation: none; background-position: 50% 50%; }
+}
