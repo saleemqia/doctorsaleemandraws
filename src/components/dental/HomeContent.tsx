@@ -1,4 +1,23 @@
+import { useEffect, useState } from "react";
+import { EXTRA_PAGES } from "@/config/extraPages";
+import implantsIcon from "@/assets/services/dental-implants.jpg";
+import veneersIcon from "@/assets/services/cosmetic-dentistry.jpg";
+import whiteningIcon from "@/assets/services/teeth-whitening.jpg";
+import rootIcon from "@/assets/services/root-canal.jpg";
+import crownsIcon from "@/assets/gallery/dental-crowns.jpg";
+import bracesIcon from "@/assets/services/orthodontics.jpg";
+import { Calendar, Phone, MapPin, Clock, ArrowUpRight, Check, Languages, Accessibility, Car, Rotate3d } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { SERVICES } from "@/config/services";
+import { pathFor, servicePath } from "@/config/seo";
+import { EMAILS, PHONES, GOOGLE_DIRECTIONS_URL, GOOGLE_MAP_EMBED_URL, ENTRANCE_360_EMBED_URLS, GOOGLE_MAPS_URL, GOOGLE_WRITE_REVIEW_URL, REVIEWS, GRADUATION_YEAR } from "@/config/clinic";
+import HeroSlideshow from "@/components/dental/HeroSlideshow";
+import crowns from "@/assets/gallery/zircon-emax.jpeg";
+import filling from "@/assets/gallery/front-filling.jpeg";
+import replacement from "@/assets/gallery/amalgam-replacement.jpeg";
+const iconImages: Record<string,string> = {"dental-implants":implantsIcon,"cosmetic-dentistry":veneersIcon,"teeth-whitening":whiteningIcon,"root-canal":rootIcon,"dental-crowns":crownsIcon,"orthodontics":bracesIcon};
+
+export default function HomeContent({ onBookingClick }: { onBookingClick: () => void }) {
   const { language, t } = useLanguage();
   const [locationView, setLocationView] = useState<"map" | 0 | 1>("map");
   useEffect(() => {
@@ -77,3 +96,22 @@ import { SERVICES } from "@/config/services";
         <a href={GOOGLE_DIRECTIONS_URL} target="_blank" rel="noopener noreferrer" className={secondary}><MapPin className="h-4 w-4" />{L("Open directions in Google Maps", "الاتجاهات على خرائط Google", "ڕێ ل Google Maps ڤەکە")}</a>
       </div><div className="rounded-2xl border border-border bg-secondary/35 p-6 md:p-8"><h3 className="text-xl font-semibold [font-family:inherit]">{L("Your first appointment", "موعدك الأول", "ژڤانێ تە یێ ئێکێ")}</h3><ol className="mt-5 space-y-4">{[L("Tell us your concerns, medical history and current medicines.","أخبرنا بما يقلقك وتاريخك الصحي والأدوية التي تستخدمها.","نیگەرانیا خۆ و مێژوویا ساخلەمی و دەرمانێن خۆ بۆ مە ببێژە."),L("Dr. Saleem examines your teeth and gums. X-rays are arranged when needed.","يفحص الدكتور سليم أسنانك ولثتك، وتُطلب الأشعة عند الحاجة.","د. سەلیم ددان و پوکێن تە دپشکنیت. تیشک ل دەمێ پێدڤی دهێتە کرن."),L("Discuss the options, expected visits and costs before agreeing to treatment.","ناقش الخيارات والزيارات المتوقعة والتكلفة قبل الموافقة على العلاج.","بەری ڕەزامەندیێ، دەربارەی چارەسەری، سەردان و بها بپرسە.")].map((x,i)=><li key={x} className="flex gap-3 text-sm leading-relaxed"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary/25 text-primary">{i+1}</span>{x}</li>)}</ol><button onClick={onBookingClick} className={`${primary} mt-7 w-full`}><Calendar className="h-4 w-4" />{t("hero.bookBtn")}</button><div className="mt-5 space-y-2">{PHONES.map(n=><a key={n.tel} href={`tel:${n.tel}`} className="flex items-center justify-center gap-2 font-semibold text-primary"><Phone className="h-4 w-4" /><span dir="ltr">{n.shown}</span></a>)}<a href={`mailto:${EMAILS.booking}`} className="block text-center text-sm text-primary hover:underline">{EMAILS.booking}</a></div><details className="mt-5 border-t border-border pt-4"><summary className="cursor-pointer text-sm font-semibold text-primary">{L("What is the consultation fee?", "ما رسوم الاستشارة؟", "بهایێ شێوەرێ چەندە؟")}</summary><p className="mt-3 text-sm">{L("The consultation fee is IQD 10,000. Treatment costs are explained separately after examination.","رسوم الاستشارة 10,000 دينار عراقي. تُوضّح تكاليف العلاج بشكل منفصل بعد الفحص.","بهایێ شێوەرێ 10,000 دینارێ عێراقی یە. بهایێ چارەسەریێ پشتی پشکنینێ جودا دهێتە ڕوونکرن.")}</p></details></div></div>
       <div className="mt-10 overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4 md:p-5">
+          <h3 className="text-lg font-semibold [font-family:inherit]">{L("Clinic location & entrance view", "موقع العيادة ومدخلها", "جهێ کلینیکێ و دەرگەهێ")}</h3>
+          <div role="tablist" aria-label={L("Clinic map and 360° views", "خريطة العيادة ومشاهد 360°", "نەخشە و دیتنێن 360° یێن کلینیکێ")} className="inline-flex flex-wrap gap-1 rounded-full border border-border bg-secondary/40 p-1">
+            {(["map", 0, 1] as const).map((view) => <button key={String(view)} type="button" role="tab" aria-selected={locationView === view} aria-controls="clinic-location-view" onClick={() => setLocationView(view)} className={`inline-flex min-h-10 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold transition-colors ${locationView === view ? "bg-primary text-white" : "text-foreground hover:bg-white"}`}>
+              {view === "map" ? <MapPin className="h-4 w-4" /> : <Rotate3d className="h-4 w-4" />}{view === "map" ? L("Map", "الخريطة", "نەخشە") : `${L("360°", "360°", "360°")} ${view + 1}`}
+            </button>)}
+          </div>
+        </div>
+        <div id="clinic-location-view" role="tabpanel" className="relative aspect-[4/3] min-h-[300px] max-h-[520px] bg-secondary/35 md:aspect-[16/9]">
+          <iframe key={locationView} src={locationView === "map" ? GOOGLE_MAP_EMBED_URL : ENTRANCE_360_EMBED_URLS[locationView]} title={locationView === "map" ? L("Map showing Dr. Saleem's dental clinic in Duhok", "خريطة موقع عيادة الدكتور سليم في دهوك", "نەخشەیا جهێ کلینیکا د. سەلیم ل دهوکێ") : L(`360 degree view ${locationView + 1} of the clinic entrance`, `مشهد 360 درجة ${locationView + 1} لمدخل العيادة`, `دیتنا 360 پلە ${locationView + 1} یا دەرگەهێ کلینیکێ`)} loading="lazy" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen className="absolute inset-0 h-full w-full border-0" />
+          {locationView !== "map" && <p className="pointer-events-none absolute inset-x-3 top-3 text-center"><span className="inline-block rounded-full bg-black/60 px-3 py-1.5 text-xs text-white">{L("Drag to look around the street and clinic entrance", "اسحب لمشاهدة الشارع ومدخل العيادة", "ڕابکێشە دا شەقام و دەرگەهێ کلینیکێ ببینی")}</span></p>}
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm"><span className="text-muted-foreground">{L("Qazi Mohammad Road · Sherko Nuts Building · 1st floor", "شارع قاضي محمد · بناية شيركو للمكسرات · الطابق الأول", "شەقامێ قازی محەمەد · بینایێ شیرکۆ · قاتێ ئێکێ")}</span><a href={GOOGLE_DIRECTIONS_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-lg px-3 font-semibold text-primary hover:bg-secondary"><MapPin className="h-4 w-4" />{L("Get directions", "الاتجاهات", "ڕێکێ ببینە")} ↗</a></div>
+      </div>
+      <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 border-t border-border pt-6 text-sm"><a href={pathFor(language,"/treatments")} className="text-primary hover:underline">{L("Treatment guides", "أدلة العلاج", "ڕێبەرێن چارەسەریێ")}</a><a href={pathFor(language,"/kids")} className="text-primary hover:underline">{L("Children’s dental care", "أسنان الأطفال", "ددانێن زارۆکان")}</a><a href={pathFor(language,"/case")} className="text-primary hover:underline">{L("A guided implant case", "حالة زراعة موجّهة", "حالەتەکا چاندنا ددانا")}</a><a href={pathFor(language,"/news")} className="text-primary hover:underline">{L("Dental news", "أخبار الأسنان", "هەوالێن ددانان")}</a><a href={pathFor(language,"/smile-preview")} className="text-primary underline">{L("Smile preview", "معاينة الابتسامة", "پێشبینیا بزەیێ")}</a></div>
+    </section>
+    <section className={section}><h2 className={h2}>{L("Explore the clinic", "اكتشف العيادة", "کلینیکێ بناسە")}</h2><div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{EXTRA_PAGES.map(p=><a key={p.path} href={pathFor(language,p.path)} className="rounded-xl border border-border bg-white p-4 font-semibold text-primary hover:bg-secondary">{p.title[language]} ↗</a>)}</div></section>
+  </>;
+}
