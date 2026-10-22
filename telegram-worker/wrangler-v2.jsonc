@@ -1,0 +1,7 @@
+{
+  "name": "dr-saleem-clinic-finance-bot",
+  "main": "src/index-v2.ts",
+  "compatibility_date": "2026-10-22",
+  "workers_dev": true,
+  "triggers": { "crons": ["0 16 * * *"] }
+}
