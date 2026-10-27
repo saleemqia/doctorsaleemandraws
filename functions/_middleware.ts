@@ -82,6 +82,7 @@ export const onRequest: PagesFunction = async ({ request, next }) => {
     .on('meta[name="twitter:title"]', setContent(s.title))
     .on('meta[name="twitter:description"]', setContent(s.description))
     .on("head", { element(e) { e.append(`<link rel="canonical" href="${here}" />${crumbs}`, { html: true }); } });
+  if (url.searchParams.has("previewDesign")) rw = rw.on("head", { element(e) { e.append('<meta name="robots" content="noindex, nofollow">', { html: true }); } });
   for (const l of ["en", "ar", "ku"] as SeoLanguage[]) {
     rw = rw.on(`link[rel="alternate"][hreflang="${l}"]`, { element(e) { e.setAttribute("href", pageUrl(l, page)); } });
   }

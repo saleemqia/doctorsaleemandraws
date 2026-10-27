@@ -53,7 +53,7 @@ export async function pinUnlocked(env: Env, req: Request): Promise<boolean> {
 export function needsPin(url: URL, method: string): boolean {
   const p = url.pathname.replace(/\/+$/, ""), action = url.searchParams.get("action") || "";
   if (p === "/clinic/api/finance") return method === "GET" ? !url.searchParams.has("names") : !["pay", "add", "patient"].includes(action);
-  return ["/clinic/api/payments", "/clinic/api/sheet"].includes(p);
+  return ["/clinic/api/payments", "/clinic/api/sheet", "/clinic/api/design"].includes(p);
 }
 
 /* ---------- dates ---------- */

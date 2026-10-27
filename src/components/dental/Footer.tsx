@@ -130,6 +130,10 @@ const Footer = () => {
 
         <div className={`mt-12 pt-8 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-background/60 ${dir === "rtl" ? "" : ""}`}>
           <p>© {new Date().getFullYear()} Dr. Saleem Andraws Dental Clinic. {t("footer.rights")}</p>
+          <a href="/clinic/design.html" className="flex items-center gap-1.5 hover:text-white transition-colors">
+            <Shield className="w-3.5 h-3.5" />
+            {language === "ar" ? "إدارة التصميم" : language === "ku" ? "بەڕێڤەبرنا دیزاینێ" : "Manage design"}
+          </a>
           <Link to="/admin" className={`flex items-center gap-1.5 hover:text-white transition-colors ${dir === "rtl" ? "" : ""}`}>
             <Shield className="w-3.5 h-3.5" />
             Admin

@@ -9,13 +9,25 @@ import MobileActionBar from "@/components/dental/MobileActionBar";
 
 import HomeContent from "@/components/dental/HomeContent";
 import { parsePath, pathFor, type SitePage } from "@/config/seo";
-import { designForDate } from "@/lib/designRotation";
+import { designForDate, type DesignChoice } from "@/lib/designRotation";
 
 const Index = () => {
   const [design, setDesign] = useState(() => designForDate(new Date()));
   useEffect(() => {
-    const timer = window.setInterval(() => setDesign(designForDate(new Date())), 60_000);
-    return () => window.clearInterval(timer);
+    let cancelled = false;
+    const preview = new URLSearchParams(window.location.search).get("previewDesign");
+    const refresh = async () => {
+      if (preview === "approved" || preview === "refined") { setDesign(preview); return; }
+      try {
+        const res = await fetch("/api/design", { cache: "no-store" });
+        if (!res.ok) throw new Error("Design setting unavailable");
+        const { mode } = await res.json();
+        if (!cancelled) setDesign(mode === "approved" || mode === "refined" ? mode as DesignChoice : designForDate(new Date()));
+      } catch { if (!cancelled) setDesign(designForDate(new Date())); }
+    };
+    void refresh();
+    const timer = window.setInterval(refresh, 60_000);
+    return () => { cancelled = true; window.clearInterval(timer); };
   }, []);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const openBooking = (place: string) => () => {
