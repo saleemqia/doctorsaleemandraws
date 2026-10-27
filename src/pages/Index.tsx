@@ -9,8 +9,14 @@ import MobileActionBar from "@/components/dental/MobileActionBar";
 
 import HomeContent from "@/components/dental/HomeContent";
 import { parsePath, pathFor, type SitePage } from "@/config/seo";
+import { designForDate } from "@/lib/designRotation";
 
 const Index = () => {
+  const [design, setDesign] = useState(() => designForDate(new Date()));
+  useEffect(() => {
+    const timer = window.setInterval(() => setDesign(designForDate(new Date())), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const openBooking = (place: string) => () => {
     track("book_open", place);
@@ -32,7 +38,7 @@ const Index = () => {
     }
   }, []);
   return (
-    <div className="min-h-screen bg-background scroll-smooth pb-[calc(56px+env(safe-area-inset-bottom,0px))] md:pb-0">
+    <div data-design={design} className="saleem-home min-h-screen bg-background scroll-smooth pb-[calc(56px+env(safe-area-inset-bottom,0px))] md:pb-0">
       <Navbar onBookingClick={openBooking("navbar")} />
       <main><HomeContent onBookingClick={openBooking("home")} /></main>
       <Footer />
