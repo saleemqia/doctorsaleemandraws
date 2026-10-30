@@ -19,6 +19,7 @@ import { SocialIndexPage, SocialDetailPage } from "./pages/SocialPages";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
+import SiteLinks from "./components/dental/SiteLinks";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
+            <div id="site-page"><Routes>
               <Route path="/" element={<Index />} />
               <Route path="/ar" element={<Index />} />
               <Route path="/ku" element={<Index />} />
@@ -51,7 +52,8 @@ const App = () => (
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
+            </Routes></div>
+            <SiteLinks />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

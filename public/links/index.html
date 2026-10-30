@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>روابط د. سليم إندراوس | Dr. Saleem Andraws Links</title>
-<meta name="description" content="كل روابط د. سليم إندراوس في مكان واحد: واتساب، اتصال، موقع العيادة في دهوك، إنستغرام، فيسبوك وغيرها.">
+<title>روابط د. سليم اندراوس حنا | Dr. Saleem Andraws Links</title>
+<meta name="description" content="كل روابط د. سليم اندراوس حنا في مكان واحد: واتساب، اتصال، موقع العيادة في دهوك، إنستغرام، فيسبوك وغيرها.">
 <link rel="canonical" href="https://www.doctorsaleem.com/links">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta property="og:title" content="روابط د. سليم إندراوس">
+<meta property="og:title" content="روابط د. سليم اندراوس حنا">
 <meta property="og:description" content="واتساب، اتصال، موقع العيادة، وحساباتي على التواصل الاجتماعي في مكان واحد.">
 <meta property="og:image" content="https://www.doctorsaleem.com/og-image.png">
 <meta property="og:url" content="https://www.doctorsaleem.com/links">
@@ -139,9 +139,9 @@ header{background:var(--surface)}
     <span class="crumb"><a href="/ar">doctorsaleem.com</a> › <b>links</b></span>
   </nav>
   <header>
-    <div class="avatar"><img src="/links/logo.webp" alt="شعار عيادة الدكتور سليم إندراوس" width="101" height="80"></div>
-    <h1>د. سليم إندراوس</h1>
-    <p class="en" lang="en" dir="ltr">Dr. Saleem Andraws</p>
+    <div class="avatar"><img src="/links/logo.webp" alt="شعار عيادة الدكتور سليم اندراوس حنا" width="101" height="80"></div>
+    <h1>د. سليم اندراوس حنا</h1>
+    <p class="en" lang="en" dir="ltr">Dr. Saleem Andraws Hanna</p>
     <p class="bio">طبيب أسنان اختصاص · تخرّج 2007 · خبرة أكثر من 17 سنة</p>
     <p class="cred" lang="en">B.D.S. · M.Sc. Oral Radiology <b>(2023)</b></p>
     <a class="mail" href="mailto:dr.saleemo@gmail.com" dir="ltr">dr.saleemo@gmail.com</a>
@@ -297,6 +297,11 @@ header{background:var(--surface)}
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
+// When shown as the welcome screen, keep visitors on links while they interact.
+if (new URLSearchParams(location.search).get('intro') === '1' && window.parent !== window) {
+  ['pointerdown','keydown','wheel','touchstart'].forEach(function(type){document.addEventListener(type,function(){window.parent.postMessage({type:'saleem-links-interaction'},location.origin)},{passive:true,once:true})});
+  document.addEventListener('click',function(e){var a=e.target.closest('a');if(a && !a.target && !a.classList.contains('pg'))a.target='_top'},true);
+}
 (function(){
   var chips=[].slice.call(document.querySelectorAll('.chip'));
   var secs=[].slice.call(document.querySelectorAll('section[data-cat]'));
