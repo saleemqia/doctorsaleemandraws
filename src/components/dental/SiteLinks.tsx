@@ -7,7 +7,7 @@ import "./SiteLinks.css";
 // Capture the address before language selection updates the URL.
 const isRootEntry = window.location.pathname === "/" && !window.location.hash && !new URLSearchParams(window.location.search).has("previewDesign") && window.self === window.top;
 const WELCOME_KEY = "saleem-links-welcome-shown";
-const WELCOME_SECONDS = 15;
+const WELCOME_SECONDS = 5;
 
 export default function SiteLinks() {
   const { language, dir } = useLanguage();
