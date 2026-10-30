@@ -142,7 +142,7 @@ header{background:var(--surface)}
     <div class="avatar"><img src="/links/logo.webp" alt="شعار عيادة الدكتور سليم اندراوس حنا" width="101" height="80"></div>
     <h1>د. سليم اندراوس حنا</h1>
     <p class="en" lang="en" dir="ltr">Dr. Saleem Andraws Hanna</p>
-    <p class="bio">طبيب أسنان اختصاص · تخرّج 2007 · خبرة أكثر من 17 سنة</p>
+    <p class="bio">طبيب أسنان اختصاص · تخرّج 2007 · خبرة نحو <span id="years-experience">19</span> سنة</p>
     <p class="cred" lang="en">B.D.S. · M.Sc. Oral Radiology <b>(2023)</b></p>
     <a class="mail" href="mailto:dr.saleemo@gmail.com" dir="ltr">dr.saleemo@gmail.com</a>
     <nav class="quick" aria-label="تواصل سريع">
@@ -297,6 +297,8 @@ header{background:var(--surface)}
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
+// Keep the displayed experience in step with the 2007 graduation year.
+try { document.getElementById('years-experience').textContent = String(Math.max(0, Number(new Intl.DateTimeFormat('en', {timeZone:'Asia/Baghdad', year:'numeric'}).format(new Date())) - 2007)); } catch (_) { /* Keep the initial value if the browser cannot determine the year. */ }
 // When shown as the welcome screen, keep visitors on links while they interact.
 if (new URLSearchParams(location.search).get('intro') === '1' && window.parent !== window) {
   ['pointerdown','keydown','wheel','touchstart'].forEach(function(type){document.addEventListener(type,function(){window.parent.postMessage({type:'saleem-links-interaction'},location.origin)},{passive:true,once:true})});
