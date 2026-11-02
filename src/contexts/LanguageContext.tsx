@@ -1142,8 +1142,9 @@ const translations: Record<Language, Record<string, string>> = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+export const LanguageProvider = ({ children, initialLanguage }: { children: ReactNode; initialLanguage?: Language }) => {
   const [language, setLanguageState] = useState<Language>(() => {
+    if (initialLanguage) return initialLanguage;
     // The address decides the language (/ar, /ku), so search engines can index each one.
     const fromPath = languageFromPath(window.location.pathname);
     if (fromPath && fromPath !== "en") return fromPath;

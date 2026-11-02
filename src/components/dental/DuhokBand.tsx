@@ -10,7 +10,7 @@ type L = "en" | "ar" | "ku";
 const VIDEO_ID = "ohvHzLMYa9c";
 const CREDIT = "RDD2022";
 
-const TEXT: Record<L, { badge: string; title1: string; title2: string; text: string; directions: string; credit: string; play: string }> = {
+export const TEXT: Record<L, { badge: string; title1: string; title2: string; text: string; directions: string; credit: string; play: string }> = {
   en: {
     badge: "Our city",
     title1: "In the heart of",
