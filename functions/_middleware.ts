@@ -73,7 +73,7 @@ export const onRequest: PagesFunction = async ({ request, next }) => {
   let rw = new HTMLRewriter()
     .on("html", { element(e) { e.setAttribute("lang", SEO[lang].htmlLang); if (lang !== "en") e.setAttribute("dir", "rtl"); } })
     .on("title", { element(e) { e.setInnerContent(s.title); } })
-    .on("#root > main", { element(e) { if (svc) e.setInnerContent(treatmentHtml, { html: true }); else if(extra) e.setInnerContent(`<h1>${esc(extra.title[lang])}</h1><p>${esc(extra.description[lang])}</p><p><a href="${pageUrl(lang, "")}#contact">Dr. Saleem Andraws · 0750 781 6500</a></p>`, {html:true}); } })
+    .on("#root > main", { element(e) { if (svc) e.setInnerContent(treatmentHtml, { html: true }); else if(extra && !["/about", "/faq", "/opening-hours", "/duhok"].includes(page)) e.setInnerContent(`<h1>${esc(extra.title[lang])}</h1><p>${esc(extra.description[lang])}</p><p><a href="${pageUrl(lang, "")}#contact">Dr. Saleem Andraws · 0750 781 6500</a></p>`, {html:true}); } })
     .on('meta[name="description"]', setContent(s.description))
     .on('meta[property="og:title"]', setContent(s.title))
     .on('meta[property="og:description"]', setContent(s.description))
@@ -81,6 +81,7 @@ export const onRequest: PagesFunction = async ({ request, next }) => {
     .on('meta[property="og:locale"]', setContent(SEO[lang].locale))
     .on('meta[name="twitter:title"]', setContent(s.title))
     .on('meta[name="twitter:description"]', setContent(s.description))
+    .on('link[rel="canonical"]', { element(e) { e.remove(); } })
     .on("head", { element(e) { e.append(`<link rel="canonical" href="${here}" />${crumbs}`, { html: true }); } });
   if (url.searchParams.has("previewDesign")) rw = rw.on("head", { element(e) { e.append('<meta name="robots" content="noindex, nofollow">', { html: true }); } });
   for (const l of ["en", "ar", "ku"] as SeoLanguage[]) {
