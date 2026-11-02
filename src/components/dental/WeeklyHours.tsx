@@ -11,7 +11,7 @@ const CLOSE_HOUR = 21;
 const DAY_OFF = 5; // Friday (0 = Sunday)
 
 // Week starts on Saturday, as in Iraq. Plain cards; today gets a gold ring.
-const DAYS: { idx: number; name: Record<L, string>; color: string; ring: string; text: string }[] = [
+export const DAYS: { idx: number; name: Record<L, string>; color: string; ring: string; text: string }[] = [
   { idx: 6, name: { en: "Saturday", ar: "السبت", ku: "شەممی" }, color: "bg-card border border-border", ring: "ring-[hsl(var(--gold))]", text: "text-foreground" },
   { idx: 0, name: { en: "Sunday", ar: "الأحد", ku: "یەکشەممی" }, color: "bg-card border border-border", ring: "ring-[hsl(var(--gold))]", text: "text-foreground" },
   { idx: 1, name: { en: "Monday", ar: "الإثنين", ku: "دووشەممی" }, color: "bg-card border border-border", ring: "ring-[hsl(var(--gold))]", text: "text-foreground" },
@@ -21,7 +21,7 @@ const DAYS: { idx: number; name: Record<L, string>; color: string; ring: string;
   { idx: 5, name: { en: "Friday", ar: "الجمعة", ku: "ئینی" }, color: "bg-[hsl(var(--ink))]", ring: "ring-[hsl(var(--gold))]", text: "text-[hsl(40_30%_92%)]" },
 ];
 
-const T: Record<L, Record<string, string>> = {
+export const T: Record<L, Record<string, string>> = {
   en: {
     badge: "Opening hours",
     title1: "When Are We",
