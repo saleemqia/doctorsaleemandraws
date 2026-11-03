@@ -82,7 +82,7 @@ export const onRequest: PagesFunction = async ({ request, next }) => {
   const extra = EXTRA_PAGES.find(x=>x.path===page);
   const detail = svc ? DETAILS[svc.slug] : undefined;
   // Visitors and crawlers without JavaScript receive the same treatment explanation as the app.
-  const treatmentHtml = svc ? `<h1>${esc(svc.name[lang])} — ${lang === "en" ? "Dr. Saleem Andraws, Duhok" : lang === "ar" ? "د. سليم أندراوس، دهوك" : "د. سەلیم ئەندراوس، دهوک"}</h1><p>${esc(detail?.what[lang] || svc.a[lang])}</p><h2>${esc(svc.q[lang])}</h2><p>${esc(svc.a[lang])}</p>${detail ? `<ul>${detail.who.map(x => `<li>${esc(x[lang])}</li>`).join("")}</ul>` : ""}<p>${lang === "en" ? "Treatment costs and the number of visits depend on your individual examination and plan. Ask Dr. Saleem about the proposed options before treatment." : lang === "ar" ? "تعتمد التكلفة وعدد الزيارات على الفحص والخطة الفردية. اسأل الدكتور سليم عن الخيارات قبل العلاج." : "بها و ژمارەیا سەردانان ل دویڤ پشکنین و پلانێ تە نە."}</p><p><a href="${pageUrl(lang, "") }#contact">${lang === "en" ? "Location, access and booking" : lang === "ar" ? "الموقع والوصول والحجز" : "جهـ، گەهشتن و حجز"}</a> · <a href="tel:07507816500">0750 781 6500</a></p>` : "";
+  const treatmentHtml = svc ? `<h1>${esc(svc.name[lang])} — ${lang === "en" ? "Doctor Saleem Andraws Dental Clinic, Duhok" : lang === "ar" ? "د. سليم أندراوس، دهوك" : "د. سەلیم ئەندراوس، دهوک"}</h1><p>${esc(detail?.what[lang] || svc.a[lang])}</p><h2>${esc(svc.q[lang])}</h2><p>${esc(svc.a[lang])}</p>${detail ? `<ul>${detail.who.map(x => `<li>${esc(x[lang])}</li>`).join("")}</ul>` : ""}<p>${lang === "en" ? "Treatment costs and the number of visits depend on your individual examination and plan. Ask Dr. Saleem about the proposed options before treatment." : lang === "ar" ? "تعتمد التكلفة وعدد الزيارات على الفحص والخطة الفردية. اسأل الدكتور سليم عن الخيارات قبل العلاج." : "بها و ژمارەیا سەردانان ل دویڤ پشکنین و پلانێ تە نە."}</p><p><a href="${pageUrl(lang, "") }#contact">${lang === "en" ? "Location, access and booking" : lang === "ar" ? "الموقع والوصول والحجز" : "جهـ، گەهشتن و حجز"}</a> · <a href="tel:07507816500">0750 781 6500</a></p>` : "";
 
   const setContent = (v: string) => ({ element(e: Element) { e.setAttribute("content", v); } });
   let rw = new HTMLRewriter()
@@ -105,4 +105,3 @@ export const onRequest: PagesFunction = async ({ request, next }) => {
   rw = rw.on('link[rel="alternate"][hreflang="x-default"]', { element(e) { e.setAttribute("href", pageUrl("en", page)); } });
   return rw.transform(res);
 };
-

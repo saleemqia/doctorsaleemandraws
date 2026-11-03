@@ -53,7 +53,7 @@ const Navbar = ({ onBookingClick }: NavbarProps) => {
           <a href={pathFor(language, "")} className="flex flex-1 min-w-0 items-center gap-3 group">
             <img 
               src={clinicLogo} 
-              alt="Dr. Saleem Andraws Dental Clinic" 
+              alt="Doctor Saleem Andraws Dental Clinic" 
               className="h-9 sm:h-11 w-auto object-contain shrink-0 rounded-md p-0.5"
             />
             <AssyrianName />
