@@ -50,13 +50,28 @@ const structuredData = (lang: SeoLanguage, page: SitePage) => {
 // Old addresses Google still knows (e.g. /home/ from the previous site) go to the right page instead of showing a copy of it.
 const OLD: Record<string, string> = { "/home": "/", "/ar/home": "/ar", "/ku/home": "/ku", "/index.html": "/" };
 
+const HOME_SUMMARY = {
+  ar: `<h1>عيادة الدكتور سليم اندراوس حنا — طبيب أسنان في دهوك</h1><p>زراعة الأسنان، الفينير وابتسامة هوليود، تقويم الأسنان، حشو الأسنان وعلاج العصب، التيجان، التبييض وطب أسنان الأطفال.</p><p>بكالوريوس طب الأسنان من جامعة بغداد عام ٢٠٠٧، وماجستير أشعة الفم والأسنان في دهوك عام ٢٠٢٣، وعضو نقابة أطباء أسنان كوردستان فرع دهوك منذ ٢٠١٤.</p><p>شارع قاضي محمد، بناية جرزات شيركو، الطابق الأول، مقابل صيدلية هناسة. الدوام السبت إلى الخميس، ٣–٩ مساءً؛ الجمعة مغلق. تتوفر مواقف مجانية ومدفوعة، وحوالي ٢٠ درجة قبل الوصول إلى المصعد.</p><p><a href="tel:07507816500">0750 781 6500</a> · <a href="tel:07781665000">0778 166 5000</a></p>`,
+  ku: `<h1>کلینیکا ددانا یا د. سليم اندراوس حنا — دکتورێ ددانا ل دهوکێ</h1><p>چاندنا ددانا، ڤینیر و بزەیا هۆلیوود، تقویم، حەشوا ددانا و دەمارێ، کراس، سپیکرنا ددانا و چاڤدێریا ددانێن زارۆکان.</p><p>بەکالۆریۆس ل زانکۆیا بەغدا، ٢٠٠٧؛ ماستەر ل تیشکێن دەڤ و ددانان، دهوک، ٢٠٢٣؛ ئەندامێ سەندیکایا دکتورێن ددانا یا کوردستانێ، لقێ دهوکێ ژ ٢٠١٤ـێ ڤە.</p><p>شەقامێ قازی محەمەد، بینایێ شیرکۆ، قاتێ ئێکێ، بەرامبەر دەرمانخانا هەناسا. شەمبی هەتا پێنجشەمبی، ٣–٩ ئێڤاری؛ ئینی گرتیە. پارکینگێ بێبها و ب پارە هەیە؛ نێزیکی ٢٠ پەیژە بەری ئاسانسۆری هەنە.</p><p><a href="tel:07507816500">0750 781 6500</a> · <a href="tel:07781665000">0778 166 5000</a></p>`,
+};
+
 export const onRequest: PagesFunction = async ({ request, next }) => {
   const url = new URL(request.url);
   const old = OLD[url.pathname.replace(/\/+$/, "") || "/"];
   if (old && request.method === "GET") return Response.redirect(`${url.origin}${old}`, 301);
   const res = await next();
-  const parsed = request.method === "GET" ? parsePath(url.pathname) : null;
-  if (!parsed || !(res.headers.get("Content-Type") || "").includes("text/html")) return res;
+  const parsed = request.method === "GET" || request.method === "HEAD" ? parsePath(url.pathname) : null;
+  const isHtml = (res.headers.get("Content-Type") || "").includes("text/html");
+  const separatelyHandled = /^\/(?:clinic|p|api)(?:\/|$)/.test(url.pathname)
+    || /^\/(?:privacy|links|admin|login|versions)\/?$/.test(url.pathname)
+    || /^\/\.lovable\/oauth\/consent\/?$/.test(url.pathname);
+  if (!parsed && isHtml && res.ok && /^(GET|HEAD)$/.test(request.method) && !separatelyHandled) {
+    const lang = /^\/ar(?:\/|$)/.test(url.pathname) ? "ar" : /^\/ku(?:\/|$)/.test(url.pathname) ? "ku" : "en";
+    const text = { en: ["Page not found", "Return to the clinic homepage", "/"], ar: ["الصفحة غير موجودة", "العودة إلى الصفحة الرئيسية", "/ar"], ku: ["لاپەڕە نەهاتە دیتن", "ڤەگەڕ بۆ لاپەڕەیا سەرەکی", "/ku"] }[lang];
+    const body = `<!doctype html><html lang="${lang}" dir="${lang === "en" ? "ltr" : "rtl"}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${text[0]}</title></head><body><main><h1>404 — ${text[0]}</h1><p><a href="${text[2]}">${text[1]}</a></p></main></body></html>`;
+    return new Response(request.method === "HEAD" ? null : body, { status: 404, headers: { "Content-Type": "text/html; charset=utf-8", "X-Robots-Tag": "noindex" } });
+  }
+  if (!parsed || !isHtml) return res;
 
   const { lang, page } = parsed;
   const s = page ? { ...SEO[lang], ...pageSeo(page)[lang] } : SEO[lang];
@@ -73,7 +88,7 @@ export const onRequest: PagesFunction = async ({ request, next }) => {
   let rw = new HTMLRewriter()
     .on("html", { element(e) { e.setAttribute("lang", SEO[lang].htmlLang); if (lang !== "en") e.setAttribute("dir", "rtl"); } })
     .on("title", { element(e) { e.setInnerContent(s.title); } })
-    .on("#root > main", { element(e) { if (svc) e.setInnerContent(treatmentHtml, { html: true }); else if(extra && !["/about", "/faq", "/opening-hours", "/duhok"].includes(page)) e.setInnerContent(`<h1>${esc(extra.title[lang])}</h1><p>${esc(extra.description[lang])}</p><p><a href="${pageUrl(lang, "")}#contact">Dr. Saleem Andraws · 0750 781 6500</a></p>`, {html:true}); } })
+    .on("#root > main", { element(e) { if (!page && lang !== "en") e.setInnerContent(HOME_SUMMARY[lang], { html: true }); else if (svc) e.setInnerContent(treatmentHtml, { html: true }); else if(extra && !["/about", "/faq", "/opening-hours", "/duhok"].includes(page)) e.setInnerContent(`<h1>${esc(extra.title[lang])}</h1><p>${esc(extra.description[lang])}</p><p><a href="${pageUrl(lang, "")}#contact">Dr. Saleem Andraws · 0750 781 6500</a></p>`, {html:true}); } })
     .on('meta[name="description"]', setContent(s.description))
     .on('meta[property="og:title"]', setContent(s.title))
     .on('meta[property="og:description"]', setContent(s.description))
@@ -90,3 +105,4 @@ export const onRequest: PagesFunction = async ({ request, next }) => {
   rw = rw.on('link[rel="alternate"][hreflang="x-default"]', { element(e) { e.setAttribute("href", pageUrl("en", page)); } });
   return rw.transform(res);
 };
+

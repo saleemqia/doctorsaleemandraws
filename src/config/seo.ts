@@ -59,8 +59,11 @@ export const parsePath = (pathname: string): { lang: SeoLanguage; page: SitePage
 export const servicePath = (lang: SeoLanguage, slug: string) => pathFor(lang, `/services/${slug}`);
 
 // Address of a page in a language: pathFor("ar", "/case") = "/ar/case", pathFor("en", "") = "/".
-export const pathFor = (lang: SeoLanguage, page: SitePage = "") =>
-  lang === "en" ? page || "/" : `/${lang}${page}`;
+export const pathFor = (lang: SeoLanguage, page: SitePage = "") => {
+  const route = lang === "en" ? page || "/" : `/${lang}${page}`;
+  // Cloudflare serves these prerendered directory indexes at trailing-slash URLs.
+  return ["/about", "/faq", "/opening-hours", "/duhok"].includes(page) ? `${route}/` : route;
+};
 
 export const pageUrl = (lang: SeoLanguage, page: SitePage = "") => `${SITE}${pathFor(lang, page)}`;
 
