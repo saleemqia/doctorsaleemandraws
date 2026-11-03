@@ -22,7 +22,7 @@ const TX = {
   inDuhok: T("in Duhok", "في دهوك", "ل دهوکێ"),
   indexTitle: T("Dental services in Duhok", "خدمات طب الأسنان في دهوك", "خزمەتگوزاریێن ددانا ل دهوکێ"),
   indexIntro: T(
-    "Every treatment at Dr. Saleem Andraws Dental Clinic, Qazi Mohammad Road, Duhok. Open a treatment to read about it, then book an examination: the doctor checks your teeth first and explains the options that suit you.",
+    "Every treatment at Doctor Saleem Andraws Dental Clinic, Qazi Mohammad Road, Duhok. Open a treatment to read about it, then book an examination: the doctor checks your teeth first and explains the options that suit you.",
     "جميع العلاجات في عيادة د. سليم أندراوس لطب الأسنان، شارع قاضي محمد، دهوك. افتح أي علاج لتقرأ عنه، ثم احجز موعد فحص: يفحص الطبيب أسنانك أولاً ويشرح لك الخيارات المناسبة لك.",
     "هەمی چارەسەریێن کلینیکا ددانان یا د. سەلیم ئەندراوس، شەقامێ قازی محەمەد، دهوک. چارەسەریەکێ ڤەکە دا دەربارە بخوینی، پاشی ڤەکۆلینەکێ ببژێرە: دکتۆر پێشی ددانێن تە دپشکنیت و ڕێکێن گونجای بۆ تە ڕوون دکەت.",
   ),
@@ -160,6 +160,7 @@ export const ServiceDetailPage = () => {
           <Crumbs items={[{ label: TX.home[l], href: pathFor(l, "") }, { label: SERVICES_INDEX_NAME[l], href: pathFor(l, "/services") }, { label: s.name[l] }]} />
           <article className="container grid gap-8 py-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-12">
             <div>
+              <p className="mb-2 text-sm font-semibold text-primary">{({ en: "Doctor Saleem Andraws Dental Clinic", ar: "عيادة الدكتور سليم اندراوس حنا لطب الأسنان", ku: "کلینیکا ددانا یا د. سليم اندراوس حنا" })[l]}</p>
               <h1 className="font-display text-3xl font-bold leading-tight md:text-5xl">
                 {s.name[l]} <span className="text-gradient">{TX.inDuhok[l]}</span>
               </h1>

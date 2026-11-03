@@ -10,12 +10,13 @@ type L = "en" | "ar" | "ku";
 const VIDEO_ID = "ohvHzLMYa9c";
 const CREDIT = "RDD2022";
 
-export const TEXT: Record<L, { badge: string; title1: string; title2: string; text: string; directions: string; credit: string; play: string }> = {
+export const TEXT: Record<L, { badge: string; title1: string; title2: string; text: string; details: string; directions: string; credit: string; play: string }> = {
   en: {
     badge: "Our city",
     title1: "In the heart of",
     title2: "Duhok",
     text: "Our clinic is on Qazi Mohammad Road, easy to reach from every part of the city.",
+    details: "Find us in the Sherko Nuts Building on Qazi Mohammad Road, first floor, opposite Hanasa Pharmacy. Free and paid parking are available. There are approximately 20 steps before the lift; call the clinic if you need help planning your visit. Use the directions link below for the map.",
     directions: "Get directions",
     credit: "Aerial video",
     play: "Play the video of Duhok",
@@ -25,6 +26,7 @@ export const TEXT: Record<L, { badge: string; title1: string; title2: string; te
     title1: "في قلب",
     title2: "دهوك",
     text: "عيادتنا في شارع قاضي محمد، ويسهل الوصول إليها من كل أنحاء المدينة.",
+    details: "تقع العيادة في بناية جرزات شيركو، الطابق الأول، مقابل صيدلية هناسة. تتوفر مواقف مجانية ومدفوعة، وهناك حوالي ٢٠ درجة قبل المصعد. اتصل بالعيادة إذا كنت بحاجة إلى المساعدة في التخطيط للزيارة، واستخدم رابط الاتجاهات أدناه لفتح الخريطة.",
     directions: "احصل على الاتجاهات",
     credit: "تصوير جوي",
     play: "تشغيل فيديو دهوك",
@@ -34,6 +36,7 @@ export const TEXT: Record<L, { badge: string; title1: string; title2: string; te
     title1: "ل دلێ",
     title2: "دهوکێ",
     text: "کلینیکا مە ل شەقامێ قازی محەمەد یە، و ژ هەمی دەڤەرێن باژێری ب ساناهی دگەهیێ.",
+    details: "کلینیک ل بینایێ شیرکۆ، قاتێ ئێکێ، بەرامبەر دەرمانخانا هەناسا یە. پارکینگێ بێبها و ب پارە هەنە و نێزیکی ٢٠ پەیژە بەری ئاسانسۆری هەنە. بۆ پلانکرنا سەردانێ پەیوەندیێ ب کلینیکێ بکە؛ لینکا خوارێ نەخشەیێ ڤەدکەت.",
     directions: "ڕێکێ ببینە",
     credit: "وێنەگرتنا ئاسمانی",
     play: "ڤیدیۆیا دهوکێ لێبدە",
@@ -75,6 +78,7 @@ const DuhokBand = () => {
             {c.title1} <span className="text-gradient">{c.title2}</span>
           </h2>
           <p className="text-muted-foreground text-base md:text-lg">{c.text}</p>
+          <p className="text-muted-foreground text-base mt-4">{c.details}</p>
         </div>
 
         <div ref={boxRef} className="relative max-w-6xl mx-auto aspect-video rounded-2xl md:rounded-3xl overflow-hidden shadow-elevated bg-sky-900">

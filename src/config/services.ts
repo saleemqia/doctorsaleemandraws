@@ -18,7 +18,7 @@ export interface ServiceInfo {
 }
 
 const T = (en: string, ar: string, ku: string) => ({ en, ar, ku });
-const SUF = T(" | Dr. Saleem Andraws, Duhok", " | د. سليم أندراوس، دهوك", " | د. سەلیم ئەندراوس، دهوک");
+const SUF = T(" | Doctor Saleem Andraws Dental Clinic", " | د. سليم أندراوس، دهوك", " | د. سەلیم ئەندراوس، دهوک");
 const withSuf = (t: L3): L3 => ({ en: t.en + SUF.en, ar: t.ar + SUF.ar, ku: t.ku + SUF.ku });
 
 export const SERVICES: ServiceInfo[] = [
