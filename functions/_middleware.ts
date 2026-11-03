@@ -62,7 +62,10 @@ export const onRequest: PagesFunction = async ({ request, next }) => {
   const res = await next();
   const parsed = request.method === "GET" || request.method === "HEAD" ? parsePath(url.pathname) : null;
   const isHtml = (res.headers.get("Content-Type") || "").includes("text/html");
-  if (!parsed && isHtml && res.ok && /^(GET|HEAD)$/.test(request.method) && !/^\/(?:clinic|p|api|privacy|links|admin|login|versions|\.lovable)(?:\/|$)/.test(url.pathname)) {
+  const separatelyHandled = /^\/(?:clinic|p|api)(?:\/|$)/.test(url.pathname)
+    || /^\/(?:privacy|links|admin|login|versions)\/?$/.test(url.pathname)
+    || /^\/\.lovable\/oauth\/consent\/?$/.test(url.pathname);
+  if (!parsed && isHtml && res.ok && /^(GET|HEAD)$/.test(request.method) && !separatelyHandled) {
     const lang = /^\/ar(?:\/|$)/.test(url.pathname) ? "ar" : /^\/ku(?:\/|$)/.test(url.pathname) ? "ku" : "en";
     const text = { en: ["Page not found", "Return to the clinic homepage", "/"], ar: ["الصفحة غير موجودة", "العودة إلى الصفحة الرئيسية", "/ar"], ku: ["لاپەڕە نەهاتە دیتن", "ڤەگەڕ بۆ لاپەڕەیا سەرەکی", "/ku"] }[lang];
     const body = `<!doctype html><html lang="${lang}" dir="${lang === "en" ? "ltr" : "rtl"}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${text[0]}</title></head><body><main><h1>404 — ${text[0]}</h1><p><a href="${text[2]}">${text[1]}</a></p></main></body></html>`;
@@ -102,3 +105,4 @@ export const onRequest: PagesFunction = async ({ request, next }) => {
   rw = rw.on('link[rel="alternate"][hreflang="x-default"]', { element(e) { e.setAttribute("href", pageUrl("en", page)); } });
   return rw.transform(res);
 };
+
