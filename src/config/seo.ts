@@ -17,7 +17,7 @@ export const LANGUAGE_PATHS: Record<SeoLanguage, string> = {
 
 export const SEO: Record<SeoLanguage, { title: string; description: string; locale: string; htmlLang: string }> = {
   en: {
-    title: "Doctor Saleem Andraws Dental Clinic — Dentist in Duhok | Dental Clinic",
+    title: "Doctor Saleem Andraws Dental Clinic — Dentist in Duhok",
     description:
       "Doctor Saleem Andraws Dental Clinic, a dentist in Duhok, Kurdistan, Iraq: dental implants, veneers and Hollywood smile, orthodontics (braces), fillings, root canal treatment, zircon and E-max crowns, whitening and children's dentistry. Qazi Mohammad Road. Call 0750 781 6500.",
     locale: "en_US",

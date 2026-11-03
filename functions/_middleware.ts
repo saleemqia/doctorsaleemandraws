@@ -57,6 +57,9 @@ const HOME_SUMMARY = {
 
 export const onRequest: PagesFunction = async ({ request, next }) => {
   const url = new URL(request.url);
+  if (request.method === "GET" && /^\/(?:ar\/|ku\/)?services(?:\/[^/]+)?\/$/.test(url.pathname)) {
+    return Response.redirect(`${url.origin}${url.pathname.slice(0, -1)}${url.search}`, 301);
+  }
   const old = OLD[url.pathname.replace(/\/+$/, "") || "/"];
   if (old && request.method === "GET") return Response.redirect(`${url.origin}${old}`, 301);
   const res = await next();
