@@ -20,6 +20,7 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
 import SiteLinks from "./components/dental/SiteLinks";
+import VisitorCounter from "./components/dental/VisitorCounter";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes></div>
+            <VisitorCounter />
             <SiteLinks />
           </BrowserRouter>
         </TooltipProvider>
