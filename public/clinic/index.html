@@ -31,6 +31,9 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .btn{border:1px solid var(--line);background:var(--card);color:var(--navy);border-radius:10px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .note{font-size:13px;color:var(--muted);margin:0 2px 10px}
 .note.warn{color:var(--red)}
+.visitstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:linear-gradient(135deg,#fff,#EEF5FD);border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;box-shadow:0 2px 10px #13285C0d}
+.visitstats h3{grid-column:1/-1;margin:0 0 2px;font-size:15px}.visitstat{text-align:center;background:#fff;border-radius:10px;padding:9px 5px}.visitstat b{display:block;font-size:20px;color:var(--blue)}.visitstat small{color:var(--muted);font-size:11px}.visitstats>small{grid-column:1/-1;color:var(--muted);font-size:11px}
+@media(max-width:520px){.visitstats{grid-template-columns:repeat(2,1fr)}}
 .day{margin:18px 2px 8px;font-weight:700;color:var(--blue)}
 .appt{background:var(--card);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 10px #13285C0d;display:grid;grid-template-columns:72px 1fr;gap:12px;border-inline-start:4px solid var(--blue)}
 .appt.past{opacity:.6;border-inline-start-color:#B8C4D9}
@@ -263,6 +266,14 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
     <div class="tbar"><button class="btn" id="selMode" type="button">☑ تحديد للدمج</button><button class="btn" id="dupBtn" type="button">🧩 مكررات محتملة</button><button class="btn pri" id="msgBtn" type="button">📣 رسائل للمرضى</button><button class="btn" id="impBtn" type="button">💵 استيراد الحسابات (Excel)</button></div>
     <form id="pform" class="sbox"><input id="pq" type="search" placeholder="اسم المريض أو رقم الهاتف أو رقم البطاقة" autocomplete="off"><button class="btn">بحث</button></form>
     <p class="note" id="pstats"></p>
+    <section class="visitstats" id="visitorStats" aria-live="polite">
+      <h3>📊 زوار الموقع — خاص بإدارة العيادة</h3>
+      <div class="visitstat"><b id="vToday">…</b><small>زائر اليوم</small></div>
+      <div class="visitstat"><b id="vWeek">…</b><small>آخر 7 أيام</small></div>
+      <div class="visitstat"><b id="vMonth">…</b><small>آخر 30 يومًا</small></div>
+      <div class="visitstat"><b id="vAll">…</b><small>منذ بدء العداد</small></div>
+      <small id="vNote">يُحسب كل متصفح مرة واحدة في اليوم، من دون حفظ الاسم أو الهاتف أو عنوان الإنترنت.</small>
+    </section>
     <details class="imp"><summary>💵 استيراد ملف الحسابات (Excel)</summary>
       <p>اختر ملف الحسابات الشهري (مثل DentalFinicial2026.xlsx). كل صفحة شهر تُربط بالمرضى بالاسم وبيوم الزيارة. إعادة رفع الملف تُحدّث الأشهر ولا تكرّرها.</p>
       <input type="file" id="finFile" accept=".xlsx,.xls">
@@ -677,8 +688,23 @@ function updatePickBar() {
 const plRow = (p) => `<div class="pl${picked.has(p.no) ? " sel" : ""}" data-no="${p.no}">${selMode ? `<span class="ck">${picked.has(p.no) ? "☑" : "☐"}</span>` : ""}<span class="pno">#${p.no}</span><b>${esc(p.name)}</b><span class="v">${p.visits} زيارة</span>
     <span class="s">آخر زيارة ${p.last || "—"}${p.phones ? " · " + esc(String(p.phones).split(",")[0]) : ""}</span></div>`;
 let lastList = [];
+async function loadVisitorStats() {
+  try {
+    const res = await fetch("/clinic/api/visitors", { cache: "no-store" });
+    const d = await res.json();
+    if (!res.ok || !d.ok) throw new Error(d.error || "HTTP " + res.status);
+    $("vToday").textContent = d.today.visitors.toLocaleString("ar-IQ");
+    $("vWeek").textContent = d.last7.visitors.toLocaleString("ar-IQ");
+    $("vMonth").textContent = d.last30.visitors.toLocaleString("ar-IQ");
+    $("vAll").textContent = d.all.visitors.toLocaleString("ar-IQ");
+    $("vNote").textContent = `بدأ العداد في ${d.started} · ${d.today.views.toLocaleString("ar-IQ")} مشاهدة للصفحات اليوم · لا تُحفظ بيانات شخصية.`;
+  } catch (err) {
+    $("vNote").textContent = "تعذّر تحميل إحصاءات الزوار الآن: " + err.message;
+  }
+}
 async function patients() {
   $("pats").hidden = false;
+  loadVisitorStats();
   const q = $("pq").value.trim();
   $("title").textContent = q ? `مرضى: ${q}` : "المرضى"; $("note").textContent = "";
   $("list").innerHTML = `<div class="spin"></div>`;
