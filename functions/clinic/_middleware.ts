@@ -25,7 +25,7 @@ fetch("/clinic/google",{method:"POST",headers:{"Content-Type":"application/json"
   { status: 401, headers: { "Content-Type": "text/html; charset=utf-8", ...PRIVATE } },
 );
 
-const patientGate = (configured: boolean) => new Response(
+const patientGate = (configured: boolean, canSetup: boolean) => new Response(
   `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#13285C">
 <title>دخول بطاقات المرضى</title><style>
@@ -37,14 +37,14 @@ input{width:100%;padding:13px 14px;border:1px solid #cbd8ea;border-radius:12px;f
 button{width:100%;margin-top:10px;padding:12px;border:0;border-radius:12px;background:#13285C;color:#fff;font:inherit;font-weight:800;cursor:pointer}
 button:disabled{opacity:.6}.msg{min-height:24px;margin-top:12px;font-size:14px}.back{display:inline-block;margin-top:10px;color:#1f6fd1;text-decoration:none;font-size:14px}
 </style></head><body><main class="card"><div class="icon">🔒</div><h1>بطاقات المرضى محمية</h1>
-<p>${configured ? "أدخل كلمة مرور بطاقات المرضى. لن تظهر الأسماء أو البطاقات قبل نجاح الدخول." : "لم تُضبط كلمة مرور بطاقات المرضى بعد. افتح قفل المالك لإكمال الإعداد."}</p>
-<form id="patientGateForm"><input id="patientPassword" name="password" type="password" inputmode="numeric" pattern="[0-9]{4,12}" minlength="4" maxlength="12" autocomplete="current-password" required ${configured ? "" : "disabled"} aria-label="كلمة مرور بطاقات المرضى"><button id="patientGateButton" ${configured ? "" : "disabled"}>فتح بطاقات المرضى</button></form>
+<p>${configured ? "أدخل كلمة مرور بطاقات المرضى. لن تظهر الأسماء أو البطاقات قبل نجاح الدخول." : canSetup ? "ضبط كلمة مرور بطاقات المرضى الآن. ستُحفظ مشفّرة ولن تظهر في GitHub." : "لم تُضبط كلمة مرور بطاقات المرضى بعد. افتح قفل المالك لإكمال الإعداد."}</p>
+<form id="patientGateForm"><input id="patientPassword" name="password" type="password" inputmode="numeric" pattern="[0-9]{4,12}" minlength="4" maxlength="12" autocomplete="${configured ? "current-password" : "new-password"}" required ${configured || canSetup ? "" : "disabled"} aria-label="كلمة مرور بطاقات المرضى"><button id="patientGateButton" ${configured || canSetup ? "" : "disabled"}>${configured ? "فتح بطاقات المرضى" : "ضبط كلمة المرور وفتح الصفحة"}</button></form>
 <div class="msg" id="patientGateMessage"></div><a class="back" href="/clinic/">العودة إلى أقسام العيادة</a>
 <script>
 var f=document.getElementById("patientGateForm"),m=document.getElementById("patientGateMessage"),b=document.getElementById("patientGateButton");
 f.addEventListener("submit",async function(e){e.preventDefault();b.disabled=true;m.style.color="#5B6B8C";m.textContent="جارٍ التحقق…";
-try{var r=await fetch("/clinic/api/patient-pin",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:document.getElementById("patientPassword").value})});var d=await r.json();
-if(d.ok){m.style.color="#1E9E5A";m.textContent="كلمة المرور صحيحة ✓ جارٍ فتح بطاقات المرضى…";setTimeout(function(){location.reload()},500)}
+try{var r=await fetch("/clinic/api/patient-pin${configured ? "" : "?action=setup"}",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:document.getElementById("patientPassword").value})});var d=await r.json();
+if(d.ok){m.style.color="#1E9E5A";m.textContent="${configured ? "كلمة المرور صحيحة ✓ جارٍ فتح بطاقات المرضى…" : "تم ضبط كلمة المرور بنجاح ✓ جارٍ فتح بطاقات المرضى…"}";setTimeout(function(){location.reload()},500)}
 else{m.style.color="#C2413A";m.textContent=d.error||"تعذّر الدخول";b.disabled=false;document.getElementById("patientPassword").value="";document.getElementById("patientPassword").focus()}}
 catch(_){m.style.color="#C2413A";m.textContent="تعذّر الاتصال";b.disabled=false}});
 </script></main></body></html>`,
@@ -102,7 +102,9 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, next }) => {
   const cleanPath = url.pathname.replace(/\/+$/, "");
   const patientPage = cleanPath === "/clinic" && url.searchParams.get("view") === "patients";
   if (patientPage && !(await patientPinUnlocked(env, request))) {
-    return patientGate(!!(await patientPinHash(env)));
+    const configured = !!(await patientPinHash(env));
+    const canSetup = !configured && await pinUnlocked(env, request);
+    return patientGate(configured, canSetup);
   }
   if (needsPatientPin(url) && !(await patientPinUnlocked(env, request))) {
     return new Response(JSON.stringify({ ok: false, patientPin: true, error: "بطاقات المرضى محمية بكلمة مرور" }), {
