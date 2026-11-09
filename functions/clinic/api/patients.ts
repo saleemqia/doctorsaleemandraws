@@ -167,31 +167,29 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       }
       const no = Number(body.no);
       if (!Number.isSafeInteger(no) || no <= 0) return json({ ok: false, error: "رقم البطاقة غير صالح" }, 400);
-      if (action === "restore") {
-        const deletedAt = body.deletedAt;
-        if (typeof deletedAt !== "string" || deletedAt.length !== 24) {
-          return json({ ok: false, error: "طلب الاستعادة غير صالح" }, 400);
-        }
-        const restored = await env.DB.prepare("UPDATE patients SET deleted_at = NULL WHERE no = ? AND deleted_at = ?")
-          .bind(no, deletedAt).run();
-        if (!restored.meta.changes) return json({ ok: false, error: "تعذّرت استعادة البطاقة" }, 409);
-        return json({ ok: true });
+      const restoring = action === "restore";
+      const deletedAt = restoring ? body.deletedAt : new Date().toISOString();
+      if (typeof deletedAt !== "string" || deletedAt.length !== 24) {
+        return json({ ok: false, error: "طلب الاستعادة غير صالح" }, 400);
       }
 
-      // Keep the patient number and source records. Calendar sync must not recreate the card.
-      const deletedAt = new Date().toISOString();
-      const deleted = await env.DB.prepare(
-        `UPDATE patients SET deleted_at = ?2
-         WHERE no = ?1 AND deleted_at IS NULL AND coalesce(merged_into, '') = ''
-           AND trim(coalesce(notes, '')) = '' AND trim(coalesce(card_no, '')) = ''
-           AND NOT EXISTS (SELECT 1 FROM patients c WHERE c.merged_into = patients.key)
-           AND NOT EXISTS (SELECT 1 FROM appointments a WHERE a.patient_key = patients.key AND trim(coalesce(a.treatment, '')) <> '')
-           AND NOT EXISTS (SELECT 1 FROM payments y WHERE y.patient_key = patients.key)
-           AND NOT EXISTS (SELECT 1 FROM card_rows r WHERE r.patient_key = patients.key)
-           AND NOT EXISTS (SELECT 1 FROM card_files f WHERE f.no = patients.no)`,
+      // Snapshot the group before updating it. Only the visibility marker changes;
+      // appointments, payments, notes, files, and merge links are retained.
+      const condition = restoring ? "deleted_at = ?2" : "deleted_at IS NULL";
+      const result = await env.DB.prepare(
+        `WITH root AS MATERIALIZED (
+           SELECT key FROM patients WHERE no = ?1 AND coalesce(merged_into, '') = '' AND ${condition}
+         ), members AS MATERIALIZED (
+           SELECT p.key FROM patients p JOIN root r ON p.key = r.key OR p.merged_into = r.key
+           WHERE p.${condition}
+         )
+         UPDATE patients SET deleted_at = ${restoring ? "NULL" : "?2"}
+         WHERE key IN (SELECT key FROM members)`,
       ).bind(no, deletedAt).run();
-      if (!deleted.meta.changes) {
-        return json({ ok: false, error: "يمكن حذف البطاقات الفارغة فقط. قد تكون البطاقة محذوفة أو مرتبطة ببطاقة أخرى، أو تحتوي على سجلات محفوظة." }, 409);
+      if (!result.meta.changes) {
+        return json({ ok: false, error: restoring
+          ? "تعذّرت استعادة البطاقة."
+          : "البطاقة غير موجودة أو حُذفت بالفعل. إذا كانت مدمجة، افتح البطاقة الرئيسية لحذف المجموعة." }, 409);
       }
       return json({ ok: true, deletedAt });
     }
@@ -218,7 +216,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       const p = await env.DB.prepare("SELECT key, merged_into FROM patients WHERE no = ? AND deleted_at IS NULL").bind(Number(body.no)).first<{ key: string; merged_into: string }>();
       if (!p) return json({ ok: false, error: "bad number" }, 400);
       // undo = the merge was a slip: back to an ordinary card. Otherwise the owner says "not the same person": remembered.
-      const stmts = [env.DB.prepare("UPDATE patients SET merged_into = ? WHERE no = ?").bind(body.undo ? null : "", Number(body.no))];
+      const stmts = [env.DB.prepare("UPDATE patients SET merged_into = ? WHERE no = ? AND deleted_at IS NULL").bind(body.undo ? null : "", Number(body.no))];
       if (p.merged_into && !body.undo) stmts.push(env.DB.prepare("INSERT OR IGNORE INTO merge_no (a, b) VALUES (?, ?)").bind(...[p.key, p.merged_into].sort()));
       await env.DB.batch(stmts);
       await refreshOne(env, p.key);
