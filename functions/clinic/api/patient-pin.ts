@@ -5,6 +5,7 @@ import {
   patientPinCheck,
   patientPinHash,
   patientPinToken,
+  patientPinUnlocked,
   pinUnlocked,
   setPatientPin,
 } from "../../../lib/clinic";
@@ -19,8 +20,7 @@ const cookie = (value: string, age: number) =>
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const configured = !!(await patientPinHash(env));
-  const token = request.headers.get("Cookie") || "";
-  return json({ ok: true, configured, unlocked: configured && token.includes(PATIENT_PIN_COOKIE + "=") });
+  return json({ ok: true, configured, unlocked: configured && await patientPinUnlocked(env, request) });
 };
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
