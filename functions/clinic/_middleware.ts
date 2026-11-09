@@ -25,7 +25,20 @@ fetch("/clinic/google",{method:"POST",headers:{"Content-Type":"application/json"
   { status: 401, headers: { "Content-Type": "text/html; charset=utf-8", ...PRIVATE } },
 );
 
-const patientGate = (configured: boolean, canSetup: boolean) => new Response(
+const patientGate = (configured: boolean, canSetup: boolean) => {
+  const ownerStep = !configured && !canSetup;
+  const title = ownerStep ? "إعداد بطاقات المرضى — للمالك" : "بطاقات المرضى محمية";
+  const hint = ownerStep
+    ? "الخطوة ١ من ٢: أدخل الرقم السري للمالك الذي تستخدمه في الحسابات."
+    : canSetup
+      ? "الخطوة ٢ من ٢: اختر كلمة مرور بطاقات المرضى (٤ إلى ١٢ رقمًا)."
+      : "أدخل كلمة مرور بطاقات المرضى لفتح الصفحة.";
+  const label = ownerStep ? "الرقم السري للمالك" : "كلمة مرور بطاقات المرضى";
+  const button = ownerStep ? "متابعة إلى إعداد كلمة المرور" : canSetup ? "ضبط كلمة المرور وفتح الصفحة" : "فتح بطاقات المرضى";
+  const endpoint = ownerStep ? "/clinic/api/pin" : canSetup ? "/clinic/api/patient-pin?action=setup" : "/clinic/api/patient-pin";
+  const success = ownerStep ? "تم التحقق من المالك. جارٍ فتح الإعداد…" : canSetup ? "تم ضبط كلمة المرور بنجاح ✓" : "كلمة المرور صحيحة ✓";
+
+  return new Response(
   `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#13285C">
 <title>دخول بطاقات المرضى</title><style>
@@ -36,20 +49,56 @@ h1{font-size:22px;margin:5px 0 8px}p{color:#5b6b8c;line-height:1.7;margin:0 0 18
 input{width:100%;padding:13px 14px;border:1px solid #cbd8ea;border-radius:12px;font:inherit;font-size:18px;text-align:center;direction:ltr;letter-spacing:3px}
 button{width:100%;margin-top:10px;padding:12px;border:0;border-radius:12px;background:#13285C;color:#fff;font:inherit;font-weight:800;cursor:pointer}
 button:disabled{opacity:.6}.msg{min-height:24px;margin-top:12px;font-size:14px}.back{display:inline-block;margin-top:10px;color:#1f6fd1;text-decoration:none;font-size:14px}
-</style></head><body><main class="card"><div class="icon">🔒</div><h1>بطاقات المرضى محمية</h1>
-<p>${configured ? "أدخل كلمة مرور بطاقات المرضى. لن تظهر الأسماء أو البطاقات قبل نجاح الدخول." : canSetup ? "ضبط كلمة مرور بطاقات المرضى الآن. ستُحفظ مشفّرة ولن تظهر في GitHub." : "لم تُضبط كلمة مرور بطاقات المرضى بعد. افتح قفل المالك لإكمال الإعداد."}</p>
-<form id="patientGateForm"><input id="patientPassword" name="password" type="password" inputmode="numeric" pattern="[0-9]{4,12}" minlength="4" maxlength="12" autocomplete="${configured ? "current-password" : "new-password"}" required ${configured || canSetup ? "" : "disabled"} aria-label="كلمة مرور بطاقات المرضى"><button id="patientGateButton" ${configured || canSetup ? "" : "disabled"}>${configured ? "فتح بطاقات المرضى" : "ضبط كلمة المرور وفتح الصفحة"}</button></form>
-<div class="msg" id="patientGateMessage"></div><a class="back" href="/clinic/">العودة إلى أقسام العيادة</a>
+label{display:block;margin:0 0 8px;font-weight:700}
+</style></head><body><main class="card"><div class="icon" aria-hidden="true">🔒</div><h1>${title}</h1>
+<p id="patientGateHint">${hint}</p>
+<form id="patientGateForm" method="post" action="${endpoint}">
+  <label for="patientPassword">${label}</label>
+  <input id="patientPassword" type="password" inputmode="numeric" pattern="${ownerStep ? "[0-9]{1,8}" : "[0-9]{4,12}"}" maxlength="${ownerStep ? 8 : 12}" autocomplete="${canSetup ? "new-password" : "current-password"}" aria-describedby="patientGateHint" required>
+  <button id="patientGateButton">${button}</button>
+</form>
+<div class="msg" id="patientGateMessage" role="status"></div><a class="back" href="/clinic/">العودة إلى أقسام العيادة</a>
 <script>
-var f=document.getElementById("patientGateForm"),m=document.getElementById("patientGateMessage"),b=document.getElementById("patientGateButton");
-f.addEventListener("submit",async function(e){e.preventDefault();b.disabled=true;m.style.color="#5B6B8C";m.textContent="جارٍ التحقق…";
-try{var r=await fetch("/clinic/api/patient-pin${configured ? "" : "?action=setup"}",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:document.getElementById("patientPassword").value})});var d=await r.json();
-if(d.ok){m.style.color="#1E9E5A";m.textContent="${configured ? "كلمة المرور صحيحة ✓ جارٍ فتح بطاقات المرضى…" : "تم ضبط كلمة المرور بنجاح ✓ جارٍ فتح بطاقات المرضى…"}";setTimeout(function(){location.reload()},500)}
-else{m.style.color="#C2413A";m.textContent=d.error||"تعذّر الدخول";b.disabled=false;document.getElementById("patientPassword").value="";document.getElementById("patientPassword").focus()}}
-catch(_){m.style.color="#C2413A";m.textContent="تعذّر الاتصال";b.disabled=false}});
+const form = document.getElementById("patientGateForm");
+const input = document.getElementById("patientPassword");
+const message = document.getElementById("patientGateMessage");
+const submit = document.getElementById("patientGateButton");
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  submit.disabled = true;
+  message.style.color = "#5B6B8C";
+  message.textContent = "جارٍ التحقق…";
+  try {
+    const response = await fetch(form.action, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ${ownerStep ? "pin" : "password"}: input.value }),
+    });
+    const result = await response.json();
+    if (response.ok && result.ok) {
+      message.style.color = "#1E9E5A";
+      message.textContent = "${success}";
+      setTimeout(() => location.reload(), 500);
+      return;
+    }
+    if (result.ownerPin || result.setup) {
+      location.reload();
+      return;
+    }
+    message.style.color = "#C2413A";
+    message.textContent = result.error || "تعذّر الدخول";
+    input.value = "";
+    input.focus();
+  } catch {
+    message.style.color = "#C2413A";
+    message.textContent = "تعذّر الاتصال. حاول مرة أخرى.";
+  }
+  submit.disabled = false;
+});
 </script></main></body></html>`,
-  { status: 401, headers: { "Content-Type": "text/html; charset=utf-8", ...PRIVATE } },
-);
+    { status: 401, headers: { "Content-Type": "text/html; charset=utf-8", ...PRIVATE } },
+  );
+};
 
 export const onRequest: PagesFunction<Env> = async ({ request, env, next }) => {
   const url = new URL(request.url);
