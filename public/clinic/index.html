@@ -83,7 +83,9 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .pl:hover{background:#F7FAFE}.pl:last-child{border-bottom:0}
 .pno{font-weight:800;color:var(--gold);font-size:13px;direction:ltr}
 .pl b{font-size:16px}.pl .v{font-size:12px;color:var(--muted);text-align:left}
-.pl .s{grid-column:2/-1;font-size:12px;color:var(--muted)}
+.pl .s{grid-column:2/-1;display:flex;align-items:center;justify-content:space-between;gap:4px 10px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.btn.card-delete{flex:0 0 auto;min-height:40px;padding:6px 10px;color:#9c2924;border-color:#e9bebc;background:#fff8f7;font-size:13px}
+.btn.card-delete:hover{background:#fce7e5}.mc .card-delete{align-self:flex-end;margin-block-start:8px}
 .pcard{background:#fff;border-radius:16px;box-shadow:0 4px 18px #13285C14;overflow:hidden}
 .phead{background:linear-gradient(135deg,#13285C,#1F6FD1);color:#fff;padding:16px;border-bottom:3px solid var(--gold)}
 .phead .no{font-size:13px;opacity:.85;direction:ltr;text-align:right}.phead h3{margin:4px 0 6px;font-size:22px}
@@ -696,9 +698,12 @@ function updatePickBar() {
   $("selMode").classList.toggle("on", selMode);
 }
 const plRow = (p) => `<div class="pl${picked.has(p.no) ? " sel" : ""}" data-no="${p.no}">${selMode ? `<span class="ck">${picked.has(p.no) ? "☑" : "☐"}</span>` : ""}<span class="pno">#${p.no}</span><b>${esc(p.name)}</b><span class="v">${p.visits} زيارة</span>
-    <span class="s">آخر زيارة ${p.last || "—"}${p.phones ? " · " + esc(String(p.phones).split(",")[0]) : ""}</span></div>`;
+    <div class="s"><span>آخر زيارة ${p.last || "—"}${p.phones ? " · " + esc(String(p.phones).split(",")[0]) : ""}</span>${selMode ? "" : cardDeleteButton(p.no)}</div></div>`;
 const cardLanguage = new URLSearchParams(location.search).get("lang") || document.documentElement.lang;
 const cardText = (en, ar, ku) => /^en\b/i.test(cardLanguage) ? en : /^(ku|ckb|kmr)\b/i.test(cardLanguage) ? ku : ar;
+const cardDeleteLabel = cardText("Delete card", "حذف البطاقة", "کارتێ ژێ ببە");
+const cardDeleteButton = (no) => `<button type="button" class="btn card-delete noprint" data-delete-card="${Number(no)}" aria-label="${esc(cardDeleteLabel)} DSA-P-${Number(no)}"><span aria-hidden="true">🗑</span> ${esc(cardDeleteLabel)}</button>`;
+let patientListOffset = 0;
 $("patientSymbolsLabel").textContent = cardText("Only show card names with these symbols", "عرض أسماء البطاقات التي تحتوي على هذه الرموز فقط", "ب تەنێ ناڤێن کارتێن کو ئەڤ نیشانە تێدا هەن نیشان بدە");
 let lastList = [];
 async function loadVisitorStats() {
@@ -716,6 +721,9 @@ async function loadVisitorStats() {
   }
 }
 async function patients(offset = 0) {
+  current = "patients";
+  patientListOffset = offset;
+  $("list").onclick = null;
   $("pats").hidden = false;
   loadVisitorStats();
   const q = toEn($("pq").value.trim());
@@ -756,6 +764,12 @@ $("patientSymbols").onchange = () => patients();
 $("list").addEventListener("click", (e) => {
   const r = e.target.closest(".pl"); if (!r || !$("list").contains(r)) return;
   const no = +r.dataset.no;
+  const deleteButton = e.target.closest("[data-delete-card]");
+  if (deleteButton) {
+    const card = lastList.find((p) => +p.no === no);
+    if (card) deletePatientCard(card, deleteButton);
+    return;
+  }
   if (!selMode) return openCard(no);
   if (picked.has(no)) picked.delete(no); else { const p = lastList.find((x) => x.no === no); if (p) picked.set(no, p); }
   r.outerHTML = plRow(lastList.find((x) => x.no === no) || { no, name: "", visits: 0 });
@@ -818,11 +832,12 @@ function duplicates(all, only) {
   }
   return out.sort((x, y) => y.score - x.score || (y.a.visits + y.b.visits) - (x.a.visits + x.b.visits));
 }
-const miniCard = (p) => `<div class="mc"><a href="#" data-open="${p.no}"><b>${esc(p.name)}</b></a><small>#${p.no} · ${p.visits} زيارة · آخر ${p.last || "—"}${p.ph?.length ? " · " + esc(p.ph[0]) : ""}</small></div>`;
+const miniCard = (p) => `<div class="mc"><a href="#" data-open="${p.no}"><b>${esc(p.name)}</b></a><small>#${p.no} · ${p.visits} زيارة · آخر ${p.last || "—"}${p.ph?.length ? " · " + esc(p.ph[0]) : ""}</small>${cardDeleteButton(p.no)}</div>`;
 async function showDuplicates() {
   current = "dups"; $("title").textContent = "🧩 مكررات محتملة"; $("count").textContent = ""; $("list").innerHTML = `<div class="spin"></div>`;
   let all; try { all = await allCards(true); } catch (err) { $("list").innerHTML = `<div class="empty">تعذّر التحميل:<br><small dir="ltr">${esc(err.message)}</small></div>`; return; }
   const pairs = duplicates(all).slice(0, 150);
+  const shownCards = new Map(pairs.flatMap(({ a, b }) => [[+a.no, a], [+b.no, b]]));
   $("count").textContent = pairs.length + " زوج";
   if (!pairs.length) { $("list").innerHTML = `<div class="empty">لا توجد مكررات محتملة ✔</div>`; return; }
   $("list").innerHTML = `<p class="note">أسماء متقاربة في بطاقات منفصلة. راجع كل زوج: «دمج» يجمع زياراتهما، و«ليسا نفس الشخص» يخفي الاقتراح نهائيًا.</p><div class="rows">` +
@@ -830,6 +845,12 @@ async function showDuplicates() {
       ${d.diff ? `<small class="warnS">⚠ رقما هاتف مختلفان: قد يكونان شخصين</small>` : d.score === 3 ? `<small class="okS">✔ نفس رقم الهاتف</small>` : ""}
       <div class="acts"><button class="btn" data-m="${i}">🔗 دمج</button><button class="btn" data-x="${i}">ليسا نفس الشخص</button></div></div>`).join("") + `</div>`;
   $("list").onclick = async (e) => {
+    const deleteButton = e.target.closest("[data-delete-card]");
+    if (deleteButton) {
+      const card = shownCards.get(+deleteButton.dataset.deleteCard);
+      if (card) return deletePatientCard(card, deleteButton);
+      return;
+    }
     const o = e.target.closest("[data-open]"); if (o) { e.preventDefault(); $("list").onclick = null; return openCard(+o.dataset.open); }
     const m = e.target.closest("[data-m]"); if (m) { const d = pairs[+m.dataset.m]; return mergeDialog([d.a, d.b], () => showDuplicates()); }
     const x = e.target.closest("[data-x]");
@@ -1098,6 +1119,67 @@ $("rpClose").onclick = closeReport;
 ["rpMoney", "rpImgs", "rpNotes", "rpQr"].forEach((id) => { $(id).onchange = drawSheet; });
 addEventListener("resize", () => { if (!$("rpt").hidden) fitSheet(); });
 
+async function refreshPatientCards(view) {
+  const position = window.scrollY;
+  if (view === "dups") await showDuplicates();
+  else await patients(view === "patients" ? patientListOffset : 0);
+  window.scrollTo(0, position);
+}
+
+async function deletePatientCard(p, button) {
+  if (button.disabled) return;
+  const no = Number(p.no);
+  const sourceView = current;
+  const card = `DSA-P-${no} — ${p.name}`;
+  const mergedNotice = !p.merged || p.merged.length ? cardText(
+    " Any cards merged into this card will also be hidden.",
+    " ستُخفى معها أي بطاقات مدمجة.",
+    " هەر کارتێن پێکڤەهاتی دێ هێنە ڤەشارتن.",
+  ) : "";
+  if (!confirm(cardText(
+    `Delete ${card} from the patient list? Appointments, payments and files will be kept.`,
+    `حذف بطاقة ${card} من قائمة المرضى؟ ستبقى المواعيد والمدفوعات والملفات محفوظة.`,
+    `کارتا ${card} ژ لیستا نەخۆشان ژێ ببە؟ ژڤان، پارەدان و فایل دێ مێنن.`,
+  ) + mergedNotice)) return;
+
+  button.disabled = true;
+  let result;
+  try {
+    result = await post("delete", { no });
+  } catch (err) {
+    button.disabled = false;
+    alert(err.message);
+    return;
+  }
+
+  allCache = null;
+  picked.delete(no);
+  if (sourceView === "card" && current === "card" && +cardData?.patient.no === no) {
+    cardData = null;
+    cardCtx = null;
+    if (/^#card=/.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
+  }
+  const removed = cardText(`Deleted DSA-P-${no}.`, `حُذفت بطاقة DSA-P-${no}.`, `کارتا DSA-P-${no} هاتە ژێبرن.`);
+  const notice = toast(`${removed} <button type="button" class="btn" id="undoDeleteP">↶ ${cardText("Undo", "تراجع", "ڤەگەڕاندن")}</button>`, 30000);
+  notice.querySelector("#undoDeleteP").onclick = async (event) => {
+    const undo = event.currentTarget;
+    undo.disabled = true;
+    try {
+      await post("restore", { no, deletedAt: result.deletedAt });
+    } catch (err) {
+      undo.disabled = false;
+      alert(err.message);
+      return;
+    }
+    allCache = null;
+    toast(cardText("Card restored.", "تمت استعادة البطاقة.", "کارت هاتە ڤەگەڕاندن."));
+    if (current === "patients" || current === "dups") await refreshPatientCards(current);
+  };
+  if (current === sourceView && (sourceView !== "card" || cardData === null)) {
+    await refreshPatientCards(sourceView);
+  }
+}
+
 function renderCard(editing) {
   const d = cardData, p = d.patient, lines = cardLines(d);
   $("title").textContent = editing ? "✏️ تعديل البطاقة" : "بطاقة مريض"; $("count").textContent = lines.filter((l) => l.visit).length + " زيارة";
@@ -1130,7 +1212,7 @@ function renderCard(editing) {
       <div class="no">DSA-P-${p.no}${p.card_no ? " · بطاقة ورقية " + esc(p.card_no) : ""}</div><h3>${esc(p.name)}</h3>
       <div class="meta"><span>📞 ${phones}</span><span>أول زيارة ${vdays[0] || ""}</span><span>آخر زيارة ${vdays[vdays.length - 1] || ""}</span>${p.edited_at ? `<span>✏️ آخر تعديل ${p.edited_at.slice(0, 10)}</span>` : ""}</div></div>
     <div class="pbody">
-      ${editing ? "" : `<div class="pf noprint"><button class="btn pri" id="editP">✏️ تعديل</button><button type="button" class="btn" id="deleteP" style="color:#a02722">🗑 ${cardText("Delete card", "حذف البطاقة", "کارتێ ژێ ببە")}</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn pri" id="prevP">👁 معاينة التقرير · PDF · مشاركة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>`}
+      ${editing ? "" : `<div class="pf noprint"><button class="btn pri" id="editP">✏️ تعديل</button><button type="button" class="btn card-delete" id="deleteP">🗑 ${cardDeleteLabel}</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn pri" id="prevP">👁 معاينة التقرير · PDF · مشاركة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>`}
       ${editing ? "" : summary}
       ${head}
       ${!editing && p.merged.length ? `<p class="note">مدموجة معها: ${p.merged.map((m) => `#${m.no} <a href="#" data-un="${m.no}">فكّ</a>`).join(" · ")}</p>` : ""}
@@ -1145,50 +1227,7 @@ function renderCard(editing) {
     </div></div>`;
   if (!editing) {
     $("editP").onclick = () => renderCard(true);
-    $("deleteP").onclick = async () => {
-      const no = Number(p.no);
-      const card = `DSA-P-${no} — ${p.name}`;
-      const mergedNotice = p.merged.length ? cardText(
-        " Cards merged into it will also be hidden.",
-        " ستُخفى أيضًا البطاقات المدمجة معها.",
-        " کارتێن پێکڤەهاتی دێ هێنە ڤەشارتن.",
-      ) : "";
-      if (!confirm(cardText(
-        `Delete ${card} from the patient list? Appointments, payments and files will be kept.`,
-        `حذف بطاقة ${card} من قائمة المرضى؟ ستبقى المواعيد والمدفوعات والملفات محفوظة.`,
-        `کارتا ${card} ژ لیستا نەخۆشان ژێ ببە؟ ژڤان، پارەدان و فایل دێ مێنن.`,
-      ) + mergedNotice)) return;
-      const button = $("deleteP");
-      button.disabled = true;
-      try {
-        const result = await post("delete", { no });
-        allCache = null;
-        picked.delete(no);
-        cardData = null;
-        cardCtx = null;
-        if (/^#card=/.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
-        current = "patients";
-        const removed = cardText(`Deleted DSA-P-${no}.`, `حُذفت بطاقة DSA-P-${no}.`, `کارتا DSA-P-${no} هاتە ژێبرن.`);
-        const notice = toast(`${removed} <button type="button" class="btn" id="undoDeleteP">↶ ${cardText("Undo", "تراجع", "ڤەگەڕاندن")}</button>`, 30000);
-        notice.querySelector("#undoDeleteP").onclick = async (event) => {
-          const undo = event.currentTarget;
-          undo.disabled = true;
-          try {
-            await post("restore", { no, deletedAt: result.deletedAt });
-            allCache = null;
-            toast(cardText("Card restored.", "تمت استعادة البطاقة.", "کارت هاتە ڤەگەڕاندن."));
-            if (current === "patients") await patients();
-          } catch (err) {
-            undo.disabled = false;
-            alert(err.message);
-          }
-        };
-        await patients();
-      } catch (err) {
-        button.disabled = false;
-        alert(err.message);
-      }
-    };
+    $("deleteP").onclick = (event) => deletePatientCard(p, event.currentTarget);
     drawQR($("qr"), `${location.origin}/clinic/?view=patients#card=${p.no}`);
     loadFiles(p);
     cardCtx = { p, lines, nVisits, paidAll, dueAll, vdays, hasMoney: mp.length > 0 };
