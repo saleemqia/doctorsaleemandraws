@@ -364,49 +364,57 @@ export async function archive(env: Env, appts: Appt[], fromDay: string, toDayExc
 /** One-time schema upgrades, remembered in clinic_settings 'schema_v'. */
 export async function ensureSchema(env: Env) {
   const v = (await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = 'schema_v'").first<{ value: string }>())?.value;
-  if (v === "7") return;
-  for (const sql of [
-    "ALTER TABLE patients ADD COLUMN visits INTEGER DEFAULT 0",
-    "ALTER TABLE patients ADD COLUMN first_day TEXT",
-    "ALTER TABLE patients ADD COLUMN last_day TEXT",
-    "ALTER TABLE patients ADD COLUMN name TEXT",
-    "ALTER TABLE patients ADD COLUMN phones TEXT",
-    "CREATE INDEX IF NOT EXISTS patients_last ON patients(last_day)",
-    "CREATE INDEX IF NOT EXISTS patients_merged ON patients(merged_into)",
-    "CREATE INDEX IF NOT EXISTS appointments_start ON appointments(start)",
-    `CREATE TABLE IF NOT EXISTS payments (id INTEGER PRIMARY KEY, src TEXT UNIQUE, sheet TEXT, patient_key TEXT, name TEXT, day TEXT,
-       paid_iqd REAL, paid_usd REAL, due_iqd REAL, due_usd REAL, work TEXT, notes TEXT, phone TEXT, matched TEXT)`,
-    "CREATE INDEX IF NOT EXISTS payments_key ON payments(patient_key)",
-    "CREATE INDEX IF NOT EXISTS payments_sheet ON payments(sheet)",
-    // v4: owner's edits on cards. They are kept apart from calendar/Excel data, so a re-sync or re-import never undoes them.
-    "ALTER TABLE patients ADD COLUMN merged_into TEXT",
-    "ALTER TABLE patients ADD COLUMN display_name TEXT",
-    "ALTER TABLE patients ADD COLUMN phone_override TEXT",
-    "ALTER TABLE patients ADD COLUMN edited_at TEXT",
-    // ref = 'a:<appointment uid>' or 'p:<payment src>' (an edit of that row) or NULL (a row the owner added by hand).
-    `CREATE TABLE IF NOT EXISTS card_rows (id INTEGER PRIMARY KEY, patient_key TEXT, ref TEXT UNIQUE, data TEXT, hidden INTEGER DEFAULT 0,
-       updated_at TEXT DEFAULT (datetime('now')))`,
-    "CREATE INDEX IF NOT EXISTS card_rows_key ON card_rows(patient_key)",
-    // Pairs the owner marked "not the same person": never suggested or auto-merged again.
-    "CREATE TABLE IF NOT EXISTS merge_no (a TEXT, b TEXT, PRIMARY KEY (a, b))",
-    // v5: X-rays and case photos attached to a card (kept by the card's number, so they survive merges; image stored as base64).
-    `CREATE TABLE IF NOT EXISTS card_files (id INTEGER PRIMARY KEY, no INTEGER, kind TEXT, title TEXT, mime TEXT, data TEXT,
-       size INTEGER, taken TEXT, created_at TEXT DEFAULT (datetime('now')))`,
-    "CREATE INDEX IF NOT EXISTS card_files_no ON card_files(no)",
-    // v6: message list. no_msg = 1 → never include this patient in reminders/announcements; msg_log remembers who was messaged and when.
-    "ALTER TABLE patients ADD COLUMN no_msg INTEGER DEFAULT 0",
-    "CREATE TABLE IF NOT EXISTS msg_log (id INTEGER PRIMARY KEY, no INTEGER, sent_at TEXT DEFAULT (datetime('now')), campaign TEXT)",
-    "CREATE INDEX IF NOT EXISTS msg_log_no ON msg_log(no)",
-    // v7: clinic expenses. src 'x:…' = imported from the accounts workbook (replaced on re-import), 'm:…' = typed in by the owner (never touched by an import).
-    `CREATE TABLE IF NOT EXISTS expenses (id INTEGER PRIMARY KEY, src TEXT UNIQUE, sheet TEXT, category TEXT, day TEXT,
-       amount_iqd REAL, amount_usd REAL, description TEXT, receipt TEXT)`,
-    "CREATE INDEX IF NOT EXISTS expenses_sheet ON expenses(sheet)",
-    // income that is in the workbook's totals but is not a patient visit (monthly exam fees, a sold chair, a row with no date)
-    `CREATE TABLE IF NOT EXISTS other_income (id INTEGER PRIMARY KEY, src TEXT UNIQUE, sheet TEXT, label TEXT, day TEXT, amount_iqd REAL, amount_usd REAL)`,
-    "CREATE INDEX IF NOT EXISTS other_income_sheet ON other_income(sheet)",
-  ]) { try { await env.DB.prepare(sql).run(); } catch { /* already there */ } }
-  await setSetting(env, "schema_v", "7");
-  await setSetting(env, "stats_dirty", "1");
+  if (v === "8") return;
+  if (v !== "7") {
+    for (const sql of [
+      "ALTER TABLE patients ADD COLUMN visits INTEGER DEFAULT 0",
+      "ALTER TABLE patients ADD COLUMN first_day TEXT",
+      "ALTER TABLE patients ADD COLUMN last_day TEXT",
+      "ALTER TABLE patients ADD COLUMN name TEXT",
+      "ALTER TABLE patients ADD COLUMN phones TEXT",
+      "CREATE INDEX IF NOT EXISTS patients_last ON patients(last_day)",
+      "CREATE INDEX IF NOT EXISTS patients_merged ON patients(merged_into)",
+      "CREATE INDEX IF NOT EXISTS appointments_start ON appointments(start)",
+      `CREATE TABLE IF NOT EXISTS payments (id INTEGER PRIMARY KEY, src TEXT UNIQUE, sheet TEXT, patient_key TEXT, name TEXT, day TEXT,
+         paid_iqd REAL, paid_usd REAL, due_iqd REAL, due_usd REAL, work TEXT, notes TEXT, phone TEXT, matched TEXT)`,
+      "CREATE INDEX IF NOT EXISTS payments_key ON payments(patient_key)",
+      "CREATE INDEX IF NOT EXISTS payments_sheet ON payments(sheet)",
+      // v4: owner's edits on cards. They are kept apart from calendar/Excel data, so a re-sync or re-import never undoes them.
+      "ALTER TABLE patients ADD COLUMN merged_into TEXT",
+      "ALTER TABLE patients ADD COLUMN display_name TEXT",
+      "ALTER TABLE patients ADD COLUMN phone_override TEXT",
+      "ALTER TABLE patients ADD COLUMN edited_at TEXT",
+      // ref = 'a:<appointment uid>' or 'p:<payment src>' (an edit of that row) or NULL (a row the owner added by hand).
+      `CREATE TABLE IF NOT EXISTS card_rows (id INTEGER PRIMARY KEY, patient_key TEXT, ref TEXT UNIQUE, data TEXT, hidden INTEGER DEFAULT 0,
+         updated_at TEXT DEFAULT (datetime('now')))`,
+      "CREATE INDEX IF NOT EXISTS card_rows_key ON card_rows(patient_key)",
+      // Pairs the owner marked "not the same person": never suggested or auto-merged again.
+      "CREATE TABLE IF NOT EXISTS merge_no (a TEXT, b TEXT, PRIMARY KEY (a, b))",
+      // v5: X-rays and case photos attached to a card (kept by the card's number, so they survive merges; image stored as base64).
+      `CREATE TABLE IF NOT EXISTS card_files (id INTEGER PRIMARY KEY, no INTEGER, kind TEXT, title TEXT, mime TEXT, data TEXT,
+         size INTEGER, taken TEXT, created_at TEXT DEFAULT (datetime('now')))`,
+      "CREATE INDEX IF NOT EXISTS card_files_no ON card_files(no)",
+      // v6: message list. no_msg = 1 → never include this patient in reminders/announcements; msg_log remembers who was messaged and when.
+      "ALTER TABLE patients ADD COLUMN no_msg INTEGER DEFAULT 0",
+      "CREATE TABLE IF NOT EXISTS msg_log (id INTEGER PRIMARY KEY, no INTEGER, sent_at TEXT DEFAULT (datetime('now')), campaign TEXT)",
+      "CREATE INDEX IF NOT EXISTS msg_log_no ON msg_log(no)",
+      // v7: clinic expenses. src 'x:…' = imported from the accounts workbook (replaced on re-import), 'm:…' = typed in by the owner (never touched by an import).
+      `CREATE TABLE IF NOT EXISTS expenses (id INTEGER PRIMARY KEY, src TEXT UNIQUE, sheet TEXT, category TEXT, day TEXT,
+         amount_iqd REAL, amount_usd REAL, description TEXT, receipt TEXT)`,
+      "CREATE INDEX IF NOT EXISTS expenses_sheet ON expenses(sheet)",
+      // income that is in the workbook's totals but is not a patient visit (monthly exam fees, a sold chair, a row with no date)
+      `CREATE TABLE IF NOT EXISTS other_income (id INTEGER PRIMARY KEY, src TEXT UNIQUE, sheet TEXT, label TEXT, day TEXT, amount_iqd REAL, amount_usd REAL)`,
+      "CREATE INDEX IF NOT EXISTS other_income_sheet ON other_income(sheet)",
+    ]) { try { await env.DB.prepare(sql).run(); } catch { /* already there */ } }
+    await setSetting(env, "stats_dirty", "1");
+  }
+  try {
+    await env.DB.prepare("ALTER TABLE patients ADD COLUMN deleted_at TEXT").run();
+  } catch (error) {
+    const { results } = await env.DB.prepare("PRAGMA table_info(patients)").all<{ name: string }>();
+    if (!results.some((column) => column.name === "deleted_at")) throw error;
+  }
+  await setSetting(env, "schema_v", "8");
 }
 
 export const setSetting = (env: Env, key: string, value: string) => env.DB.prepare(
