@@ -56,6 +56,38 @@ export function needsPin(url: URL, method: string): boolean {
   return ["/clinic/api/payments", "/clinic/api/sheet", "/clinic/api/design"].includes(p);
 }
 
+/* ---------- separate lock for patient cards ---------- */
+
+export const PATIENT_PIN_COOKIE = "clinic_patients";
+export const PATIENT_PIN_HOURS = 8;
+export async function patientPinHash(env: Env): Promise<string> {
+  return (await env.DB.prepare("SELECT value FROM clinic_settings WHERE key = 'patient_pin'").first<{ value: string }>())?.value || "";
+}
+export const patientPinToken = (hash: string) => sha256("patients-ok|" + hash);
+export async function patientPinCheck(env: Env, password: string): Promise<string> {
+  const stored = await patientPinHash(env);
+  if (!stored || !/^\d{4,12}$/.test(password) || (await sha256("patients:" + password)) !== stored) return "";
+  return patientPinToken(stored);
+}
+export async function setPatientPin(env: Env, password: string): Promise<boolean> {
+  if (!/^\d{4,12}$/.test(password)) return false;
+  const hash = await sha256("patients:" + password);
+  await env.DB.prepare(
+    "INSERT INTO clinic_settings (key, value, updated_at) VALUES ('patient_pin', ?, datetime('now')) ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at"
+  ).bind(hash).run();
+  return true;
+}
+export async function patientPinUnlocked(env: Env, req: Request): Promise<boolean> {
+  const cookie = cookieValue(req, PATIENT_PIN_COOKIE);
+  if (!cookie) return false;
+  const stored = await patientPinHash(env);
+  return !!stored && cookie === (await patientPinToken(stored));
+}
+export function needsPatientPin(url: URL): boolean {
+  const path = url.pathname.replace(/\/+$/, "");
+  return ["/clinic/api/patients", "/clinic/api/files", "/clinic/api/visitors"].includes(path);
+}
+
 /* ---------- dates ---------- */
 
 export const localDay = (d: Date) => new Date(d.getTime() + TZ_OFFSET_MIN * 60000).toISOString().slice(0, 10);
