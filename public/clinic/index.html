@@ -265,6 +265,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   <div id="pats" hidden>
     <div class="tbar"><button class="btn" id="selMode" type="button">☑ تحديد للدمج</button><button class="btn" id="dupBtn" type="button">🧩 مكررات محتملة</button><button class="btn pri" id="msgBtn" type="button">📣 رسائل للمرضى</button><button class="btn" id="impBtn" type="button">💵 استيراد الحسابات (Excel)</button></div>
     <form id="pform" class="sbox"><input id="pq" type="search" placeholder="اسم المريض أو رقم الهاتف أو رقم البطاقة" autocomplete="off"><button class="btn">بحث</button></form>
+    <label class="opt"><input id="patientSymbols" type="checkbox"> <span id="patientSymbolsLabel">عرض أسماء البطاقات التي تحتوي على هذه الرموز فقط</span> <bdi dir="ltr">+ / &#92; .</bdi></label>
     <p class="note" id="pstats"></p>
     <section class="visitstats" id="visitorStats" aria-live="polite">
       <h3>📊 زوار الموقع — خاص بإدارة العيادة</h3>
@@ -690,6 +691,9 @@ function updatePickBar() {
 }
 const plRow = (p) => `<div class="pl${picked.has(p.no) ? " sel" : ""}" data-no="${p.no}">${selMode ? `<span class="ck">${picked.has(p.no) ? "☑" : "☐"}</span>` : ""}<span class="pno">#${p.no}</span><b>${esc(p.name)}</b><span class="v">${p.visits} زيارة</span>
     <span class="s">آخر زيارة ${p.last || "—"}${p.phones ? " · " + esc(String(p.phones).split(",")[0]) : ""}</span></div>`;
+const cardLanguage = new URLSearchParams(location.search).get("lang") || document.documentElement.lang;
+const cardText = (en, ar, ku) => /^en\b/i.test(cardLanguage) ? en : /^(ku|ckb|kmr)\b/i.test(cardLanguage) ? ku : ar;
+$("patientSymbolsLabel").textContent = cardText("Only show card names with these symbols", "عرض أسماء البطاقات التي تحتوي على هذه الرموز فقط", "ب تەنێ ناڤێن کارتێن کو ئەڤ نیشانە تێدا هەن نیشان بدە");
 let lastList = [];
 async function loadVisitorStats() {
   try {
@@ -705,14 +709,18 @@ async function loadVisitorStats() {
     $("vNote").textContent = "تعذّر تحميل إحصاءات الزوار الآن: " + err.message;
   }
 }
-async function patients() {
+async function patients(offset = 0) {
   $("pats").hidden = false;
   loadVisitorStats();
-  const q = $("pq").value.trim();
+  const q = toEn($("pq").value.trim());
+  const symbolsOnly = $("patientSymbols").checked;
   $("title").textContent = q ? `مرضى: ${q}` : "المرضى"; $("note").textContent = "";
   $("list").innerHTML = `<div class="spin"></div>`;
   const get = async () => {
-    const res = await fetch(`/clinic/api/patients?q=${encodeURIComponent(q)}`, { cache: "no-store" });
+    const params = new URLSearchParams({ q });
+    if (symbolsOnly) params.set("symbols", "1");
+    if (offset > 0) params.set("offset", String(offset));
+    const res = await fetch(`/clinic/api/patients?${params}`, { cache: "no-store" });
     const txt = await res.text(); let j; try { j = JSON.parse(txt); } catch { j = { error: `HTTP ${res.status}: ${txt.slice(0, 160)}` }; }
     if (!res.ok || j.error) throw new Error(j.error || "HTTP " + res.status);
     return j;
@@ -726,13 +734,19 @@ async function patients() {
   }
   if (!window._am) { window._am = 1; fetch("/clinic/api/patients?action=automerge", { method: "POST" }).catch(() => {}); }
   $("pstats").textContent = `${d.total} مريضًا (بطاقة لكل مريض، مرتبة حسب آخر زيارة)` + (d.patients.length >= 100 ? " · تظهر أول 100، ابحث للوصول للباقي" : "");
-  $("count").textContent = q ? d.patients.length + " نتيجة" : "";
+  $("count").textContent = q || symbolsOnly ? `${offset + d.patients.length} ${cardText("results shown", "نتيجة معروضة", "ئەنجام هاتنە نیشاندان")}` : "";
   lastList = d.patients;
   updatePickBar();
   if (!d.patients.length) { $("list").innerHTML = `<div class="empty">لا نتائج</div>`; return; }
   $("list").innerHTML = `<div class="rows">` + d.patients.map(plRow).join("") + `</div>`;
+  if (symbolsOnly && (offset || d.hasMore)) {
+    $("list").insertAdjacentHTML("beforeend", `<div class="acts">${offset ? `<button type="button" class="btn" id="symbolsPrev">${cardText("Previous", "السابق", "یێ بۆری")}</button>` : ""}${d.hasMore ? `<button type="button" class="btn" id="symbolsNext">${cardText("Next", "التالي", "یێ بهێت")}</button>` : ""}</div>`);
+    if (offset) $("symbolsPrev").onclick = () => patients(offset - 100);
+    if (d.hasMore) $("symbolsNext").onclick = () => patients(offset + 100);
+  }
 }
 $("pform").onsubmit = (e) => { e.preventDefault(); patients(); };
+$("patientSymbols").onchange = () => patients();
 $("list").addEventListener("click", (e) => {
   const r = e.target.closest(".pl"); if (!r || !$("list").contains(r)) return;
   const no = +r.dataset.no;
@@ -1110,7 +1124,7 @@ function renderCard(editing) {
       <div class="no">DSA-P-${p.no}${p.card_no ? " · بطاقة ورقية " + esc(p.card_no) : ""}</div><h3>${esc(p.name)}</h3>
       <div class="meta"><span>📞 ${phones}</span><span>أول زيارة ${vdays[0] || ""}</span><span>آخر زيارة ${vdays[vdays.length - 1] || ""}</span>${p.edited_at ? `<span>✏️ آخر تعديل ${p.edited_at.slice(0, 10)}</span>` : ""}</div></div>
     <div class="pbody">
-      ${editing ? "" : `<div class="pf noprint"><button class="btn pri" id="editP">✏️ تعديل</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn pri" id="prevP">👁 معاينة التقرير · PDF · مشاركة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>`}
+      ${editing ? "" : `<div class="pf noprint"><button class="btn pri" id="editP">✏️ تعديل</button><button type="button" class="btn" id="deleteP" style="color:#a02722">🗑 ${cardText("Delete card", "حذف البطاقة", "کارتێ ژێ ببە")}</button><button class="btn" id="mergeP">🔗 دمج مع بطاقة أخرى</button><button class="btn pri" id="prevP">👁 معاينة التقرير · PDF · مشاركة</button><button class="btn" id="backP">↩ قائمة المرضى</button></div>`}
       ${editing ? "" : summary}
       ${head}
       ${!editing && p.merged.length ? `<p class="note">مدموجة معها: ${p.merged.map((m) => `#${m.no} <a href="#" data-un="${m.no}">فكّ</a>`).join(" · ")}</p>` : ""}
@@ -1125,6 +1139,45 @@ function renderCard(editing) {
     </div></div>`;
   if (!editing) {
     $("editP").onclick = () => renderCard(true);
+    $("deleteP").onclick = async () => {
+      const no = Number(p.no);
+      const card = `DSA-P-${no} — ${p.name}`;
+      if (!confirm(cardText(
+        `Delete ${card}? The card will disappear from the patient list. Calendar appointments will be kept.`,
+        `حذف بطاقة ${card}؟ ستختفي من قائمة المرضى وتبقى المواعيد في التقويم.`,
+        `کارتا ${card} ژێ ببە؟ کارت دێ ژ لیستا نەخۆشان چوونە دەر. ژڤان دێ د تەقویمێ دا مێنن.`,
+      ))) return;
+      const button = $("deleteP");
+      button.disabled = true;
+      try {
+        const result = await post("delete", { no });
+        allCache = null;
+        picked.delete(no);
+        cardData = null;
+        cardCtx = null;
+        if (/^#card=/.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
+        current = "patients";
+        const removed = cardText(`Deleted DSA-P-${no}.`, `حُذفت بطاقة DSA-P-${no}.`, `کارتا DSA-P-${no} هاتە ژێبرن.`);
+        const notice = toast(`${removed} <button type="button" class="btn" id="undoDeleteP">↶ ${cardText("Undo", "تراجع", "ڤەگەڕاندن")}</button>`, 30000);
+        notice.querySelector("#undoDeleteP").onclick = async (event) => {
+          const undo = event.currentTarget;
+          undo.disabled = true;
+          try {
+            await post("restore", { no, deletedAt: result.deletedAt });
+            allCache = null;
+            toast(cardText("Card restored.", "تمت استعادة البطاقة.", "کارت هاتە ڤەگەڕاندن."));
+            if (current === "patients") await patients();
+          } catch (err) {
+            undo.disabled = false;
+            alert(err.message);
+          }
+        };
+        await patients();
+      } catch (err) {
+        button.disabled = false;
+        alert(err.message);
+      }
+    };
     drawQR($("qr"), `${location.origin}/clinic/?view=patients#card=${p.no}`);
     loadFiles(p);
     cardCtx = { p, lines, nVisits, paidAll, dueAll, vdays, hasMoney: mp.length > 0 };
