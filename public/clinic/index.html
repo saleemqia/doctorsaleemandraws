@@ -322,6 +322,9 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
   </div>
 </main>
 <script>
+if (location.hash.startsWith("#card=") && new URLSearchParams(location.search).get("view") !== "patients") {
+  location.replace("/clinic/?view=patients" + location.hash);
+}
 const CLINIC = "عيادة الدكتور سليم أندراوس", CLINIC_PHONE = "0750 781 6500";
 const LH = { name: "عيادة د. سليم أندراوس لطب الأسنان", doc: "د. سليم أندراوس · بكالوريوس طب وجراحة الفم والأسنان · ماجستير الأشعة الفموية والوجهية", addr: "دهوك - كي ار او - بناية جرزات شيركو، الطابق الأول", phones: "0750 781 6500 · 0778 166 5000", mail: "clinic@doctorsaleem.com · dr.saleemo@gmail.com", web: "www.doctorsaleem.com" };
 const lhContact = () => `<span>📍 ${LH.addr}</span><span>📞 <bdi dir="ltr">${LH.phones}</bdi></span><span>✉ <bdi dir="ltr">${LH.mail}</bdi></span><span>🌐 <bdi dir="ltr">${LH.web}</bdi></span>`;
@@ -1044,7 +1047,7 @@ function fitSheet() { const w = $("rpScroll").clientWidth - 16; $("rpZoom").styl
 function drawSheet() { $("sheet").innerHTML = sheetHTML(rpOpts()); const imgs = [...$("sheet").querySelectorAll("img")]; fitSheet(); imgs.forEach((i) => { i.onload = fitSheet; }); }
 async function openReport() {
   if (!cardCtx) return;
-  const q = $("qr"); if (q && !q.innerHTML) await drawQR(q, `${location.origin}/clinic/#card=${cardCtx.p.no}`);
+  const q = $("qr"); if (q && !q.innerHTML) await drawQR(q, `${location.origin}/clinic/?view=patients#card=${cardCtx.p.no}`);
   document.body.classList.add("previewing"); $("rpt").hidden = false; $("rpMsg").textContent = ""; drawSheet();
 }
 const closeReport = () => { $("rpt").hidden = true; document.body.classList.remove("previewing"); };
@@ -1122,7 +1125,7 @@ function renderCard(editing) {
     </div></div>`;
   if (!editing) {
     $("editP").onclick = () => renderCard(true);
-    drawQR($("qr"), `${location.origin}/clinic/#card=${p.no}`);
+    drawQR($("qr"), `${location.origin}/clinic/?view=patients#card=${p.no}`);
     loadFiles(p);
     cardCtx = { p, lines, nVisits, paidAll, dueAll, vdays, hasMoney: mp.length > 0 };
     $("prevP").onclick = openReport;
