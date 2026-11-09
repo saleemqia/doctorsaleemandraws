@@ -1148,11 +1148,16 @@ function renderCard(editing) {
     $("deleteP").onclick = async () => {
       const no = Number(p.no);
       const card = `DSA-P-${no} — ${p.name}`;
+      const mergedNotice = p.merged.length ? cardText(
+        " Cards merged into it will also be hidden.",
+        " ستُخفى أيضًا البطاقات المدمجة معها.",
+        " کارتێن پێکڤەهاتی دێ هێنە ڤەشارتن.",
+      ) : "";
       if (!confirm(cardText(
-        `Delete ${card}? The card will disappear from the patient list. Calendar appointments will be kept.`,
-        `حذف بطاقة ${card}؟ ستختفي من قائمة المرضى وتبقى المواعيد في التقويم.`,
-        `کارتا ${card} ژێ ببە؟ کارت دێ ژ لیستا نەخۆشان چوونە دەر. ژڤان دێ د تەقویمێ دا مێنن.`,
-      ))) return;
+        `Delete ${card} from the patient list? Appointments, payments and files will be kept.`,
+        `حذف بطاقة ${card} من قائمة المرضى؟ ستبقى المواعيد والمدفوعات والملفات محفوظة.`,
+        `کارتا ${card} ژ لیستا نەخۆشان ژێ ببە؟ ژڤان، پارەدان و فایل دێ مێنن.`,
+      ) + mergedNotice)) return;
       const button = $("deleteP");
       button.disabled = true;
       try {
