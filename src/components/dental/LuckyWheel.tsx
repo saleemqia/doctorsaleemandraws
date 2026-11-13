@@ -110,7 +110,7 @@ export default function LuckyWheel() {
     language === "ar"
       ? `مرحبًا، اختارت عجلة الحظ مفاجأة من عيادة د. سليم. رمزي: ${status?.claimCode}. أرغب بحجز استشارة مجانية أو تنظيف وتلميع مجاني.`
       : language === "ku"
-        ? `سلاڤ، عەجلێ کلینیکا د. سەلیم تشتەکێ تایبەت بۆ من هەلبژارتیە. کودا من: ${status?.claimCode}. من دڤێت شێوەرەکا بەلاشان یان پاککرن و پۆلیشکرنا بەلاشان حجز بکەم.`
+        ? `سلاڤ، عەجلێ کلینیکا د. سليم تشتەکێ تایبەت بۆ من هەلبژارتیە. کودا من: ${status?.claimCode}. من دڤێت شێوەرەکا بەلاشان یان پاککرن و پۆلیشکرنا بەلاشان حجز بکەم.`
         : `Hello, my lucky wheel spin selected a clinic surprise at Doctor Saleem Andraws Dental Clinic. My code is ${status?.claimCode}. I would like to book a free consultation or free scaling and polishing.`,
   );
 
