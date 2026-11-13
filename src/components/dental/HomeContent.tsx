@@ -12,6 +12,7 @@ import { SERVICES } from "@/config/services";
 import { pathFor, servicePath } from "@/config/seo";
 import { EMAILS, PHONES, GOOGLE_DIRECTIONS_URL, GOOGLE_MAP_EMBED_URL, ENTRANCE_360_EMBED_URLS, GOOGLE_MAPS_URL, GOOGLE_WRITE_REVIEW_URL, REVIEWS, GRADUATION_YEAR } from "@/config/clinic";
 import HeroSlideshow from "@/components/dental/HeroSlideshow";
+import LuckyWheel from "@/components/dental/LuckyWheel";
 import crowns from "@/assets/gallery/zircon-emax.jpeg";
 import filling from "@/assets/gallery/front-filling.jpeg";
 import replacement from "@/assets/gallery/amalgam-replacement.jpeg";
@@ -79,6 +80,7 @@ export default function HomeContent({ onBookingClick }: { onBookingClick: () => 
         { id: "contact", label: L("Location & booking", "الموقع والحجز", "جهـ و ژڤان"), tone: "bg-blue-100 text-blue-950 ring-blue-200" },
       ].map((item) => <a key={item.id} href={`#${item.id}`} className={`inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold shadow-sm ring-1 transition duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${item.tone}`}>{item.label}<span aria-hidden="true" className="ms-2 opacity-60">↓</span></a>)}
     </nav>
+    <LuckyWheel />
     <section id="services" className={`${section} bg-gradient-to-b from-sky-50 via-white to-cyan-50`}>
       <div className="flex flex-wrap items-end justify-between gap-4"><div><p className={label}>{L("Treatments", "العلاجات", "چارەسەری")}</p><h2 className={h2}>{L("Care for your teeth and your smile", "العناية بأسنانك وابتسامتك", "چاڤدێری بۆ ددان و بزەیا تە")}</h2></div><a className="font-semibold text-primary hover:underline" href={pathFor(language,"/services")}>{all} →</a></div>
       <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{SERVICES.filter(s=>["dental-implants","veneers-hollywood-smile","orthodontics-braces","root-canal-fillings","teeth-whitening","crowns-bridges-dentures"].includes(s.slug)).map(s=><a key={s.slug} href={servicePath(language,s.slug)} className="group rounded-2xl border border-sky-200/80 bg-white/90 p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:border-primary hover:bg-white hover:shadow-card"><img src={iconImages[s.image]} alt="" loading="lazy" width="72" height="72" className="mb-4 h-[72px] w-[72px] rounded-2xl object-cover shadow-[0_6px_12px_-3px_hsl(210_65%_32%/0.3)] ring-4 ring-white" /><div className="flex items-center justify-between gap-3"><h3 className="text-lg font-semibold [font-family:inherit]">{s.name[language]}</h3><ArrowUpRight className="h-5 w-5 shrink-0 text-primary" /></div><p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.a[language]}</p></a>)}</div>
