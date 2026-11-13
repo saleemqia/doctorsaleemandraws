@@ -7,7 +7,7 @@ import { pathFor } from "@/config/seo";
 const INTRO = {
   en: "At Dr. Saleem Andraws Dental Clinic in Duhok we follow new dental techniques and research, so patients can understand what is changing in dentistry. These are the latest headlines from trusted dental news sites. For advice about your own teeth, please book an examination.",
   ar: "في عيادة د. سليم أندراوس لطب الأسنان في دهوك نتابع التقنيات والأبحاث الجديدة في طب الأسنان ليفهم المرضى ما الذي يتغير. هذه آخر العناوين من مواقع إخبارية موثوقة. للنصيحة بخصوص أسنانك أنت، احجز موعد فحص.",
-  ku: "ل کلینیکا ددانان یا د. سەلیم ئەندراوس ل دهوکێ، ئەم تەکنیک و لێکۆلینەوێن نوی یێن ددانان دشوێنین، دا نەخۆش بزانن چ د گوهۆڕینێ دایە. ئەڤە نویترین ناڤونیشانێن ژ ماڵپەڕێن هەوالان یێن باوەرپێکرینە. بۆ ڕاوێژا ددانێن خۆ، ڤەکۆلینەکێ ببژێرە.",
+  ku: "ل کلینیکا ددانان یا د. سليم ئەندراوس ل دهوکێ، ئەم تەکنیک و لێکۆلینەوێن نوی یێن ددانان دشوێنین، دا نەخۆش بزانن چ د گوهۆڕینێ دایە. ئەڤە نویترین ناڤونیشانێن ژ ماڵپەڕێن هەوالان یێن باوەرپێکرینە. بۆ ڕاوێژا ددانێن خۆ، ڤەکۆلینەکێ ببژێرە.",
 };
 const LINKS: [string, string, string, string][] = [
   ["/treatments", "How treatments are done", "كيف يتم علاج الأسنان", "چارەسەری چاوا دئێتە کرن"],
