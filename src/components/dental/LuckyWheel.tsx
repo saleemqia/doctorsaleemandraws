@@ -14,53 +14,53 @@ type WheelStatus = {
 
 const copy = {
   en: {
-    badge: "A clinic gift",
-    title: "Try your luck",
-    description: "Spin for a surprise clinic gift. A winner may receive a free consultation or scaling and polishing.",
+    badge: "A moment for your smile",
+    title: "Spin your luck",
+    description: "Take a quick spin and see where it lands.",
     spin: "Spin the wheel",
     spinning: "Spinning…",
-    left: "A surprise clinic gift could be next",
-    today: "Thank you for visiting. Sorry, no clinic gift this time. Please try your luck again tomorrow.",
-    won: "You won a clinic gift!",
+    left: "Your next spin could land somewhere new",
+    today: "Thank you for visiting. It was not your turn this time. Please try your luck again tomorrow.",
+    won: "Your spin selected a clinic surprise!",
     wonText: "Choose a free consultation or free scaling and polishing. Show this code when booking:",
     book: "Claim on WhatsApp",
-    terms: "No payment is required. One spin per device per day. Prize must be booked within 14 days and treatment is provided only when clinically appropriate.",
+    terms: "No payment is required. One spin per device per day. Book within 14 days. Treatment is provided only when clinically appropriate.",
     tip: "Keep smiling",
-    gift: "Clinic gift",
+    gift: "Spin your luck",
     ready: "Ready to spin",
     error: "The wheel is unavailable right now. Please try again shortly.",
   },
   ar: {
-    badge: "هدية من العيادة",
+    badge: "لحظة جميلة لابتسامتك",
     title: "جرّب حظك",
-    description: "أدر العجلة من أجل هدية مفاجأة من العيادة. قد يفوز الزائر باستشارة مجانية أو تنظيف وتلميع مجاني.",
+    description: "أدر العجلة سريعًا وشاهد أين ستتوقف.",
     spin: "أدر العجلة",
     spinning: "تدور العجلة…",
-    left: "قد تكون هدية مفاجأة من العيادة قريبة",
-    today: "شكرًا لزيارتك. نعتذر، لم تربح هدية من العيادة هذه المرة. جرّب حظك مرة أخرى غدًا.",
-    won: "لقد ربحت هدية من العيادة!",
+    left: "قد تتوقف محاولتك القادمة على شيء مختلف",
+    today: "شكرًا لزيارتك. لم يحالفك الحظ هذه المرة. جرّب حظك مرة أخرى غدًا.",
+    won: "اختارت العجلة مفاجأة من العيادة!",
     wonText: "اختر استشارة مجانية أو تنظيف وتلميع مجاني. أظهر هذا الرمز عند الحجز:",
     book: "احجز عبر واتساب",
-    terms: "لا يلزم أي دفع. محاولة واحدة لكل جهاز يوميًا. يجب حجز الهدية خلال 14 يومًا، ويُقدَّم العلاج فقط إذا كان مناسبًا بعد الفحص.",
+    terms: "لا يلزم أي دفع. محاولة واحدة لكل جهاز يوميًا. احجز خلال 14 يومًا، ويُقدَّم العلاج فقط إذا كان مناسبًا بعد الفحص.",
     tip: "ابتسامة جميلة",
-    gift: "هدية العيادة",
+    gift: "جرّب حظك",
     ready: "جاهز للدوران",
     error: "العجلة غير متاحة الآن. حاول مرة أخرى بعد قليل.",
   },
   ku: {
-    badge: "دیاریا ژ کلینیکێ",
+    badge: "دەقا خۆش بۆ بزەیا تە",
     title: "بەختێ خۆ تاقی بکە",
-    description: "عەجلێ بۆ دیاریا نهێنی یا کلینیکێ بچرخینە. ڕەنگە سەرکەفتنێ شێوەرەکا بەلاشان یان پاککرن و پۆلیشکرنا بەلاشان بیت.",
+    description: "عەجلێ بزویرینە و ببینە کو ل کوێ د وەستیت.",
     spin: "عەجلێ بچرخینە",
     spinning: "عەجل دچرخیت…",
-    left: "دیاریا نهێنی یا کلینیکێ ڕەنگە نێزیک بیت",
-    today: "سوپاس بۆ سەردانا تە. ببورە، ڤێ جارێ دیاریا کلینیکێ نەبرد. سبە جارەکا دی بەختێ خۆ تاقی بکە.",
-    won: "تو دیاریا کلینیکێ برد!",
+    left: "چرخانا بهێت ڕەنگە ل شوینەکێ جیاواز بوەستیت",
+    today: "سوپاس بۆ سەردانا تە. ڤێ جارێ بەخت دگەل تە نەبوو. سبە جارەکا دی بەختێ خۆ تاقی بکە.",
+    won: "عەجل تشتەکێ تایبەت هەلبژارت!",
     wonText: "شێوەرەکا بەلاشان یان پاککرن و پۆلیشکرنا بەلاشان هەلبژێرە. ڤێ کودێ دەمێ حجزکرنێ نیشان بدە:",
     book: "ل ڕێیا واتساپێ دا حجز بکە",
-    terms: "هیچ پارە پێدڤی نینە. یەک چرخان بۆ هەر ئامێرێ د رۆژێ دا. دیاری دناڤ 14 رۆژان دا حجز بکە، و چارەسەری تەنێ پشتی پشکنینێ دەمێ گونجایێ دهێتە کرن.",
+    terms: "هیچ پارە پێدڤی نینە. یەک چرخان بۆ هەر ئامێرێ د رۆژێ دا. دناڤ 14 رۆژان دا حجز بکە، و چارەسەری تەنێ پشتی پشکنینێ دەمێ گونجایێ دهێتە کرن.",
     tip: "بزەیەکا جوان",
-    gift: "دیاریا کلینیکێ",
+    gift: "بەختێ خۆ تاقی بکە",
     ready: "ئامادەیە بۆ چرخانێ",
     error: "عەجل نوکە بەردەست نینە. کەمێ پاشتر دوبارە هەوڵ بدە.",
   },
@@ -108,10 +108,10 @@ export default function LuckyWheel() {
 
   const claimText = encodeURIComponent(
     language === "ar"
-      ? `مرحبًا، ربحت هدية عجلة الحظ من عيادة د. سليم. رمز الهدية: ${status?.claimCode}. أرغب بحجز استشارة مجانية أو تنظيف وتلميع مجاني.`
+      ? `مرحبًا، اختارت عجلة الحظ مفاجأة من عيادة د. سليم. رمزي: ${status?.claimCode}. أرغب بحجز استشارة مجانية أو تنظيف وتلميع مجاني.`
       : language === "ku"
-        ? `سلاڤ، من دیاریا عەجلێ یا کلینیکا د. سەلیم بردیە. کودا دیاریێ: ${status?.claimCode}. من دڤێت شێوەرەکا بەلاشان یان پاککرن و پۆلیشکرنا بەلاشان حجز بکەم.`
-        : `Hello, I won a lucky-wheel clinic gift from Doctor Saleem Andraws Dental Clinic. My gift code is ${status?.claimCode}. I would like to book a free consultation or free scaling and polishing.`,
+        ? `سلاڤ، عەجلێ کلینیکا د. سەلیم تشتەکێ تایبەت بۆ من هەلبژارتیە. کودا من: ${status?.claimCode}. من دڤێت شێوەرەکا بەلاشان یان پاککرن و پۆلیشکرنا بەلاشان حجز بکەم.`
+        : `Hello, my lucky wheel spin selected a clinic surprise at Doctor Saleem Andraws Dental Clinic. My code is ${status?.claimCode}. I would like to book a free consultation or free scaling and polishing.`,
   );
 
   return (
