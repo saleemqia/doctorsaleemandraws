@@ -24,7 +24,7 @@ export default function SiteLinks() {
   const text = {
     en: { links: "All links", title: "Dr. Saleem's links", open: "Go to the website", timer: "Website opens in", seconds: "seconds", paused: "Take your time browsing the links", close: "Close links introduction" },
     ar: { links: "كل الروابط", title: "روابط الدكتور سليم", open: "الدخول إلى الموقع", timer: "يفتح الموقع خلال", seconds: "ثانية", paused: "تصفح الروابط براحتك", close: "إغلاق الروابط والانتقال للموقع" },
-    ku: { links: "هەمی لینک", title: "لینکێن د. سەلیم", open: "بچۆ ماڵپەڕێ", timer: "ماڵپەڕ دڤەبیت پشتی", seconds: "چرکە", paused: "لینکان ب ئارامی ببینە", close: "لینکان بگرە و بچۆ ماڵپەڕێ" },
+    ku: { links: "هەمی لینک", title: "لینکێن د. سليم", open: "بچۆ ماڵپەڕێ", timer: "ماڵپەڕ دڤەبیت پشتی", seconds: "چرکە", paused: "لینکان ب ئارامی ببینە", close: "لینکان بگرە و بچۆ ماڵپەڕێ" },
   }[language];
 
   const close = () => { try { sessionStorage.setItem(WELCOME_KEY, "1"); } catch { /* storage is optional */ } setWelcome(false); };
