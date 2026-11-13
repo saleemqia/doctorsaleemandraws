@@ -27,6 +27,7 @@ const copy = {
     terms: "No payment is required. One spin per device per day. Book within 14 days. Treatment is provided only when clinically appropriate.",
     tip: "Keep smiling",
     gift: "Spin your luck",
+    wheelLabels: ["Bright smile", "Good luck", "Smile moment", "Try again", "Healthy teeth", "Your lucky spin", "Fresh smile", "Keep smiling"],
     ready: "Ready to spin",
     error: "The wheel is unavailable right now. Please try again shortly.",
   },
@@ -44,6 +45,7 @@ const copy = {
     terms: "لا يلزم أي دفع. محاولة واحدة لكل جهاز يوميًا. احجز خلال 14 يومًا، ويُقدَّم العلاج فقط إذا كان مناسبًا بعد الفحص.",
     tip: "ابتسامة جميلة",
     gift: "جرّب حظك",
+    wheelLabels: ["ابتسامة مشرقة", "حظ سعيد", "لحظة جميلة", "حاول مجددًا", "أسنان صحية", "دورك الجميل", "ابتسم دائمًا", "بداية جميلة"],
     ready: "جاهز للدوران",
     error: "العجلة غير متاحة الآن. حاول مرة أخرى بعد قليل.",
   },
@@ -61,6 +63,7 @@ const copy = {
     terms: "هیچ پارە پێدڤی نینە. یەک چرخان بۆ هەر ئامێرێ د رۆژێ دا. دناڤ 14 رۆژان دا حجز بکە، و چارەسەری تەنێ پشتی پشکنینێ دەمێ گونجایێ دهێتە کرن.",
     tip: "بزەیەکا جوان",
     gift: "بەختێ خۆ تاقی بکە",
+    wheelLabels: ["بزەیەکا جوان", "بەختێ باش", "دەقەکا خۆش", "دوبارە هەوڵ بدە", "ددانێن ساخلەم", "چرخانا تە", "بزە بکە", "دەستپێکا باش"],
     ready: "ئامادەیە بۆ چرخانێ",
     error: "عەجل نوکە بەردەست نینە. کەمێ پاشتر دوبارە هەوڵ بدە.",
   },
@@ -141,8 +144,9 @@ export default function LuckyWheel() {
           <div className="relative h-72 w-72 sm:h-80 sm:w-80">
             <span aria-hidden="true" className="absolute left-1/2 top-[-9px] z-10 h-0 w-0 -translate-x-1/2 border-x-[14px] border-t-[26px] border-x-transparent border-t-primary drop-shadow-sm" />
             <div className="absolute inset-0 overflow-hidden rounded-full border-8 border-white shadow-[0_14px_38px_-12px_rgba(14,116,144,0.45)]" style={{ transform: `rotate(${angle}deg)`, transition: spinning ? "transform 2.2s cubic-bezier(.16,.77,.18,1)" : "none", background: "conic-gradient(#0ea5e9 0deg 45deg,#fbbf24 45deg 90deg,#38bdf8 90deg 135deg,#fde68a 135deg 180deg,#0ea5e9 180deg 225deg,#fbbf24 225deg 270deg,#38bdf8 270deg 315deg,#fde68a 315deg 360deg)" }}>
-              <span className="absolute left-1/2 top-4 -translate-x-1/2 text-xs font-bold text-sky-950">{text.gift}</span>
-              <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs font-bold text-sky-950">{text.tip}</span>
+              {text.wheelLabels.map((label, index) => (
+                <span key={label} className="absolute left-1/2 top-1/2 w-[42%] -translate-y-1/2 origin-left text-center text-[10px] font-bold leading-tight text-sky-950 sm:text-xs" style={{ transform: `rotate(${index * 45 + 22.5}deg) translateX(22%)` }}>{label}</span>
+              ))}
             </div>
             <div className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-white bg-primary text-center text-sm font-bold text-white shadow-lg"><Sparkles className="h-6 w-6" /><span className="sr-only">{text.gift}</span></div>
           </div>
