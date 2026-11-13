@@ -73,6 +73,7 @@ export default function LuckyWheel() {
   const [angle, setAngle] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [message, setMessage] = useState("");
+  const testMode = new URLSearchParams(window.location.search).get("wheelTest") === "1";
 
   const load = async () => {
     try {
@@ -84,19 +85,27 @@ export default function LuckyWheel() {
     }
   };
 
-  useEffect(() => { void load(); }, [language]);
+  useEffect(() => {
+    if (testMode) setStatus({ ok: true, canSpin: true, spinsUntilGift: 0 });
+    else void load();
+  }, [language, testMode]);
 
   const spin = async () => {
     if (spinning || !status?.canSpin) return;
     setSpinning(true);
     setMessage("");
     try {
-      const response = await fetch("/api/luck", { method: "POST", credentials: "same-origin" });
-      if (!response.ok) throw new Error("Unavailable");
-      const result = await response.json() as WheelStatus;
+      let result: WheelStatus;
+      if (testMode) {
+        result = { ok: true, canSpin: true, spinsUntilGift: 0, winner: Math.random() < 0.2 };
+      } else {
+        const response = await fetch("/api/luck", { method: "POST", credentials: "same-origin" });
+        if (!response.ok) throw new Error("Unavailable");
+        result = await response.json() as WheelStatus;
+      }
       setAngle((current) => current + 1440 + (result.winner ? 22 : 202));
       window.setTimeout(() => {
-        setStatus(result);
+        setStatus(testMode ? { ...result, canSpin: true } : result);
         setMessage(result.winner ? text.won : text.today);
         setSpinning(false);
       }, 2200);
