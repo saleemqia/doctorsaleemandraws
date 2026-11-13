@@ -16,10 +16,10 @@ const copy = {
   en: {
     badge: "A clinic gift",
     title: "Try your luck",
-    description: "Every 100th valid spin receives one clinic gift: a free consultation or scaling and polishing.",
+    description: "Spin for a surprise clinic gift. A winner may receive a free consultation or scaling and polishing.",
     spin: "Spin the wheel",
     spinning: "Spinning…",
-    left: "valid spins until the next gift",
+    left: "A surprise clinic gift could be next",
     today: "You have already spun today. Please come back tomorrow.",
     won: "You won a clinic gift!",
     wonText: "Choose a free consultation or free scaling and polishing. Show this code when booking:",
@@ -33,10 +33,10 @@ const copy = {
   ar: {
     badge: "هدية من العيادة",
     title: "جرّب حظك",
-    description: "كل دورة صحيحة رقم 100 تحصل على هدية من العيادة: استشارة مجانية أو تنظيف وتلميع مجاني.",
+    description: "أدر العجلة من أجل هدية مفاجأة من العيادة. قد يفوز الزائر باستشارة مجانية أو تنظيف وتلميع مجاني.",
     spin: "أدر العجلة",
     spinning: "تدور العجلة…",
-    left: "دورة صحيحة حتى الهدية التالية",
+    left: "قد تكون هدية مفاجأة من العيادة قريبة",
     today: "لقد أدرت العجلة اليوم. عد غدًا للمحاولة مرة أخرى.",
     won: "لقد ربحت هدية من العيادة!",
     wonText: "اختر استشارة مجانية أو تنظيف وتلميع مجاني. أظهر هذا الرمز عند الحجز:",
@@ -50,10 +50,10 @@ const copy = {
   ku: {
     badge: "دیاریا ژ کلینیکێ",
     title: "بەختێ خۆ تاقی بکە",
-    description: "هەر 100ـەم چرخانا دروست دیاریا کلینیکێ وەردگریت: شێوەرەکا بەلاشان یان پاککرن و پۆلیشکرنا بەلاشان.",
+    description: "عەجلێ بۆ دیاریا نهێنی یا کلینیکێ بچرخینە. ڕەنگە سەرکەفتنێ شێوەرەکا بەلاشان یان پاککرن و پۆلیشکرنا بەلاشان بیت.",
     spin: "عەجلێ بچرخینە",
     spinning: "عەجل دچرخیت…",
-    left: "چرخانێن دروست تا دیاریا بهێت",
+    left: "دیاریا نهێنی یا کلینیکێ ڕەنگە نێزیک بیت",
     today: "تو ڤێ رۆژێ عەجل چرخاندیە. سبە بهێ بۆ هەوڵدانا دی.",
     won: "تو دیاریا کلینیکێ برد!",
     wonText: "شێوەرەکا بەلاشان یان پاککرن و پۆلیشکرنا بەلاشان هەلبژێرە. ڤێ کودێ دەمێ حجزکرنێ نیشان بدە:",
@@ -122,7 +122,7 @@ export default function LuckyWheel() {
           <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">{text.title}</h2>
           <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">{text.description}</p>
           <div className="mt-6 rounded-2xl border border-amber-200 bg-white/90 p-4 shadow-sm">
-            <p className="flex items-center gap-2 font-semibold text-foreground"><Gift className="h-5 w-5 text-amber-600" />{status ? <><span className="text-2xl text-primary">{status.spinsUntilGift}</span> {text.left}</> : text.ready}</p>
+            <p className="flex items-center gap-2 font-semibold text-foreground"><Gift className="h-5 w-5 text-amber-600" />{status ? text.left : text.ready}</p>
           </div>
           {message && <p role="status" className={`mt-5 rounded-xl px-4 py-3 text-sm leading-relaxed ${status?.winner ? "bg-emerald-100 text-emerald-950" : "bg-sky-100 text-sky-950"}`}>{message}</p>}
           {status?.winner && status.claimCode && <div className="mt-4 rounded-xl border border-emerald-200 bg-white p-4"><p className="text-sm text-muted-foreground">{text.wonText}</p><p className="mt-2 font-mono text-xl font-bold tracking-wider text-emerald-700">{status.claimCode}</p><a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${claimText}`} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-4 py-2 font-semibold text-white hover:bg-primary/90">{text.book}</a></div>}
@@ -135,7 +135,7 @@ export default function LuckyWheel() {
               <span className="absolute left-1/2 top-4 -translate-x-1/2 text-xs font-bold text-sky-950">{text.gift}</span>
               <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs font-bold text-sky-950">{text.tip}</span>
             </div>
-            <div className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-white bg-primary text-center text-sm font-bold text-white shadow-lg"><Sparkles className="mr-1 h-4 w-4" />100</div>
+            <div className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-white bg-primary text-center text-sm font-bold text-white shadow-lg"><Sparkles className="h-6 w-6" /><span className="sr-only">{text.gift}</span></div>
           </div>
           <button type="button" onClick={spin} disabled={!status?.canSpin || spinning} className="mt-7 inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-7 py-3 font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50">{spinning ? text.spinning : text.spin}</button>
         </div>
