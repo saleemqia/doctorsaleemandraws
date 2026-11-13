@@ -18,7 +18,7 @@ export interface ServiceInfo {
 }
 
 const T = (en: string, ar: string, ku: string) => ({ en, ar, ku });
-const SUF = T(" | Doctor Saleem Andraws Dental Clinic", " | د. سليم أندراوس، دهوك", " | د. سەلیم ئەندراوس، دهوک");
+const SUF = T(" | Doctor Saleem Andraws Dental Clinic", " | د. سليم أندراوس، دهوك", " | د. سليم ئەندراوس، دهوک");
 const withSuf = (t: L3): L3 => ({ en: t.en + SUF.en, ar: t.ar + SUF.ar, ku: t.ku + SUF.ku });
 
 export const SERVICES: ServiceInfo[] = [
@@ -39,7 +39,7 @@ export const SERVICES: ServiceInfo[] = [
     description: T(
       "Dental implants in Duhok to replace missing teeth with teeth that look and work like natural ones. Examination and X-ray first. Dr. Saleem Andraws Dental Clinic, Qazi Mohammad Road. 0750 781 6500.",
       "زراعة الأسنان في دهوك لتعويض الأسنان المفقودة بأسنان تبدو وتعمل مثل الطبيعية، بعد الفحص وصورة الأشعة. عيادة د. سليم أندراوس، شارع قاضي محمد. 07507816500",
-      "چاندنا ددانا ل دهوکێ بۆ گوهۆڕینا ددانێن کەفتی ب ددانێن وەک یێن سروشتی، پشتی پشکنین و تیشکێ. کلینیکا د. سەلیم ئەندراوس، شەقامێ قازی محەمەد. 07507816500",
+      "چاندنا ددانا ل دهوکێ بۆ گوهۆڕینا ددانێن کەفتی ب ددانێن وەک یێن سروشتی، پشتی پشکنین و تیشکێ. کلینیکا د. سليم ئەندراوس، شەقامێ قازی محەمەد. 07507816500",
     ),
   },
   {
@@ -59,7 +59,7 @@ export const SERVICES: ServiceInfo[] = [
     description: T(
       "Veneers, Hollywood smile and complete smile makeovers in Duhok, plus zircon and E-max crowns. See real before-and-after cases. Dr. Saleem Andraws Dental Clinic. 0750 781 6500.",
       "فينير وابتسامة هوليود وتجميل الابتسامة الكامل في دهوك، مع تيجان الزركون والإيماكس. شاهد حالات حقيقية قبل وبعد. عيادة د. سليم أندراوس. 07507816500",
-      "ڤینیر، بزەیا هۆلیوود و جوانکرنا تەواوی یا بزەیێ ل دهوکێ، دگەل کراسێن زیرکۆن و ئیماکس. نموونەیێن بەری و پشتی ببینە. کلینیکا د. سەلیم ئەندراوس. 07507816500",
+      "ڤینیر، بزەیا هۆلیوود و جوانکرنا تەواوی یا بزەیێ ل دهوکێ، دگەل کراسێن زیرکۆن و ئیماکس. نموونەیێن بەری و پشتی ببینە. کلینیکا د. سليم ئەندراوس. 07507816500",
     ),
   },
   {
@@ -79,7 +79,7 @@ export const SERVICES: ServiceInfo[] = [
     description: T(
       "Professional teeth whitening at the clinic in Duhok, after the doctor checks your teeth and gums so the result is safe and even. Dr. Saleem Andraws Dental Clinic. 0750 781 6500.",
       "تبييض الأسنان الاحترافي في العيادة في دهوك، بعد فحص الأسنان واللثة لنتيجة آمنة ومتساوية. عيادة د. سليم أندراوس. 07507816500",
-      "سپیکرنا ددانا یا پیشەیی ل کلینیکێ ل دهوکێ، پشتی پشکنینا ددان و پوکان. کلینیکا د. سەلیم ئەندراوس. 07507816500",
+      "سپیکرنا ددانا یا پیشەیی ل کلینیکێ ل دهوکێ، پشتی پشکنینا ددان و پوکان. کلینیکا د. سليم ئەندراوس. 07507816500",
     ),
   },
   {
@@ -99,7 +99,7 @@ export const SERVICES: ServiceInfo[] = [
     description: T(
       "Root canal treatment to save damaged teeth and tooth-coloured fillings for cavities, at Dr. Saleem Andraws Dental Clinic in Duhok. See how a root canal is done. 0750 781 6500.",
       "علاج العصب (حشو العصب) لإنقاذ الأسنان المتضررة وحشوات تجميلية بلون الأسنان لعلاج التسوس في عيادة د. سليم أندراوس في دهوك. 07507816500",
-      "حەشوا دەمارێ بۆ ڕزگارکرنا ددانێن زیانلێکەفتی و حەشوێن ب ڕەنگێ ددانی بۆ کڕمبوونێ، ل کلینیکا د. سەلیم ئەندراوس ل دهوکێ. 07507816500",
+      "حەشوا دەمارێ بۆ ڕزگارکرنا ددانێن زیانلێکەفتی و حەشوێن ب ڕەنگێ ددانی بۆ کڕمبوونێ، ل کلینیکا د. سليم ئەندراوس ل دهوکێ. 07507816500",
     ),
   },
   {
@@ -138,7 +138,7 @@ export const SERVICES: ServiceInfo[] = [
     description: T(
       "Orthodontic treatment (braces) in Duhok to straighten crooked or crowded teeth. Examination and X-ray first, then a clear plan and expected time. Dr. Saleem Andraws. 0750 781 6500.",
       "تقويم الأسنان في دهوك لعلاج الأسنان الملتوية أو المزدحمة. فحص وصورة أشعة أولاً، ثم شرح الخطة والمدة المتوقعة. عيادة د. سليم أندراوس. 07507816500",
-      "ڕێکخستنا ددانا (تقویم) ل دهوکێ بۆ ددانێن خوار یان تێکەل. پشکنین و تیشک پێشی، پاشی پلان و دەمێ پێدڤی. کلینیکا د. سەلیم ئەندراوس. 07507816500",
+      "ڕێکخستنا ددانا (تقویم) ل دهوکێ بۆ ددانێن خوار یان تێکەل. پشکنین و تیشک پێشی، پاشی پلان و دەمێ پێدڤی. کلینیکا د. سليم ئەندراوس. 07507816500",
     ),
   },
   {
@@ -158,7 +158,7 @@ export const SERVICES: ServiceInfo[] = [
     description: T(
       "Professional teeth cleaning and polishing in Duhok to remove tartar and stains and keep your gums healthy, with a check for cavities. Dr. Saleem Andraws Dental Clinic. 0750 781 6500.",
       "تنظيف وتلميع الأسنان الاحترافي في دهوك لإزالة الجير والتصبغات والحفاظ على صحة اللثة، مع فحص التسوس. عيادة د. سليم أندراوس. 07507816500",
-      "پاقژکرن و بریقەدانا ددانا یا پیشەیی ل دهوکێ دا کلس و ڕەنگ بچن و پوک ساخلەم بمینن. کلینیکا د. سەلیم ئەندراوس. 07507816500",
+      "پاقژکرن و بریقەدانا ددانا یا پیشەیی ل دهوکێ دا کلس و ڕەنگ بچن و پوک ساخلەم بمینن. کلینیکا د. سليم ئەندراوس. 07507816500",
     ),
   },
   {
@@ -177,7 +177,7 @@ export const SERVICES: ServiceInfo[] = [
     description: T(
       "Gentle tooth extraction under local anaesthetic in Duhok when a tooth cannot be saved, with aftercare advice and options to replace the tooth. Dr. Saleem Andraws. 0750 781 6500.",
       "قلع الأسنان بلطف تحت التخدير الموضعي في دهوك عندما لا يمكن إنقاذ السن، مع شرح العناية بعد القلع وخيارات تعويض السن. عيادة د. سليم أندراوس. 07507816500",
-      "هەلکێشانا ددانی ب نەرمی و سڕکرنا جهی ل دهوکێ دەمێ ددان نەهێتە ڕزگارکرن، دگەل شیرەتێن پشتی هەلکێشانێ. کلینیکا د. سەلیم ئەندراوس. 07507816500",
+      "هەلکێشانا ددانی ب نەرمی و سڕکرنا جهی ل دهوکێ دەمێ ددان نەهێتە ڕزگارکرن، دگەل شیرەتێن پشتی هەلکێشانێ. کلینیکا د. سليم ئەندراوس. 07507816500",
     ),
   },
 ];
