@@ -28,7 +28,7 @@ export const SOCIALS: SocialInfo[] = [
   },
   {
     slug: "tiktok", name: "TikTok", handle: "@salandhana", url: "https://www.tiktok.com/@salandhana", color: "#111111", embed: "tiktok", videos: [],
-    text: T("Short videos from Dr. Saleem.", "فيديوهات قصيرة من د. سليم.", "ڤیدیۆیێن کورت ژ د. سەلیم."),
+    text: T("Short videos from Dr. Saleem.", "فيديوهات قصيرة من د. سليم.", "ڤیدیۆیێن کورت ژ د. سليم."),
   },
   {
     slug: "youtube", name: "YouTube", handle: "Dr. Saleem Andraws", url: "https://youtu.be/edq1-loT6As", color: "#FF0000", embed: "youtube", id: "edq1-loT6As",
@@ -50,16 +50,16 @@ export const OTHER_LINKS: { name: string; handle: string; url: string }[] = [
 
 export const SOCIAL_INDEX = {
   name: T("Social media", "مواقع التواصل", "تۆڕێن جڤاکی"),
-  title: T("Dr. Saleem Andraws Dental Clinic on Social Media | Duhok", "عيادة د. سليم أندراوس على مواقع التواصل | دهوك", "کلینیکا د. سەلیم ئەندراوس ل سەر تۆڕێن جڤاکی | دهوک"),
+  title: T("Dr. Saleem Andraws Dental Clinic on Social Media | Duhok", "عيادة د. سليم أندراوس على مواقع التواصل | دهوك", "کلینیکا د. سليم ئەندراوس ل سەر تۆڕێن جڤاکی | دهوک"),
   description: T(
     "See our Instagram, Facebook, TikTok, YouTube and Snapchat inside the website: real cases, clinic news and dental tips from Dr. Saleem Andraws Dental Clinic in Duhok.",
     "شاهد إنستغرام وفيسبوك وتيك توك ويوتيوب وسناب شات داخل الموقع: حالات حقيقية وأخبار العيادة ونصائح الأسنان من عيادة د. سليم أندراوس في دهوك.",
-    "ئینستاگرام، فەیسبووک، تیکتۆک، یووتیووب و سناپچاتا مە د ناڤ ماڵپەڕی دا ببینە: حالەتێن ڕاستەقینە، هەوالێن کلینیکێ و شیرەتێن ددانان ژ کلینیکا د. سەلیم ئەندراوس ل دهوکێ.",
+    "ئینستاگرام، فەیسبووک، تیکتۆک، یووتیووب و سناپچاتا مە د ناڤ ماڵپەڕی دا ببینە: حالەتێن ڕاستەقینە، هەوالێن کلینیکێ و شیرەتێن ددانان ژ کلینیکا د. سليم ئەندراوس ل دهوکێ.",
   ),
 };
 
 export const socialTitle = (s: SocialInfo): L3 => T(
   `${s.name} – Dr. Saleem Andraws Dental Clinic, Duhok`,
   `${s.name} – عيادة د. سليم أندراوس، دهوك`,
-  `${s.name} – کلینیکا د. سەلیم ئەندراوس، دهوک`,
+  `${s.name} – کلینیکا د. سليم ئەندراوس، دهوک`,
 );
