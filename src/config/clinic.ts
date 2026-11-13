@@ -41,7 +41,7 @@ export const EMAIL_LABELS: Record<keyof typeof EMAILS | "doctor", Record<"en" | 
   info: { en: "General questions", ar: "الاستفسارات العامة", ku: "پرسیارێن گشتی" },
   booking: { en: "Appointments & booking", ar: "المواعيد والحجز", ku: "ژڤان و حجزکرن" },
   clinic: { en: "Clinic office & reports", ar: "إدارة العيادة والتقارير", ku: "کارگێڕیا کلینیکێ و ڕاپۆرت" },
-  doctor: { en: "Dr. Saleem", ar: "د. سليم", ku: "د. سەلیم" },
+  doctor: { en: "Dr. Saleem", ar: "د. سليم", ku: "د. سليم" },
 };
 export const INSTAGRAM_URL = "https://www.instagram.com/dr.saleemandraws/";
 export const INSTAGRAM_HANDLE = "@dr.saleemandraws";
