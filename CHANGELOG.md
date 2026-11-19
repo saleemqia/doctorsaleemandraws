@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-11-19 — Delete appointments from the finance page
+
+- In المالية والحسابات, each appointment chip under the payment form now has a 🗑 button that deletes the appointment after a confirmation, using the same `/clinic/api/appt?action=delete` call as the appointments view.
+- Changed file: `public/clinic/index.html`. Verified with a syntax check of the page scripts; check on the live /clinic after deploy.
+
 ## 2026-11-13 — Wheel copy and privacy
 
 - Kept the internal prize schedule private. Public visitors see only a surprise-gift wheel.

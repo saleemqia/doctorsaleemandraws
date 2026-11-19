@@ -67,6 +67,7 @@ main{max-width:760px;margin:-40px auto 40px;padding:0 16px}
 .noDim .appt.past{opacity:1;border-inline-start-color:var(--blue)}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
 .chips button{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:999px;padding:7px 13px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.qchip{display:inline-flex;align-items:stretch}.qchip [data-qa]{border-start-end-radius:0;border-end-end-radius:0}.chips .qdel{border-start-start-radius:0;border-end-start-radius:0;border-inline-start:0;padding:7px 10px;color:#C2413A}.chips .qdel:hover{background:#FDECEA}
 .chips button small{color:var(--muted);font-weight:500;margin-inline-start:4px}
 .chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}.chips button.on small{color:#cfe0f7}
 .chips.months button{border-radius:10px;font-size:13px}
@@ -1596,7 +1597,7 @@ async function qeAppts() {
   try {
     const d = await (await fetch(`/clinic/api/day?from=${day}&days=1`, { credentials: "same-origin", cache: "no-store" })).json();
     const a = (d.appts || []).filter((x) => !x.allDay && x.title);
-    box.innerHTML = a.length ? `<small class="note">مواعيد هذا اليوم (اضغط لتعبئة الاسم):</small><div class="chips">${a.map((x, i) => `<button type="button" data-qa="${i}">${esc(x.title)} · ${ampm(x.start)}</button>`).join("")}</div>` : "";
+    box.innerHTML = a.length ? `<small class="note">مواعيد هذا اليوم (اضغط لتعبئة الاسم، أو 🗑 لحذف الموعد):</small><div class="chips">${a.map((x, i) => `<span class="qchip"><button type="button" data-qa="${i}">${esc(x.title)} · ${ampm(x.start)}</button><button type="button" class="qdel" data-qadel="${i}" title="حذف الموعد" aria-label="حذف موعد ${esc(x.title)}">🗑</button></span>`).join("")}</div>` : "";
     box._a = a;
   } catch { box.innerHTML = ""; }
 }
@@ -1604,6 +1605,14 @@ document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-qa]"); if (!b) return; const a = $("qeAppts")._a?.[+b.dataset.qa]; const f = $("pForm"); if (!a || !f) return;
   f.name.value = String(a.title).replace(/\s*[\/(].*$/, "").trim() || a.title; if (a.phone) f.phone.value = a.phone; if (a.treatment && !f.work.value) f.work.value = a.treatment;
   (f.paid_iqd || f.name).focus();
+});
+document.addEventListener("click", async (e) => {      // delete an appointment straight from the finance page
+  const b = e.target.closest("[data-qadel]"); if (!b) return; const a = $("qeAppts")._a?.[+b.dataset.qadel]; if (!a) return;
+  if (!confirm(`حذف موعد «${a.title}» ${dayLabel(a.day)} ${ampm(a.start)} من التقويم؟`)) return;
+  b.disabled = true;
+  const r = await (await fetch("/clinic/api/appt?action=delete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ uid: a.uid }) })).json().catch(() => ({ ok: false }));
+  toast(r.ok ? "✔ حُذف الموعد" + (r.errors?.length ? " · ⚠️ " + esc(r.errors.join(" · ")) : "") : "⚠️ تعذّر الحذف: " + esc((r.errors || []).join(" · ") || r.error || "لا يوجد تقويم مربوط"));
+  qeAppts();
 });
 document.addEventListener("change", (e) => { if (e.target.closest("#pForm") && e.target.name === "day") { qeDay = e.target.value; qeAppts(); } });
 let nameT;
