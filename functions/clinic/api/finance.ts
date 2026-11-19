@@ -6,6 +6,7 @@
 // Income comes from the same `payments` rows that feed the patient cards, so one Excel upload updates cards and charts together.
 import { Env, ensureSchema, json, patientKey, setSetting } from "../../../lib/clinic";
 import { appendPaymentToSheet, checkPaymentSheets, deletePaymentFromSheet, updatePaymentInSheet } from "../../../lib/google-sheets";
+import { AUTO_PREFIX } from "../../../lib/appt-pay";
 
 const num = (v: unknown) => (v === null || v === undefined || v === "" || isNaN(Number(v)) ? null : Number(v));
 
@@ -133,9 +134,26 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       if (!name || key.startsWith("#") || !/^\d{4}-\d{2}-\d{2}$/.test(day)) return json({ ok: false, error: "أدخل اسم المريض والتاريخ" }, 400);
       // A visit may be recorded before any money is collected. Empty money fields are
       // stored as zero so it remains visible in the patient card and export.
+      const work = String(body.work || "").slice(0, 300), notes = String(body.notes || "").slice(0, 300);
+      // A visit already added from the Outlook calendar (money still empty): fill that row, don't add a second one.
+      const auto = await env.DB.prepare(
+        `SELECT id, src, work FROM payments WHERE patient_key = ? AND day = ? AND src LIKE ? AND coalesce(paid_iqd,0) = 0 AND coalesce(paid_usd,0) = 0
+           AND coalesce(due_iqd,0) = 0 AND coalesce(due_usd,0) = 0 ORDER BY id LIMIT 1`,
+      ).bind(key, day, AUTO_PREFIX + "%").first<{ id: number; src: string; work: string }>();
+      if (auto) {
+        const w = work || String(auto.work || "");
+        await env.DB.prepare("UPDATE payments SET name=?, paid_iqd=?, paid_usd=?, due_iqd=?, due_usd=?, work=?, notes=?, phone=coalesce(nullif(?, ''), phone) WHERE id=?")
+          .bind(name, paidI ?? 0, paidU ?? 0, dueI ?? 0, dueU ?? 0, w, notes, phone, auto.id).run();
+        if (phone) await setPhone(env, key, phone).run();
+        try {
+          await updatePaymentInSheet(env, day, { src: auto.src, name, day, paid_iqd: paidI ?? 0, paid_usd: paidU ?? 0, due_iqd: dueI ?? 0, due_usd: dueU ?? 0, work: w, notes });
+          return json({ ok: true, newCard: false, filled: true, sheetSynced: true });
+        } catch (e) {
+          return json({ ok: true, newCard: false, filled: true, sheetSynced: false, syncWarning: String((e as Error)?.message || e) });
+        }
+      }
       const known = await env.DB.prepare("SELECT key FROM patients WHERE key = ?").bind(key).first();
       const src = "m:" + Date.now() + Math.random().toString(36).slice(2, 6);
-      const work = String(body.work || "").slice(0, 300), notes = String(body.notes || "").slice(0, 300);
       const stmts = [env.DB.prepare(
         `INSERT INTO payments (src, sheet, patient_key, name, day, paid_iqd, paid_usd, due_iqd, due_usd, work, notes, phone, matched) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       ).bind(src, day.slice(0, 7), key, name, day, paidI ?? 0, paidU ?? 0, dueI ?? 0, dueU ?? 0, work, notes, phone, "manual")];

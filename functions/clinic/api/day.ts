@@ -3,6 +3,7 @@
 // the visible range is saved on every load, and the whole calendar at most every 6 hours.
 import { Appt, Env, addDays, archive, archivedBetween, eventsBetween, fullSync, json, loadCalendar, todayLocal } from "../../../lib/clinic";
 import { autoCopy, pageEvents } from "../../../lib/calendars";
+import { apptsToPayments } from "../../../lib/appt-pay";
 
 // Visits typed in or changed on this page in the last 6 hours: shown at once, because Outlook's published link updates later.
 async function withPageEdits(env: Env, list: Appt[], from: string, to: string): Promise<Appt[]> {
@@ -33,7 +34,8 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env, waitUntil
     const live = eventsBetween(raw, from, to);
     const old = await archivedBetween(env, from, to, new Set(live.map((a) => a.uid)));
     const appts = await withPageEdits(env, [...live, ...old].sort((a, b) => a.start.localeCompare(b.start)), from, to);
-    waitUntil(archive(env, live, from, to).then(() => fullSync(env, raw)).then(() => autoCopy(env)).catch(() => {}));
+    waitUntil(archive(env, live, from, to).then(() => fullSync(env, raw)).then(() => autoCopy(env)).catch(() => {})
+      .then(() => apptsToPayments(env)).catch(() => {}));
     return json({ source: "outlook", today: todayLocal(), from, to, appts });
   } catch (e) {
     const { results } = await env.DB.prepare(

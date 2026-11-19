@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-11-19 — Outlook appointments go to the accounts automatically
+
+- Once an Outlook appointment's start time passes, the visit is added once to the payments list and the 2026 Google sheet (name, date, treatment, phone; money empty). Runs in the background whenever the clinic page loads appointments, up to 4 visits per run. Starts from 2026-11-19; older visits are not added.
+- Skipped: all-day entries, non-patient titles, titles marked as no-show/postponed/cancelled, and appointments deleted from the page. A row the owner deletes is not added again (table `appt_pay`).
+- Entering a payment for the same patient and day fills the automatic row instead of adding a second one.
+- Files: `lib/appt-pay.ts` (new), `functions/clinic/api/day.ts`, `functions/clinic/api/finance.ts`. Verified with a type check and a local SQLite test of the add/skip/no-re-add rules.
+
 ## 2026-11-19 — Delete appointments from the finance page
 
 - In المالية والحسابات, each appointment chip under the payment form now has a 🗑 button that deletes the appointment after a confirmation, using the same `/clinic/api/appt?action=delete` call as the appointments view.
